@@ -1,0 +1,25 @@
+﻿<Module>
+	<Name value="ScenePhysicsImplementer"/>
+	<Id value="ScenePhysicsImplementer"/>
+	<Version value="e1.7.1"/>
+	<DefaultModule value="false"/>
+	<SingleplayerModule value="true"/>
+	<MultiplayerModule value="false"/>
+	<Official value="false"/>
+	<DependedModules>
+		<DependedModule Id="Native"/>
+		<DependedModule Id="SandBoxCore"/>
+		<DependedModule Id="Sandbox"/>
+		<DependedModule Id="CustomBattle"/>
+		<DependedModule Id="StoryMode"/>
+	</DependedModules>
+	<SubModules>
+		<SubModule>
+			<Name value = "ScenePhysicsImplementer"/>
+			<DLLName value = "ScenePhysicsImplementer.dll"/>
+			<SubModuleClassType value = "ScenePhysicsImplementer.ScenePhysicsImplementerSubModule"/>
+			<Tags/>
+		</SubModule>
+	</SubModules>
+</Module>
+
