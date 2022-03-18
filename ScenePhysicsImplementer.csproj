@@ -26,7 +26,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\SceneEditorExtras\bin\Win64_Shipping_Client</OutputPath>
+    <OutputPath>C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\ScenePhysicsImplementer\bin\Win64_Shipping_Client</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -34,7 +34,7 @@
   <PropertyGroup>
     <StartAction>Program</StartAction>
     <StartProgram>C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\Bannerlord.exe</StartProgram>
-    <StartArguments>/singleplayer _MODULES_*Native*SandBoxCore*SandBox*StoryMode*SceneEditorExtras*_MODULES_</StartArguments>
+    <StartArguments>/singleplayer _MODULES_*Native*SandBoxCore*SandBox*StoryMode*SceneEditorHelpers*ScenePhysicsImplementer*_MODULES_</StartArguments>
     <StartWorkingDirectory>C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client</StartWorkingDirectory>
   </PropertyGroup>
   <ItemGroup>
