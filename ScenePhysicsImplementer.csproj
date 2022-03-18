@@ -257,13 +257,13 @@
     <!-- TODO -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SCEConstraintLib.cs" />
-    <Compile Include="SCEConstraintSet.cs" />
-    <Compile Include="SCEDynamicObjectBase.cs" />
-    <Compile Include="SCEMathLib.cs" />
+    <Compile Include="ConstraintLib.cs" />
+    <Compile Include="ConstraintSet.cs" />
+    <Compile Include="SCE_PhysicsObject.cs" />
+    <Compile Include="MathLib.cs" />
     <Compile Include="ScenePhysicsImplementerSubModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SCEObjectPhysLib.cs" />
+    <Compile Include="ObjectPropertiesLib.cs" />
     <Content Include="SubModule.xml" />
   </ItemGroup>
   <PropertyGroup>

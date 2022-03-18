@@ -14,7 +14,7 @@ namespace ScenePhysicsImplementer
     //Y = longitude
     //Z = altitude
     
-    public class SCEObjectPhysLib
+    public class ObjectPropertiesLib
     {
         private GameEntity physObject;
         private float mass;
@@ -24,7 +24,7 @@ namespace ScenePhysicsImplementer
 
         private Vec3 CoM;
 
-        public SCEObjectPhysLib(GameEntity v_physObject)
+        public ObjectPropertiesLib(GameEntity v_physObject)
         {
             physObject = v_physObject;
 
@@ -41,8 +41,8 @@ namespace ScenePhysicsImplementer
             Vec3 min = physObject.GetBoundingBoxMin();
 
             //adjust for scaling - local bounding box dimensions are not affected by scale
-            max = SCEMath.VectorMultiplyComponents(max, physObject.GetGlobalScale());
-            min = SCEMath.VectorMultiplyComponents(min, physObject.GetGlobalScale());
+            max = MathLib.VectorMultiplyComponents(max, physObject.GetGlobalScale());
+            min = MathLib.VectorMultiplyComponents(min, physObject.GetGlobalScale());
 
             float x = (max - min).x;
             float y = (max - min).y;
@@ -58,9 +58,9 @@ namespace ScenePhysicsImplementer
 
         public static float CalculateSphereBodyForObject(GameEntity physObject)
         {
-            float sphereRadius = SCEMath.AverageVectors(new List<Vec3>() { physObject.GetBoundingBoxMax(), physObject.GetBoundingBoxMin() }).Length;
+            float sphereRadius = MathLib.AverageVectors(new List<Vec3>() { physObject.GetBoundingBoxMax(), physObject.GetBoundingBoxMin() }).Length;
             Vec3 objGlobalScale = physObject.GetGlobalScale();
-            float scaleFactor = objGlobalScale[SCEMath.IndexOfAbsMinVectorComponent(objGlobalScale)] / objGlobalScale[SCEMath.IndexOfAbsMaxVectorComponent(objGlobalScale)];
+            float scaleFactor = objGlobalScale[MathLib.IndexOfAbsMinVectorComponent(objGlobalScale)] / objGlobalScale[MathLib.IndexOfAbsMaxVectorComponent(objGlobalScale)];
             sphereRadius *= scaleFactor;
             return sphereRadius;
         }

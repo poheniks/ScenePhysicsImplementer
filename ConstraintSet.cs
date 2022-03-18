@@ -28,11 +28,11 @@ using System.Collections.Generic;
 */
 namespace ScenePhysicsImplementer
 {
-    class SCEConstraintSet
+    class ConstraintSet
     {
         public GameEntity parent;
         public GameEntity child;
-        public SCEObjectPhysLib childObjLib;
+        public ObjectPropertiesLib childObjLib;
 
         public List<MatrixFrame> weldConstraints = new List<MatrixFrame>(); //inital local frame to weld to
 
@@ -53,11 +53,11 @@ namespace ScenePhysicsImplementer
             Hinge
         }
 
-        public SCEConstraintSet(GameEntity _parent, GameEntity _child)
+        public ConstraintSet(GameEntity _parent, GameEntity _child)
         {
             parent = _parent;
             child = _child;
-            childObjLib = new SCEObjectPhysLib(child);
+            childObjLib = new ObjectPropertiesLib(child);
         }
 
         public void AddWeld(MatrixFrame childInitialFrame)
@@ -96,7 +96,7 @@ namespace ScenePhysicsImplementer
             MatrixFrame parentFrame = parent.GetFrame();
 
             
-            childGlobalFrame = SCEConstraintLib.AdjustFrameForCOM(childGlobalFrame, childCoM);
+            childGlobalFrame = ConstraintLib.AdjustFrameForCOM(childGlobalFrame, childCoM);
             childGlobalFrame.rotation.MakeUnit();
             Vec3 childGlobalForceCenter = childGlobalFrame.origin;
             
@@ -132,7 +132,7 @@ namespace ScenePhysicsImplementer
             {
                 MatrixFrame childInitialFrame = hinge.Item1;
 
-                Vec3 force = SCEConstraintLib.CalculateForceForTranslation(parent, child, childInitialFrame, childPrevGlobalFrame, parentPrevFrame, dt);
+                Vec3 force = ConstraintLib.CalculateForceForTranslation(parent, child, childInitialFrame, childPrevGlobalFrame, parentPrevFrame, dt);
                 Vec3 childForce = force; 
                 Vec3 parentForce = -force;
 
@@ -143,7 +143,7 @@ namespace ScenePhysicsImplementer
                 child.ApplyLocalForceToDynamicBody(childCoM, childForce);
                 parent.ApplyLocalForceToDynamicBody(parentForceCenter, parentForce);
 
-                List<Tuple<Vec3, Vec3>> forceCouples = SCEConstraintLib.CalculateForceCouplesForHinge(parent, child, childObjLib, childInitialFrame, childPrevGlobalFrame, parentPrevFrame, hingeOrientation, hingeRotation, hingePower, dt);
+                List<Tuple<Vec3, Vec3>> forceCouples = ConstraintLib.CalculateForceCouplesForHinge(parent, child, childObjLib, childInitialFrame, childPrevGlobalFrame, parentPrevFrame, hingeOrientation, hingeRotation, hingePower, dt);
                 foreach (Tuple<Vec3, Vec3> forceCouple in forceCouples)
                 {
                     Vec3 forceLocalPos = forceCouple.Item1;
@@ -189,13 +189,13 @@ namespace ScenePhysicsImplementer
             //welded constraints
             foreach (MatrixFrame childInitialFrame in weldConstraints)
             {
-                Vec3 force = SCEConstraintLib.CalculateForceForTranslation(parent, child, childInitialFrame, childPrevGlobalFrame, parentPrevFrame, dt);
+                Vec3 force = ConstraintLib.CalculateForceForTranslation(parent, child, childInitialFrame, childPrevGlobalFrame, parentPrevFrame, dt);
                 child.ApplyLocalForceToDynamicBody(childCoM, force);
                 parent.ApplyLocalForceToDynamicBody(parentForceCenter, -force*1f);
 
                 //MBDebug.RenderDebugSphere(parentFrame.TransformToParent(parentLocal), 0.1f, Colors.Black.ToUnsignedInteger());
 
-                List<Tuple<Vec3,Vec3>> forceCouples = SCEConstraintLib.CalculateForceCouplesForLockedRotation(parent, child, childObjLib, childInitialFrame, childPrevGlobalFrame, dt);
+                List<Tuple<Vec3,Vec3>> forceCouples = ConstraintLib.CalculateForceCouplesForLockedRotation(parent, child, childObjLib, childInitialFrame, childPrevGlobalFrame, dt);
                 foreach (Tuple<Vec3,Vec3> forceCouple in forceCouples)
                 {
                     Vec3 parentCouple = child.GetGlobalFrame().rotation.TransformToParent(forceCouple.Item1);

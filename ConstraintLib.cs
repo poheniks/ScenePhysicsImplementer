@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace ScenePhysicsImplementer
 {
-    public static class SCEConstraintLib
+    public static class ConstraintLib
     {
         public static Vec3 CalculateForceForTranslation(GameEntity parent, GameEntity child, MatrixFrame childInitialFrame, MatrixFrame prevChildGlobalFrame, MatrixFrame prevParentFrame, float dt)
         {
@@ -72,7 +72,7 @@ namespace ScenePhysicsImplementer
             
         }
 
-        public static List<Tuple<Vec3, Vec3>> CalculateForceCouplesForHinge(GameEntity parent, GameEntity child, SCEObjectPhysLib objLib, MatrixFrame childInitialFrame, MatrixFrame prevChildGlobalFrame, MatrixFrame prevParentFrame, Vec3 hingeOrientation, Vec3 hingeRotation, float hingePower, float dt)
+        public static List<Tuple<Vec3, Vec3>> CalculateForceCouplesForHinge(GameEntity parent, GameEntity child, ObjectPropertiesLib objLib, MatrixFrame childInitialFrame, MatrixFrame prevChildGlobalFrame, MatrixFrame prevParentFrame, Vec3 hingeOrientation, Vec3 hingeRotation, float hingePower, float dt)
         {
             //dt = Math.Min(Math.Max(dt, 0.006f), 0.2f);
 
@@ -137,7 +137,7 @@ namespace ScenePhysicsImplementer
             Vec3 proportion = curTorque*curAng;
             Vec3 derivative = (curTorque*curAng - prevTorque*prevAng)/dt;
 
-            Tuple<Vec3, Vec3> forceCouple = GenerateGlobalForceCoupleFromLocalTorque(childGlobalFrame, SCEMath.VectorMultiplyComponents(proportion*kP + derivative*kD + childMat.TransformToParent(new Vec3(0,hingePower)), MoI));
+            Tuple<Vec3, Vec3> forceCouple = GenerateGlobalForceCoupleFromLocalTorque(childGlobalFrame, MathLib.VectorMultiplyComponents(proportion*kP + derivative*kD + childMat.TransformToParent(new Vec3(0,hingePower)), MoI));
             Vec3 forcePos = forceCouple.Item1;
             Vec3 forceDir = forceCouple.Item2;
             Tuple<Vec3, Vec3> curUnitForceCouple = forceCouple;
@@ -169,7 +169,7 @@ namespace ScenePhysicsImplementer
         }
 
 
-        public static List<Tuple<Vec3, Vec3>> CalculateForceCouplesForLockedRotation(GameEntity parent, GameEntity child, SCEObjectPhysLib objLib, MatrixFrame childInitialFrame, MatrixFrame prevChildGlobalFrame, float dt)
+        public static List<Tuple<Vec3, Vec3>> CalculateForceCouplesForLockedRotation(GameEntity parent, GameEntity child, ObjectPropertiesLib objLib, MatrixFrame childInitialFrame, MatrixFrame prevChildGlobalFrame, float dt)
         {
             MatrixFrame parentFrame = parent.GetFrame();
             MatrixFrame childFrame = child.GetGlobalFrame();
@@ -315,7 +315,7 @@ namespace ScenePhysicsImplementer
             float cur = Vec3.DotProduct(curAxis, targetAxis);
             if ( cur < -1 )
             {
-                SCEMath.DebugMessage("inversed");
+                MathLib.DebugMessage("inversed");
                 return invCurAxis;
             }
             
@@ -343,7 +343,7 @@ namespace ScenePhysicsImplementer
             //constrain torque composition equation by setting max moment arm to 1, max dir to max torque component
             //torque = new Vec3(2, 7, 4);
             //T(y) = F(x)*L(z) + F(z)*L(x), where F(x) = T(max); L(z) = 1
-            int indexOfMaxTorqueComponent = SCEMath.IndexOfAbsMaxVectorComponent(torque);
+            int indexOfMaxTorqueComponent = MathLib.IndexOfAbsMaxVectorComponent(torque);
             int indexShiftRight = indexOfMaxTorqueComponent + 1;   
             if (indexShiftRight > 2) indexShiftRight = 0;
             int indexShiftLeft = indexOfMaxTorqueComponent - 1;

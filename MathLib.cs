@@ -8,7 +8,7 @@ using TaleWorlds.Library;
 
 namespace ScenePhysicsImplementer
 {
-    public static class SCEMath
+    public static class MathLib
     {
         public static float GlobalMaxNum
         {
