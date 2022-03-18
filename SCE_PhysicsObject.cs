@@ -15,7 +15,7 @@ namespace ScenePhysicsImplementer
 
      */
 
-    public class SCE_DynamicObjectBase : UsableMachine
+    public class SCE_PhysicsObject : UsableMachine
     {
 
         public bool isParent = false;
@@ -32,11 +32,11 @@ namespace ScenePhysicsImplementer
         private bool firstTick = false;
 
         //child & parent fields
-        List<SCEConstraintSet> constraintSets = new List<SCEConstraintSet>();
+        List<ConstraintSet> constraintSets = new List<ConstraintSet>();
 
         //child fields
         GameEntity parentObject;
-        SCE_DynamicObjectBase parentScript; 
+        SCE_PhysicsObject parentScript; 
         bool childToParentInitialized;
         MatrixFrame initialFrame;
 
@@ -106,7 +106,7 @@ namespace ScenePhysicsImplementer
             if (!firstTick && (isParent | (!isParent && parentInitialized)))
             {
                 GameEntityPhysicsExtensions.SetDamping(physObject, 1.1f, 1.1f);
-                SCEObjectPhysLib objLib = new SCEObjectPhysLib(physObject);
+                ObjectPropertiesLib objLib = new ObjectPropertiesLib(physObject);
                 Vec3 prinMoI = objLib.principalMomentsOfInertia;
                 //prinMoI = Vec3.One * 500f;
                 GameEntityPhysicsExtensions.SetMassSpaceInertia(physObject, prinMoI); //MoI axes: (x, y, z) = (s, f, u)
@@ -117,7 +117,7 @@ namespace ScenePhysicsImplementer
             if (!isParent && childToParentInitialized)
             {
                 ChildTickPositioning();
-                foreach (SCEConstraintSet constraint in constraintSets)
+                foreach (ConstraintSet constraint in constraintSets)
                 {
                     constraint.TickConstraint(dt);
                 }
@@ -136,14 +136,14 @@ namespace ScenePhysicsImplementer
                 MatrixFrame adjGlobalFrame = physObject.GetGlobalFrame();
                 Vec3 CoM = physObject.CenterOfMass * 1f;
 
-                adjGlobalFrame = SCEConstraintLib.AdjustFrameForCOM(adjGlobalFrame, CoM);
+                adjGlobalFrame = ConstraintLib.AdjustFrameForCOM(adjGlobalFrame, CoM);
                 adjGlobalFrame.rotation.MakeUnit();
                 
                 Vec3 scale = physObject.GetGlobalScale();
                 //CoM = SCEMath.VectorMultiplyComponents(CoM, physObject.GetGlobalScale());
                 
 
-                Tuple<Vec3, Vec3> forceCouple = SCEConstraintLib.GenerateGlobalForceCoupleFromLocalTorque(adjGlobalFrame, torque);
+                Tuple<Vec3, Vec3> forceCouple = ConstraintLib.GenerateGlobalForceCoupleFromLocalTorque(adjGlobalFrame, torque);
                 Vec3 forcePos = forceCouple.Item1;
                 Vec3 forceDir = forceCouple.Item2;
 
@@ -153,9 +153,9 @@ namespace ScenePhysicsImplementer
 
                 if (isParent) 
                 {
-                    SCEObjectPhysLib objLib = new SCEObjectPhysLib(physObject);
-                    Vec3 MoI = SCEMath.VectorRound(objLib.principalMomentsOfInertia, 2);
-                    SCEMath.DebugMessage("MoI: " + MoI);
+                    ObjectPropertiesLib objLib = new ObjectPropertiesLib(physObject);
+                    Vec3 MoI = MathLib.VectorRound(objLib.principalMomentsOfInertia, 2);
+                    MathLib.DebugMessage("MoI: " + MoI);
                     /*
                     MBDebug.RenderDebugSphere(orgFrame.TransformToParent(forcePos), 0.2f);
                     MBDebug.RenderDebugDirectionArrow(orgFrame.TransformToParent(forcePos), forceDir);
@@ -182,17 +182,17 @@ namespace ScenePhysicsImplementer
             IEnumerable<GameEntity> children = physObject.GetChildren();
             foreach (GameEntity child in children)
             {
-                SCE_DynamicObjectBase childBase = (SCE_DynamicObjectBase)child.GetFirstScriptOfType(this.GetType());
+                SCE_PhysicsObject childBase = (SCE_PhysicsObject)child.GetFirstScriptOfType(this.GetType());
                 if (childBase == null) continue;
                 if (childBase != null)
                 {
                     if (childBase.isParent) continue;
                 }
 
-                SCEMath.DebugMessage("has type " + child.GetOldPrefabName());
+                MathLib.DebugMessage("has type " + child.GetOldPrefabName());
 
-                float sphereRadius = SCEObjectPhysLib.CalculateSphereBodyForObject(child);
-                Vec3 unscaledCenterOfMass = SCEMath.VectorMultiplyComponents(child.CenterOfMass, SCEMath.VectorInverseComponents(child.GetGlobalScale()));
+                float sphereRadius = ObjectPropertiesLib.CalculateSphereBodyForObject(child);
+                Vec3 unscaledCenterOfMass = MathLib.VectorMultiplyComponents(child.CenterOfMass, MathLib.VectorInverseComponents(child.GetGlobalScale()));
 
                 child.RemovePhysics();
                 child.AddSphereAsBody(unscaledCenterOfMass, sphereRadius*1f, BodyFlags.BodyOwnerEntity);
@@ -209,7 +209,7 @@ namespace ScenePhysicsImplementer
 
                 if (childBase.testCase) continue;
 
-                SCEConstraintSet baseConstraint = new SCEConstraintSet(physObject, child);
+                ConstraintSet baseConstraint = new ConstraintSet(physObject, child);
                 if (!childBase.hingeConstraint) baseConstraint.AddWeld(childFrame);
                 else baseConstraint.AddHinge(childFrame);
 
@@ -239,8 +239,8 @@ namespace ScenePhysicsImplementer
             MatrixFrame globalFrame = parentObject.GetFrame().TransformToParent(testFrame);
 
             Quaternion frameQuat = globalFrame.rotation.ToQuaternion();
-            Quaternion rotQuat = SCEMath.CreateQuaternionFromTWEulerAngles(new Vec3(0f,0f,0f) * (float)SCEMath.DegtoRad);
-            Quaternion newRotation = SCEMath.QuaternionMultiply(rotQuat, frameQuat);
+            Quaternion rotQuat = MathLib.CreateQuaternionFromTWEulerAngles(new Vec3(0f,0f,0f) * (float)MathLib.DegtoRad);
+            Quaternion newRotation = MathLib.QuaternionMultiply(rotQuat, frameQuat);
 
             Mat3 frameRot = newRotation.ToMat3;
             globalFrame.rotation = frameRot;
@@ -264,13 +264,13 @@ namespace ScenePhysicsImplementer
         {
             if (PilotAgent == null) return;
 
-            List<SCE_DynamicObjectBase> driveHinges = new List<SCE_DynamicObjectBase>();
-            List<SCE_DynamicObjectBase> steerHinges = new List<SCE_DynamicObjectBase>();
+            List<SCE_PhysicsObject> driveHinges = new List<SCE_PhysicsObject>();
+            List<SCE_PhysicsObject> steerHinges = new List<SCE_PhysicsObject>();
             if (childPhysObjects.Count > 0)
             {
                 foreach (GameEntity childObj in childPhysObjects)
                 {
-                    SCE_DynamicObjectBase objBase = childObj.GetFirstScriptOfType<SCE_DynamicObjectBase>();
+                    SCE_PhysicsObject objBase = childObj.GetFirstScriptOfType<SCE_PhysicsObject>();
                     if (objBase != null)
                     {
                         if (objBase.isDriveHinge) driveHinges.Add(objBase);
@@ -280,14 +280,14 @@ namespace ScenePhysicsImplementer
             }
             Vec2 control = PilotAgent.MovementInputVector;
 
-            foreach (SCE_DynamicObjectBase drive in driveHinges)
+            foreach (SCE_PhysicsObject drive in driveHinges)
             {
                 drive.constraintSets.FirstOrDefault().hingePower = -control.y * 3f;
                 physObject.ApplyLocalForceToDynamicBody(physObject.CenterOfMass, Vec3.Up * -Math.Abs(control.y) * 1f);
             }
-            foreach (SCE_DynamicObjectBase steer in steerHinges)
+            foreach (SCE_PhysicsObject steer in steerHinges)
             {
-                steer.constraintSets.FirstOrDefault().hingeRotation = new Vec3(0,0,35f*(float)SCEMath.DegtoRad)*-control.x;
+                steer.constraintSets.FirstOrDefault().hingeRotation = new Vec3(0,0,35f*(float)MathLib.DegtoRad)*-control.x;
             }
             
         }

@@ -11,7 +11,7 @@ namespace ScenePhysicsImplementer
     {
         protected override void OnSubModuleLoad()
         {
-            SCEMath.DebugMessage("Scene Physics Implementer Submodule Loaded");
+            MathLib.DebugMessage("Scene Physics Implementer Submodule Loaded");
         }
     }
 }
