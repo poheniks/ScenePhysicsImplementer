@@ -114,8 +114,8 @@ namespace ScenePhysicsImplementer
             Vec3 targetFreeAxis = targetMat.f;
             Vec3 prevTargetFreeAxis = prevTargetMat.f;
 
-            childFreeAxis = CheckGetInverseFreeAxis(childFreeAxis, targetFreeAxis);
-            prevChildFreeAxis = CheckGetInverseFreeAxis(prevChildFreeAxis, prevTargetFreeAxis);
+            childFreeAxis = CheckForInverseFreeAxis(childFreeAxis, targetFreeAxis);
+            prevChildFreeAxis = CheckForInverseFreeAxis(prevChildFreeAxis, prevTargetFreeAxis);
 
             Quaternion torqueQuat = Quaternion.FindShortestArcAsQuaternion(childFreeAxis, targetFreeAxis);
             Quaternion prevTorqueQuat = Quaternion.FindShortestArcAsQuaternion(prevChildFreeAxis, prevTargetFreeAxis);
@@ -300,7 +300,7 @@ namespace ScenePhysicsImplementer
             return frame;
         }
 
-        public static Vec3 CheckGetInverseFreeAxis(Vec3 curAxis, Vec3 targetAxis)
+        public static Vec3 CheckForInverseFreeAxis(Vec3 curAxis, Vec3 targetAxis)
         {
             //prevents the quaternion solution from generating a perpendicular off-axis torque when child and target axes are 180-degrees apart
             //occurs at approximately child.f = -target.f 
@@ -359,7 +359,7 @@ namespace ScenePhysicsImplementer
             float xError = torque[0] - (forceDir[2] * forcePos[1] - forceDir[1] * forcePos[2]);
             float yError = torque[1] - (forceDir[0] * forcePos[2] - forceDir[2] * forcePos[0]);
             float zError = torque[2] - (forceDir[1] * forcePos[0] - forceDir[0] * forcePos[1]);
-            */
+             */
 
             //transform force dir from local to global; keep force pos local
             forceDir = globalFrame.rotation.TransformToParent(forceDir);
@@ -367,9 +367,11 @@ namespace ScenePhysicsImplementer
             return Tuple.Create(forcePos, forceDir);
         }
 
-        public static Vec3 VectorPID(Vec3 proportional, Vec3 derivative, float kP, float kD)
+        public static Vec3 VectorPID(Vec3 curError, Vec3 prevError, float dt, float kP, float kD)
         {
             //integral term not implemented
+            Vec3 proportional = curError;
+            Vec3 derivative = (curError - prevError) / dt;
             return proportional * kP + derivative * kD;
 
         }

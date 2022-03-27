@@ -9,17 +9,18 @@ using TaleWorlds.MountAndBlade;
 
 namespace ScenePhysicsImplementer
 {
-    //DO EVERYTHING IN GLOBAL COORDINATES
+    //DO EVERYTHING IN GLOBAL COORDINATES (with some exceptions)
     public abstract class ConstraintBase : ScriptComponentBehavior
     {
         public string ConstrainingObjectTag = "";
         public bool ToggleEditorHelpers = true;
+        public bool ToggleForceDebugging = false;
         public bool DisableParentReaction = false;
         public float kP = 1f;
         public float kD = 1f;
 
-        public float kPStatic { get; private set; } = 100f;
-        public float kDStatic { get; private set; } = 2.5f;
+        public float kPStatic { get; set; } = 50f;
+        public float kDStatic { get; set; } = 2f;
 
         public GameEntity constrainingObject { get; private set; }
         public GameEntity physObject { get; private set; }
@@ -29,9 +30,11 @@ namespace ScenePhysicsImplementer
         private MatrixFrame _constrainingObjGlobalFrame;
         private MatrixFrame _physObjGlobalFrame;
         private MatrixFrame _targetGlobalFrame;
-        public MatrixFrame constrainingObjGlobalFrame { get { return _constrainingObjGlobalFrame; } private set { _constrainingObjGlobalFrame = value; } }  
+        public MatrixFrame constrainingObjGlobalFrame { get { return _constrainingObjGlobalFrame; } private set { _constrainingObjGlobalFrame = value; } }
         public MatrixFrame physObjGlobalFrame { get { return _physObjGlobalFrame; } private set { _physObjGlobalFrame = value; } }
         public MatrixFrame targetGlobalFrame { get { return _targetGlobalFrame; } private set { _targetGlobalFrame = value; } }
+        public Mat3 physObjMat { get; private set; }
+        public Mat3 targetMat { get; private set; }
 
         //frames from previous tick
         private MatrixFrame _prevPhysObjGlobalFrame;
@@ -40,10 +43,15 @@ namespace ScenePhysicsImplementer
         public MatrixFrame prevPhysObjGlobalFrame { get { return _prevPhysObjGlobalFrame; } private set { _prevPhysObjGlobalFrame = value; } }
         public MatrixFrame prevConstrainingObjectGlobalFrame { get { return _prevConstrainingObjectGlobalFrame; } private set { _prevConstrainingObjectGlobalFrame = value; } }
         public MatrixFrame prevTargetGlobalFrame { get { return _prevTargetGlobalFrame; } private set { _prevTargetGlobalFrame = value; } }
+        public Mat3 prevPhysObjMat { get; private set; }
+        public Mat3 prevTargetMat { get; private set; }
 
         private bool firstFrame = true;
         Vec3 physObjCoM;  //always local coordinates
-        private List<Tuple<Vec3,Vec3>> forces = new List<Tuple<Vec3, Vec3>>();
+        private List<Tuple<Vec3, Vec3>> forces = new List<Tuple<Vec3, Vec3>>();
+
+        public ObjectPropertiesLib physObjProperties { get; private set; }
+        public ObjectPropertiesLib constrainingObjProperties { get; private set; }
 
         public bool isValid { get; private set; }
 
@@ -70,12 +78,16 @@ namespace ScenePhysicsImplementer
             if (physObject != null && constrainingObject != null) isValid = true;
             else return;
 
+            physObjProperties = new ObjectPropertiesLib(physObject);
+            constrainingObjProperties = new ObjectPropertiesLib(constrainingObject);
+
+            //need to move these two calls to a different class later
+            physObject.SetMassSpaceInertia(physObjProperties.principalMomentsOfInertia);
+            constrainingObject.SetMassSpaceInertia(constrainingObjProperties.principalMomentsOfInertia);
+
             physObjCoM = physObject.CenterOfMass;  //does NOT return vector lengths scaled to child matrix frames - vector lengths always global
 
             InitializeFrames(); //set MatrixFrame fields
-            
-            kPStatic *= physObject.Mass;
-            kDStatic *= physObject.Mass;
         }
 
         private void InitializeFrames()
@@ -84,22 +96,27 @@ namespace ScenePhysicsImplementer
             UpdateCurrentFrames();
 
             firstFrame = false;
-            targetInitialLocalFrame = constrainingObjGlobalFrame.TransformToLocal(physObjGlobalFrame);
+            targetInitialLocalFrame = constrainingObjGlobalFrame.TransformToLocal(physObjGlobalFrame);  //get & set target frame local to constraint object here
             targetGlobalFrame = constrainingObjGlobalFrame.TransformToParent(targetInitialLocalFrame);
-            //targetGlobalFrame = ObjectPropertiesLib.AdjustFrameForCOM(targetGlobalFrame, physObjCoM);
 
             //set previous frames to current, on first tick - since no previous frames exist yet
             prevConstrainingObjectGlobalFrame = constrainingObjGlobalFrame;
             prevPhysObjGlobalFrame = physObjGlobalFrame;
             prevTargetGlobalFrame = targetGlobalFrame;
+            prevPhysObjMat = physObjMat;
+            prevTargetMat = targetMat;
         }
 
         protected override void OnTickParallel(float dt)
         {
             if (!isValid) return;
             UpdateCurrentFrames();
-            TickForce(ApplyForce(dt));
-            ApplyTorque(dt);
+
+            TickForce(Tuple.Create(Vec3.Zero, CalculateConstraintForce(dt)));
+            TickTorque(CalculateConstraintTorque(dt));
+
+            //TickTorque(new Vec3(0, 0, 0));
+
             UpdatePreviousFrames();
         }
 
@@ -108,52 +125,79 @@ namespace ScenePhysicsImplementer
             //set current frames
             physObjGlobalFrame = physObject.GetGlobalFrame();
             constrainingObjGlobalFrame = constrainingObject.GetGlobalFrame();
-            
-            //unscale frames; everything is in terms of physObj, so adjust target & this entity's frames by this entity's CoM
+
+            //unscale object frames; everything is in terms of physObj, so adjust this & constraint object frames by this CoM
             physObjGlobalFrame = ObjectPropertiesLib.AdjustFrameForCOM(physObjGlobalFrame, physObjCoM);
             constrainingObjGlobalFrame = ObjectPropertiesLib.AdjustFrameForCOM(constrainingObjGlobalFrame, physObjCoM);
 
-            if (firstFrame) return;
+            if (firstFrame) return; //targetInitialLocalFrame not initalized yet
             targetGlobalFrame = constrainingObjGlobalFrame.TransformToParent(targetInitialLocalFrame);
-            //targetGlobalFrame = ObjectPropertiesLib.AdjustFrameForCOM(targetGlobalFrame, physObjCoM);
+
+            //set rotation matrices
+            physObjMat = physObjGlobalFrame.rotation;
+            targetMat = targetGlobalFrame.rotation;
         }
 
         public void UpdatePreviousFrames()
         {
+            //frames
             prevConstrainingObjectGlobalFrame = constrainingObjGlobalFrame;
             prevPhysObjGlobalFrame = physObjGlobalFrame;
             prevTargetGlobalFrame = targetGlobalFrame;
+            //rotation matrices
+            prevPhysObjMat = physObjMat;
+            prevTargetMat = targetMat;
         }
 
-        public abstract Vec3 ApplyForce(float dt);
-        public abstract Vec3 ApplyTorque(float dt);
-        
-        private void TickForce(Vec3 force)
+        public virtual Vec3 CalculateConstraintForce(float dt)
         {
-            MatrixFrame physObjTrueGlobalFrame = physObject.GetGlobalFrame();
-            MatrixFrame constraintObjTrueGlobalFrame = constrainingObject.GetGlobalFrame();
+            return Vec3.Zero;
+        }
+        public virtual Vec3 CalculateConstraintTorque(float dt)
+        {
+            return Vec3.Zero;
+        }
 
-            physObjTrueGlobalFrame.rotation.MakeUnit();
-            constraintObjTrueGlobalFrame.rotation.MakeUnit();
+        private void TickTorque(Vec3 torque)
+        {
+            Tuple<Vec3, Vec3> forceCouple = ConstraintLib.GenerateGlobalForceCoupleFromLocalTorque(physObjGlobalFrame, torque);
+            Tuple<Vec3, Vec3> inversedForceCouple = Tuple.Create(-forceCouple.Item1, -forceCouple.Item2);
+            TickForce(forceCouple);
+            TickForce(inversedForceCouple);
+        }
+        
+        private void TickForce(Tuple<Vec3,Vec3> forceTuple)
+        {
+            Vec3 forceLocalOffset = forceTuple.Item1;
+            Vec3 forceDir = forceTuple.Item2;
+            if (forceDir == Vec3.Zero) return;
 
-            Vec3 localPhysObjOrigin = physObjTrueGlobalFrame.TransformToLocal(physObjGlobalFrame.origin);
-            Vec3 localConstraintObjOrigin = constraintObjTrueGlobalFrame.TransformToLocal(physObjGlobalFrame.origin);
+            MatrixFrame physObjOriginGlobalFrame = physObject.GetGlobalFrame();
+            MatrixFrame constraintObjOriginGlobalFrame = constrainingObject.GetGlobalFrame();
 
-            physObject.ApplyLocalForceToDynamicBody(localPhysObjOrigin, force);
-            if (!DisableParentReaction) constrainingObject.ApplyLocalForceToDynamicBody(localConstraintObjOrigin, -force);
+            physObjOriginGlobalFrame.rotation.MakeUnit();
+            constraintObjOriginGlobalFrame.rotation.MakeUnit();
 
-            /*
-            Vec3 debugPhysLoc = physObjTrueGlobalFrame.TransformToParent(localPhysObjOrigin);
-            Vec3 debugConstraintLoc = constraintObjTrueGlobalFrame.TransformToParent(localConstraintObjOrigin);
+            Vec3 localPhysObjOrigin = physObjOriginGlobalFrame.TransformToLocal(physObjGlobalFrame.origin) + forceLocalOffset;  //get global frame adjusted for CoM and add any force offset
+            Vec3 globalPhysObjOrigin = physObjOriginGlobalFrame.TransformToParent(localPhysObjOrigin);  //convert back to global coordinates for easier constraining object local transform
+            Vec3 localConstraintObjOrigin = constraintObjOriginGlobalFrame.TransformToLocal(globalPhysObjOrigin);
+
+            physObject.ApplyLocalForceToDynamicBody(localPhysObjOrigin, forceDir);
+            if (!DisableParentReaction) constrainingObject.ApplyLocalForceToDynamicBody(localConstraintObjOrigin, -forceDir);
+
+            //debug force locations & directions
+            if (!ToggleForceDebugging) return;
+            Vec3 debugPhysLoc = physObjOriginGlobalFrame.TransformToParent(localPhysObjOrigin);
+            Vec3 debugConstraintLoc = constraintObjOriginGlobalFrame.TransformToParent(localConstraintObjOrigin);
 
             MBDebug.RenderDebugSphere(targetGlobalFrame.origin, 0.1f, Colors.Magenta.ToUnsignedInteger());
 
             MBDebug.RenderDebugSphere(debugPhysLoc, 0.1f, Colors.Green.ToUnsignedInteger());
-            MBDebug.RenderDebugDirectionArrow(debugPhysLoc, force, Colors.Green.ToUnsignedInteger());
+            MBDebug.RenderDebugDirectionArrow(debugPhysLoc, forceDir.NormalizedCopy(), Colors.Green.ToUnsignedInteger());
 
             MBDebug.RenderDebugSphere(debugConstraintLoc, 0.1f, Colors.Blue.ToUnsignedInteger());
-            MBDebug.RenderDebugDirectionArrow(debugConstraintLoc, -force, Colors.Blue.ToUnsignedInteger());
-            */
+            MBDebug.RenderDebugDirectionArrow(debugConstraintLoc, -forceDir.NormalizedCopy(), Colors.Blue.ToUnsignedInteger());
+            
         }
 
         private void FindConstrainingObject()
@@ -204,21 +248,8 @@ namespace ScenePhysicsImplementer
             MBDebug.RenderDebugBoxObject(constrainingObject.GlobalBoxMin, constrainingObject.GlobalBoxMax, Colors.Magenta.ToUnsignedInteger());
         }
     }
-
-    public class SCE_ConstraintSpherical : ConstraintBase
+    public class ConstraintPID
     {
 
-        public override Vec3 ApplyForce(float dt)
-        {
-            Vec3 displacement = targetGlobalFrame.origin - physObjGlobalFrame.origin;
-            Vec3 prevDisplacement = prevTargetGlobalFrame.origin - prevPhysObjGlobalFrame.origin;
-            Vec3 velocity = (displacement - prevDisplacement) / dt;
-
-            return ConstraintLib.VectorPID(displacement, velocity, kPStatic*kP, kDStatic*kD);
-        }
-        public override Vec3 ApplyTorque(float dt)
-        {
-            return Vec3.Zero;
-        }
     }
 }

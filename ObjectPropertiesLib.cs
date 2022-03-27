@@ -19,23 +19,19 @@ namespace ScenePhysicsImplementer
         private GameEntity physObject;
         private float mass;
 
-        public Vec3 principalMomentsOfInertia;   //(pitch, roll, yaw) in terms of Bannerlord local coordinate system, about the vehicle's center of mass (as opposed to geometric center)
-        //public SCEMath.Matrix3x3 inertiaTensor;
-
-        private Vec3 CoM;
+        public Vec3 principalMomentsOfInertia;   //(pitch, roll, yaw) in terms of Bannerlord local coordinate system
 
         public ObjectPropertiesLib(GameEntity v_physObject)
         {
             physObject = v_physObject;
 
-            CoM = physObject.CenterOfMass;
             mass = physObject.Mass;
             FindPrincipalMoI();
         }
 
         private void FindPrincipalMoI()
         {
-            //simplified principle moments of inertia (MoI) based on bounding box
+            //simplified principle moments of inertia (MoI) based on bounding box, about geometric center
             //http://mechanicsmap.psu.edu/websites/centroidtables/centroids3D/centroids3D.html
             Vec3 max = physObject.GetBoundingBoxMax();
             Vec3 min = physObject.GetBoundingBoxMin();
@@ -82,7 +78,6 @@ namespace ScenePhysicsImplementer
             //maybe convert to a PhysicsShape.GetTriangles methodology later - need a way to convert hollow to solid volumes
             //need to convert from Ixx, Iyy, Izz principal axes to full inertia tensor: https://ocw.mit.edu/courses/aeronautics-and-astronautics/16-07-dynamics-fall-2009/lecture-notes/MIT16_07F09_Lec26.pdf; https://www.youtube.com/watch?v=-chgCHuEI4Y
 
-            //for simplified cube inertia tensor: https://www-robotics.cs.umass.edu/~grupen/603/slides/DynamicsI.pdf
             Vec3 max = physObject.GetBoundingBoxMax();
             Vec3 min = physObject.GetBoundingBoxMin();
 
