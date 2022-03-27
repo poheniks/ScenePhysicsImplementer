@@ -10,10 +10,6 @@ namespace ScenePhysicsImplementer
 {
     public static class MathLib
     {
-        public static float GlobalMaxNum
-        {
-            get { return 10000; }
-        }
         public static double DegtoRad
         {
             get { return Math.PI / 180; }
@@ -22,11 +18,6 @@ namespace ScenePhysicsImplementer
         public static double RadtoDeg
         {
             get { return 180 / Math.PI; }
-        }
-
-        public static float AlmostZero
-        {
-            get { return 0.005f; }
         }
 
         public static int IndexOfAbsMaxVectorComponent(Vec3 vec)

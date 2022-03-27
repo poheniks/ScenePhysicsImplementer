@@ -260,6 +260,7 @@
     <Compile Include="ConstraintBase.cs" />
     <Compile Include="ConstraintLib.cs" />
     <Compile Include="ConstraintSet.cs" />
+    <Compile Include="ConstraintTypes.cs" />
     <Compile Include="SCE_PhysicsObject.cs" />
     <Compile Include="MathLib.cs" />
     <Compile Include="ScenePhysicsImplementerSubModule.cs" />
