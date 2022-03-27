@@ -257,6 +257,7 @@
     <!-- TODO -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConstraintBase.cs" />
     <Compile Include="ConstraintLib.cs" />
     <Compile Include="ConstraintSet.cs" />
     <Compile Include="SCE_PhysicsObject.cs" />

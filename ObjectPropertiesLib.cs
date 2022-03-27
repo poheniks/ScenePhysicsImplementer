@@ -65,11 +65,12 @@ namespace ScenePhysicsImplementer
             return sphereRadius;
         }
 
-        
-        public static MatrixFrame UnscaleFrame(MatrixFrame frame, GameEntity entity, bool isLocal)
+
+        public static MatrixFrame AdjustFrameForCOM(MatrixFrame frame, Vec3 centerOfMass)
         {
-            if (isLocal) frame.Scale(entity.GetLocalScale());
-            else frame.Scale(entity.GetGlobalScale());
+            frame.rotation.MakeUnit();
+            Mat3 rot = frame.rotation;
+            frame.origin += rot.s * centerOfMass.x + rot.f * centerOfMass.y + rot.u * centerOfMass.z;
             return frame;
         }
 

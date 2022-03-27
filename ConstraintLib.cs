@@ -14,12 +14,12 @@ namespace ScenePhysicsImplementer
             //dt = Math.Min(Math.Max(dt, 0.006f),0.2f);
 
             MatrixFrame parentFrame = parent.GetFrame();
-            MatrixFrame childFrame = child.GetGlobalFrame();
+            MatrixFrame childGlobalFrame = child.GetGlobalFrame();
             MatrixFrame targetFrame = parentFrame.TransformToParent(childInitialFrame); //to global coordinates 
             MatrixFrame prevTargetFrame = prevParentFrame.TransformToParent(childInitialFrame); //to global coordinates 
 
             Vec3 childCOM = child.CenterOfMass;
-            childFrame = AdjustFrameForCOM(childFrame, childCOM);
+            childGlobalFrame = AdjustFrameForCOM(childGlobalFrame, childCOM);
             prevChildGlobalFrame = AdjustFrameForCOM(prevChildGlobalFrame, childCOM);
             targetFrame = AdjustFrameForCOM(targetFrame, childCOM);
             prevTargetFrame = AdjustFrameForCOM(prevTargetFrame, childCOM);
@@ -27,12 +27,12 @@ namespace ScenePhysicsImplementer
             //normalize frame rotations, since any vector transforms will carry rotations scaling
 
             parentFrame.rotation.MakeUnit();
-            childFrame.rotation.MakeUnit();
+            childGlobalFrame.rotation.MakeUnit();
             prevChildGlobalFrame.rotation.MakeUnit();
             targetFrame.rotation.MakeUnit();
             prevTargetFrame.rotation.MakeUnit();
 
-            Vec3 childCurPos = childFrame.origin;
+            Vec3 childCurPos = childGlobalFrame.origin;
             Vec3 prevChildCurPos = prevChildGlobalFrame.origin;
             Vec3 childInitialPos = targetFrame.origin;
             Vec3 prevChildInitialPos = prevTargetFrame.origin;
@@ -59,13 +59,13 @@ namespace ScenePhysicsImplementer
             
 
             //debug matrix rotation vectors
-            MBDebug.RenderDebugSphere(childFrame.origin + childFrame.rotation.s, 0.05f, Colors.Red.ToUnsignedInteger());
-            MBDebug.RenderDebugSphere(childFrame.origin + childFrame.rotation.f, 0.05f, Colors.Green.ToUnsignedInteger());
-            MBDebug.RenderDebugSphere(childFrame.origin + childFrame.rotation.u, 0.05f, Colors.Blue.ToUnsignedInteger());
+            MBDebug.RenderDebugSphere(childGlobalFrame.origin + childGlobalFrame.rotation.s, 0.05f, Colors.Red.ToUnsignedInteger());
+            MBDebug.RenderDebugSphere(childGlobalFrame.origin + childGlobalFrame.rotation.f, 0.05f, Colors.Green.ToUnsignedInteger());
+            MBDebug.RenderDebugSphere(childGlobalFrame.origin + childGlobalFrame.rotation.u, 0.05f, Colors.Blue.ToUnsignedInteger());
 
-            MBDebug.RenderDebugSphere(childFrame.origin + targetFrame.rotation.s, 0.025f, Colors.Red.ToUnsignedInteger());
-            MBDebug.RenderDebugSphere(childFrame.origin + targetFrame.rotation.f, 0.025f, Colors.Green.ToUnsignedInteger());
-            MBDebug.RenderDebugSphere(childFrame.origin + targetFrame.rotation.u, 0.025f, Colors.Blue.ToUnsignedInteger());
+            MBDebug.RenderDebugSphere(childGlobalFrame.origin + targetFrame.rotation.s, 0.025f, Colors.Red.ToUnsignedInteger());
+            MBDebug.RenderDebugSphere(childGlobalFrame.origin + targetFrame.rotation.f, 0.025f, Colors.Green.ToUnsignedInteger());
+            MBDebug.RenderDebugSphere(childGlobalFrame.origin + targetFrame.rotation.u, 0.025f, Colors.Blue.ToUnsignedInteger());
             
 
             return force;
@@ -292,13 +292,6 @@ namespace ScenePhysicsImplementer
             return angle;
         }
 
-        public static Vec3 GetVectorAngularVelocity(Vec3 cur, Vec3 prev, float dt)
-        {
-            Vec3 velocity = (cur - prev) / dt;
-
-            return velocity;
-        }
-
         public static MatrixFrame AdjustFrameForCOM(MatrixFrame frame, Vec3 centerOfMass)
         {
             Mat3 rot = frame.rotation;
@@ -372,6 +365,13 @@ namespace ScenePhysicsImplementer
             forceDir = globalFrame.rotation.TransformToParent(forceDir);
 
             return Tuple.Create(forcePos, forceDir);
+        }
+
+        public static Vec3 VectorPID(Vec3 proportional, Vec3 derivative, float kP, float kD)
+        {
+            //integral term not implemented
+            return proportional * kP + derivative * kD;
+
         }
     }
 }

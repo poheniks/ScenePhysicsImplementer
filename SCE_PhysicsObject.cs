@@ -88,7 +88,7 @@ namespace ScenePhysicsImplementer
             physObject = base.GameEntity;
             scene = physObject.Scene;
 
-            if (NavMeshPrefabName.Length > 0) AttachDynamicNavmeshToEntity();
+            if (NavMeshPrefabName.Length > 0) AttachDynamicNavmeshToEntity();   //enables dynamic nav meshing
 
             if (isParent) ParentInit();
             if (!enableGravity) physObject.DisableGravity();
@@ -98,7 +98,7 @@ namespace ScenePhysicsImplementer
 
         protected override void OnPhysicsCollision(ref PhysicsContact contact)
         {
-
+            //unused for now
         }
 
         protected override void OnTickParallel(float dt)
@@ -153,25 +153,11 @@ namespace ScenePhysicsImplementer
 
                 if (isParent) 
                 {
-                    ObjectPropertiesLib objLib = new ObjectPropertiesLib(physObject);
-                    Vec3 MoI = MathLib.VectorRound(objLib.principalMomentsOfInertia, 2);
-                    MathLib.DebugMessage("MoI: " + MoI);
-                    /*
-                    MBDebug.RenderDebugSphere(orgFrame.TransformToParent(forcePos), 0.2f);
-                    MBDebug.RenderDebugDirectionArrow(orgFrame.TransformToParent(forcePos), forceDir);
 
-                    MBDebug.RenderDebugSphere(orgFrame.TransformToParent(-forcePos), 0.2f);
-                    MBDebug.RenderDebugDirectionArrow(orgFrame.TransformToParent(-forcePos), -forceDir);
-                    */
-
-                    //physObject.ApplyLocalForceToDynamicBody(-offset, -forceDir);
-                    //physObject.ApplyLocalForceToDynamicBody(Vec3.Zero + offset, forceDir);
-
-                    //physObject.ApplyLocalForceToDynamicBody(CoM, tForce);
                 }
-                if (!isParent)
+                if (!isParent && childToParentInitialized)
                 {
-                    //physObject.ApplyLocalForceToDynamicBody(CoM, -tForce*1f);
+
                 }
 
             }
