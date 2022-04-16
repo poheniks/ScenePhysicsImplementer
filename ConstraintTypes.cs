@@ -12,65 +12,134 @@ namespace ScenePhysicsImplementer
 
     public class SCE_ConstraintSpherical : ConstraintBase
     {
-
+        private Vec3 prevDisplacement;
         public override Vec3 CalculateConstraintForce(float dt)
         {
             //force to lock translational movement
             Vec3 displacement = targetGlobalFrame.origin - physObjGlobalFrame.origin;
-            Vec3 prevDisplacement = prevTargetGlobalFrame.origin - prevPhysObjGlobalFrame.origin;
-
             displacement *= physObject.Mass;
-            prevDisplacement *= physObject.Mass;
 
             kPStatic = 100f;
             kDStatic = 2.5f;
+
             Vec3 constraintForce = ConstraintLib.VectorPID(displacement, prevDisplacement, dt, kPStatic * kP, kDStatic * kD);
+
+            prevDisplacement = displacement;
             return constraintForce;
         }
+
+        public override void ShowForceDebuggers(Vec3 physObjLocalForcePos, Vec3 constraintObjLocalForcePos, Vec3 forceDir)
+        {
+            base.ShowForceDebuggers(physObjLocalForcePos, constraintObjLocalForcePos, forceDir);
+            MBDebug.RenderDebugSphere(physObjGlobalFrame.origin + physObjGlobalFrame.rotation.s, 0.05f, Colors.Red.ToUnsignedInteger());
+            MBDebug.RenderDebugSphere(physObjGlobalFrame.origin + physObjGlobalFrame.rotation.f, 0.05f, Colors.Green.ToUnsignedInteger());
+            MBDebug.RenderDebugSphere(physObjGlobalFrame.origin + physObjGlobalFrame.rotation.u, 0.05f, Colors.Blue.ToUnsignedInteger());
+
+            MBDebug.RenderDebugSphere(physObjGlobalFrame.origin + targetGlobalFrame.rotation.s, 0.025f, Colors.Red.ToUnsignedInteger());
+            MBDebug.RenderDebugSphere(physObjGlobalFrame.origin + targetGlobalFrame.rotation.f, 0.025f, Colors.Green.ToUnsignedInteger());
+            MBDebug.RenderDebugSphere(physObjGlobalFrame.origin + targetGlobalFrame.rotation.u, 0.025f, Colors.Blue.ToUnsignedInteger());
+        }
+    }
+
+    public class SCE_ConstraintWeld : SCE_ConstraintSpherical
+    {
+        private Vec3 prevTorqueVector;
+        private int prevTorqueSign;
+        public override Vec3 CalculateConstraintTorque(float dt)
+        {
+            Quaternion physObjQuat = Quaternion.QuaternionFromMat3(physObjMat);
+            Quaternion targetQuat = Quaternion.QuaternionFromMat3(targetMat);
+
+            physObjQuat.SafeNormalize();
+            targetQuat.SafeNormalize();
+
+            Quaternion torqueQuat = targetQuat.TransformToLocal(physObjQuat);
+            //torqueQuat = physObjQuat.TransformToParent(torqueQuat);
+            Vec3 torqueVector;
+            float angularDisplacement;
+            Quaternion.AxisAngleFromQuaternion(out torqueVector, out angularDisplacement, torqueQuat);
+
+            int torqueSign = ConstraintLib.GetSignForAxisAngleRotation(angularDisplacement);
+            angularDisplacement = ConstraintLib.GetAngleBetween180(angularDisplacement);
+
+            torqueVector *= -torqueSign;
+            torqueVector *= angularDisplacement;
+            torqueVector = MathLib.VectorMultiplyComponents(torqueVector, MoI);
+
+            torqueVector = physObjMat.TransformToParent(torqueVector);
+
+            kPStatic = 25f;
+            kDStatic = 1f;
+
+            if (torqueSign != prevTorqueSign && (angularDisplacement > (float)Math.PI*0.95f | angularDisplacement < -(float)Math.PI*0.95f))
+            {
+                MathLib.DebugMessage("flip");
+                prevTorqueVector *= -1;
+            }
+            Vec3 constraintTorque = ConstraintLib.VectorPID(torqueVector, prevTorqueVector, dt, kPStatic * kP, kDStatic * kD);
+            //constraintTorque = Vec3.Zero;
+            prevTorqueVector = torqueVector;
+            prevTorqueSign = torqueSign;
+            return constraintTorque;
+        }
+
     }
 
     public class SCE_ConstraintHinge : SCE_ConstraintSpherical
     {
-        public Vec3 HingeOrientation = Vec3.Zero;
         public Vec3 HingeRotationAxis = Vec3.Zero;
+
+        private Vec3 prevTorqueVector;
+        private Vec3 physObjFreeAxis;
+        private Vec3 targetFreeAxis;
         public override Vec3 CalculateConstraintTorque(float dt)
+        {
+            SetHingeRotationAxis(HingeRotationAxis);
+            physObjFreeAxis = ConstraintLib.CheckForInverseFreeAxis(physObjFreeAxis, targetFreeAxis);
+
+            Quaternion rotationQuat = Quaternion.FindShortestArcAsQuaternion(physObjFreeAxis, targetFreeAxis);
+            rotationQuat.SafeNormalize();
+
+            Vec3 torqueVector;
+            float angularDisplacement;
+
+            Quaternion.AxisAngleFromQuaternion(out torqueVector, out angularDisplacement, rotationQuat);
+
+            torqueVector *= angularDisplacement;
+            torqueVector = MathLib.VectorMultiplyComponents(torqueVector, MoI);
+
+            kPStatic = 55f;
+            kDStatic = 1f;
+
+            Vec3 constraintTorque = ConstraintLib.VectorPID(torqueVector, prevTorqueVector, dt, kPStatic * kP, kDStatic * kD);
+
+            prevTorqueVector = torqueVector;
+            return constraintTorque;
+        }
+        public void SetHingeRotationAxis(Vec3 hingeRotationAxis)
         {
             //rotation changes the free-rotation axis
             //orientation changes this object's facing direction
-            physObjMat.ApplyEulerAngles(HingeRotationAxis);
-            targetMat.ApplyEulerAngles(HingeOrientation);
+            hingeRotationAxis *= (float)MathLib.DegtoRad;
+
+            Mat3 physObjRotatedMat = physObjMat;
+            Mat3 targetRotatedMat = targetMat;
+            physObjRotatedMat.ApplyEulerAngles(hingeRotationAxis);
+            targetRotatedMat.ApplyEulerAngles(hingeRotationAxis);
 
             //use forward axis as default free-rotation axis & facing direction
-            Vec3 physObjFreeAxis = physObjMat.f;
-            Vec3 prevPhysObjFreeAxis = prevPhysObjMat.f;
-            Vec3 targetFreeAxis = targetMat.f;
-            Vec3 prevTargetFreeAxis = prevTargetMat.f;
-
-            physObjFreeAxis = ConstraintLib.CheckForInverseFreeAxis(physObjFreeAxis, targetFreeAxis);
-            prevPhysObjFreeAxis = ConstraintLib.CheckForInverseFreeAxis(prevPhysObjFreeAxis, prevTargetFreeAxis);
-
-            Quaternion rotationQuat = Quaternion.FindShortestArcAsQuaternion(physObjFreeAxis, targetFreeAxis);
-            Quaternion prevRotationQuat = Quaternion.FindShortestArcAsQuaternion(prevPhysObjFreeAxis, prevTargetFreeAxis);
-
-            rotationQuat.SafeNormalize();
-            prevRotationQuat.SafeNormalize();
-
-            Vec3 torqueVector, prevTorqueVector;
-            float angularDisplacement, prevAngularDisplacement;
-
-            Quaternion.AxisAngleFromQuaternion(out torqueVector, out angularDisplacement, rotationQuat);
-            Quaternion.AxisAngleFromQuaternion(out prevTorqueVector, out prevAngularDisplacement, prevRotationQuat);
-
-            torqueVector *= angularDisplacement;
-            prevTorqueVector *= prevAngularDisplacement;
-
-            Vec3 MoI = physObjProperties.principalMomentsOfInertia;
-            torqueVector = MathLib.VectorMultiplyComponents(torqueVector, MoI);
-            prevTorqueVector = MathLib.VectorMultiplyComponents(prevTorqueVector, MoI);
-
-            kPStatic = 55f;
-            kDStatic = 5f;
-            return ConstraintLib.VectorPID(torqueVector, prevTorqueVector, dt, kPStatic * kP, kDStatic * kD);
+            physObjFreeAxis = physObjRotatedMat.f;
+            targetFreeAxis = targetRotatedMat.f;
         }
+
+        public override void ShowEditorHelpers()
+        {
+            base.ShowEditorHelpers();
+            SetHingeRotationAxis(HingeRotationAxis);
+            //show rotation axis
+            MBDebug.RenderDebugLine(physObjGlobalFrame.origin, physObjFreeAxis, Colors.Green.ToUnsignedInteger());
+            MBDebug.RenderDebugLine(physObjGlobalFrame.origin, -physObjFreeAxis, Colors.Green.ToUnsignedInteger());
+        }
+
     }
 }

@@ -137,7 +137,7 @@ namespace ScenePhysicsImplementer
             Vec3 proportion = curTorque*curAng;
             Vec3 derivative = (curTorque*curAng - prevTorque*prevAng)/dt;
 
-            Tuple<Vec3, Vec3> forceCouple = GenerateGlobalForceCoupleFromLocalTorque(childGlobalFrame, MathLib.VectorMultiplyComponents(proportion*kP + derivative*kD + childMat.TransformToParent(new Vec3(0,hingePower)), MoI));
+            Tuple<Vec3, Vec3> forceCouple = GenerateGlobalForceCoupleFromGlobalTorque(childGlobalFrame, MathLib.VectorMultiplyComponents(proportion*kP + derivative*kD + childMat.TransformToParent(new Vec3(0,hingePower)), MoI));
             Vec3 forcePos = forceCouple.Item1;
             Vec3 forceDir = forceCouple.Item2;
             Tuple<Vec3, Vec3> curUnitForceCouple = forceCouple;
@@ -315,7 +315,7 @@ namespace ScenePhysicsImplementer
             return curAxis;
         }
 
-        public static Tuple<Vec3,Vec3> GenerateGlobalForceCoupleFromLocalTorque(MatrixFrame globalFrame, Vec3 torque)
+        public static Tuple<Vec3,Vec3> GenerateGlobalForceCoupleFromGlobalTorque(MatrixFrame globalFrame, Vec3 torque)
         {
             Vec3 forcePos = Vec3.Zero;
             Vec3 forceDir = Vec3.Zero;

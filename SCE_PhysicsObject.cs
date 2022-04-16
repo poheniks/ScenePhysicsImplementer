@@ -143,7 +143,7 @@ namespace ScenePhysicsImplementer
                 //CoM = SCEMath.VectorMultiplyComponents(CoM, physObject.GetGlobalScale());
                 
 
-                Tuple<Vec3, Vec3> forceCouple = ConstraintLib.GenerateGlobalForceCoupleFromLocalTorque(adjGlobalFrame, torque);
+                Tuple<Vec3, Vec3> forceCouple = ConstraintLib.GenerateGlobalForceCoupleFromGlobalTorque(adjGlobalFrame, torque);
                 Vec3 forcePos = forceCouple.Item1;
                 Vec3 forceDir = forceCouple.Item2;
 
