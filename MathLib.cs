@@ -271,9 +271,13 @@ namespace ScenePhysicsImplementer
             return (float)Math.Sqrt(Math.Pow(a, 2) + Math.Pow(b, 2));
         }
 
-        public static void DebugMessage(string message)
+        public static void DebugMessage(string message, bool isError = false, bool isImportantInfo = false)
         {
-            TaleWorlds.Core.InformationManager.DisplayMessage(new TaleWorlds.Core.InformationMessage(message));
+            TaleWorlds.Core.InformationMessage infoMessage = new TaleWorlds.Core.InformationMessage(message);
+            if (isImportantInfo) infoMessage.Color = Colors.Green;
+            if (isError) infoMessage.Color = Colors.Red;
+
+            TaleWorlds.Core.InformationManager.DisplayMessage(infoMessage);
         }
 
         public struct Matrix2x2

@@ -87,24 +87,18 @@ namespace ScenePhysicsImplementer
             Mat3 childMat = childFrame.rotation;
             Mat3 childGlobalMat = childGlobalFrame.rotation;
 
-
             Vec3 childCoM = child.CenterOfMass;
             Vec3 childLocal = child.GetFrame().origin;
 
-
             MatrixFrame parentGlobalFrame = parent.GetGlobalFrame();
             MatrixFrame parentFrame = parent.GetFrame();
-
             
             childGlobalFrame = ConstraintLib.AdjustFrameForCOM(childGlobalFrame, childCoM);
             childGlobalFrame.rotation.MakeUnit();
             Vec3 childGlobalForceCenter = childGlobalFrame.origin;
             
-
-            
             parentGlobalFrame.rotation.MakeUnit();
             Vec3 parentForceCenter = parentGlobalFrame.TransformToLocal(childGlobalForceCenter);
-
 
             //forces use global frame
             //(s, f, u) = (x, y, z)
@@ -163,8 +157,6 @@ namespace ScenePhysicsImplementer
 
                     child.ApplyLocalForceToDynamicBody(childCoM + childLocalCouple, childForceCouple); child.ApplyLocalForceToDynamicBody(childCoM - childLocalCouple, -childForceCouple);
                     parent.ApplyLocalForceToDynamicBody(parentLocalForceCouplePos, parentForceCouple); parent.ApplyLocalForceToDynamicBody(parentLocalForceCoupleNeg, -parentForceCouple);
-
-
 
                     /*
                     MBDebug.RenderDebugSphere(childGlobalFrame.TransformToParent(forceLocalPos), 0.2f, Colors.Magenta.ToUnsignedInteger());
