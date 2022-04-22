@@ -14,8 +14,8 @@ namespace ScenePhysicsImplementer
     {
         //scene editor exposed fields
         public string ConstrainingObjectTag = "";
-        public bool ToggleEditorHelpers = true;
-        public bool ToggleForceDebugging = false;
+        public bool ShowEditorHelpers = true;
+        public bool ShowForceDebugging = false;
         public bool DisableParentReaction = false;
         public float kP = 1f;
         public float kD = 1f;
@@ -104,8 +104,8 @@ namespace ScenePhysicsImplementer
             if (!isValid) return;
             UpdateCurrentFrames();
 
-            TickForce(Tuple.Create(Vec3.Zero, CalculateConstraintForce(dt)));
-            TickTorque(CalculateConstraintTorque(dt));
+            TickForceReaction(Tuple.Create(Vec3.Zero, CalculateConstraintForce(dt)), DisableParentReaction);
+            TickTorqueReaction(CalculateConstraintTorque(dt), DisableParentReaction);
 
             //TickTorque(new Vec3(0, 0, 0));
         }
@@ -144,15 +144,15 @@ namespace ScenePhysicsImplementer
             return Vec3.Zero;
         }
 
-        private void TickTorque(Vec3 torque)
+        public void TickTorqueReaction(Vec3 torque, bool disableParentReaction = false)
         {
             Tuple<Vec3, Vec3> forceCouple = ConstraintLib.GenerateGlobalForceCoupleFromGlobalTorque(physObjGlobalFrame, torque);
             Tuple<Vec3, Vec3> inversedForceCouple = Tuple.Create(-forceCouple.Item1, -forceCouple.Item2);
-            TickForce(forceCouple);
-            TickForce(inversedForceCouple);
+            TickForceReaction(forceCouple, disableParentReaction);
+            TickForceReaction(inversedForceCouple, disableParentReaction);
         }
-        
-        private void TickForce(Tuple<Vec3,Vec3> forceTuple)
+
+        public void TickForceReaction(Tuple<Vec3, Vec3> forceTuple, bool disableParentReaction = false)
         {
             Vec3 forceLocalOffset = forceTuple.Item1;
             Vec3 forceDir = forceTuple.Item2;
@@ -163,10 +163,10 @@ namespace ScenePhysicsImplementer
             Vec3 constraintObjLocalForcePos = constraintObjOriginGlobalFrame.TransformToLocal(physObjGlobalForcePos);   //convert global force pos to constraining object local coordinate system
 
             physObject.ApplyLocalForceToDynamicBody(physObjLocalForcePos, forceDir);
-            if (!DisableParentReaction) constrainingObject.ApplyLocalForceToDynamicBody(constraintObjLocalForcePos, -forceDir);
+            if (!disableParentReaction) constrainingObject.ApplyLocalForceToDynamicBody(constraintObjLocalForcePos, -forceDir);
 
-            if (!ToggleForceDebugging) return;
-            ShowForceDebuggers(physObjLocalForcePos, constraintObjLocalForcePos, forceDir);
+            if (!ShowForceDebugging) return;
+            RenderForceDebuggers(physObjLocalForcePos, constraintObjLocalForcePos, forceDir);
         }
 
         private void FindConstrainingObject()
@@ -194,10 +194,10 @@ namespace ScenePhysicsImplementer
 
         protected override void OnEditorTick(float dt)
         {
-            if (ToggleEditorHelpers && physObject.IsSelectedOnEditor()) ShowEditorHelpers();
+            if (ShowEditorHelpers && physObject.IsSelectedOnEditor()) RenderEditorHelpers();
         }
 
-        public virtual void ShowForceDebuggers(Vec3 physObjLocalForcePos, Vec3 constraintObjLocalForcePos, Vec3 forceDir)
+        public virtual void RenderForceDebuggers(Vec3 physObjLocalForcePos, Vec3 constraintObjLocalForcePos, Vec3 forceDir)
         {
             //debug force locations & directions
             Vec3 debugPhysLoc = physObjOriginGlobalFrame.TransformToParent(physObjLocalForcePos);
@@ -213,7 +213,7 @@ namespace ScenePhysicsImplementer
             MBDebug.RenderDebugDirectionArrow(debugConstraintLoc, -forceDir.NormalizedCopy(), Colors.Black.ToUnsignedInteger());
         }
 
-        public virtual void ShowEditorHelpers()
+        public virtual void RenderEditorHelpers()
         {
             if (constrainingObject != null && constrainingObject.Scene == null) FindConstrainingObject();
             if (!isValid) return;

@@ -28,9 +28,9 @@ namespace ScenePhysicsImplementer
             return constraintForce;
         }
 
-        public override void ShowForceDebuggers(Vec3 physObjLocalForcePos, Vec3 constraintObjLocalForcePos, Vec3 forceDir)
+        public override void RenderForceDebuggers(Vec3 physObjLocalForcePos, Vec3 constraintObjLocalForcePos, Vec3 forceDir)
         {
-            base.ShowForceDebuggers(physObjLocalForcePos, constraintObjLocalForcePos, forceDir);
+            base.RenderForceDebuggers(physObjLocalForcePos, constraintObjLocalForcePos, forceDir);
             MBDebug.RenderDebugSphere(physObjGlobalFrame.origin + physObjGlobalFrame.rotation.s, 0.05f, Colors.Red.ToUnsignedInteger());
             MBDebug.RenderDebugSphere(physObjGlobalFrame.origin + physObjGlobalFrame.rotation.f, 0.05f, Colors.Green.ToUnsignedInteger());
             MBDebug.RenderDebugSphere(physObjGlobalFrame.origin + physObjGlobalFrame.rotation.u, 0.05f, Colors.Blue.ToUnsignedInteger());
@@ -89,12 +89,25 @@ namespace ScenePhysicsImplementer
     {
         public Vec3 HingeRotationAxis = Vec3.Zero;
 
+        [EditorVisibleScriptComponentVariable(false)]
+        public Vec3 HingeTurnDegrees { get; set; }
+
+        public Vec3 initialHingeRotation { get; private set; }
+        public Vec3 physObjFreeAxis { get; private set; }
+        public Vec3 targetFreeAxis { get; private set; }
+
         private Vec3 prevTorqueVector;
-        private Vec3 physObjFreeAxis;
-        private Vec3 targetFreeAxis;
+
+        public override void InitializePhysics()
+        {
+            base.InitializePhysics();
+            initialHingeRotation = HingeRotationAxis;
+        }
+
         public override Vec3 CalculateConstraintTorque(float dt)
         {
             SetHingeRotationAxis(HingeRotationAxis);
+            TurnHinge(HingeTurnDegrees);
             physObjFreeAxis = ConstraintLib.CheckForInverseFreeAxis(physObjFreeAxis, targetFreeAxis);
 
             Quaternion rotationQuat = Quaternion.FindShortestArcAsQuaternion(physObjFreeAxis, targetFreeAxis);
@@ -118,8 +131,7 @@ namespace ScenePhysicsImplementer
         }
         public void SetHingeRotationAxis(Vec3 hingeRotationAxis)
         {
-            //rotation changes the free-rotation axis
-            //orientation changes this object's facing direction
+            //sets base hinge orientation at scene init
             hingeRotationAxis *= (float)MathLib.DegtoRad;
 
             Mat3 physObjRotatedMat = physObjMat;
@@ -132,9 +144,19 @@ namespace ScenePhysicsImplementer
             targetFreeAxis = targetRotatedMat.f;
         }
 
-        public override void ShowEditorHelpers()
+        private void TurnHinge(Vec3 turnDegrees)
         {
-            base.ShowEditorHelpers();
+            //sets hinge orientation after scene init
+            turnDegrees *= (float)MathLib.DegtoRad;
+            Mat3 targetRotatedMat = targetMat;
+
+            targetRotatedMat.ApplyEulerAngles(turnDegrees);
+            targetFreeAxis = targetRotatedMat.f;
+        }
+
+        public override void RenderEditorHelpers()
+        {
+            base.RenderEditorHelpers();
             SetHingeRotationAxis(HingeRotationAxis);
             //show rotation axis
             MBDebug.RenderDebugLine(physObjGlobalFrame.origin, physObjFreeAxis, Colors.Green.ToUnsignedInteger());

@@ -32,6 +32,7 @@ namespace ScenePhysicsImplementer
 
     public class ScenePhysicsEditorMissionBehavior : MissionLogic
     {
+        //needs cleanup
         private bool togglePhysicsControl = false;
         private bool isAttemptingToManipulate = false;
         private Agent player;
@@ -60,8 +61,7 @@ namespace ScenePhysicsImplementer
             if (!togglePhysicsControl) return;
 
             OnTogglePhysicsManipulate();
-            
-
+          
         }
 
         private void OnTogglePhysicsManipulate()
@@ -71,10 +71,7 @@ namespace ScenePhysicsImplementer
             if (!playerLookVector.IsValid | !playerEyePos.IsValid) return;
 
 
-            if (!isAttemptingToManipulate) 
-            {
-                hasTarget = RaycastForTarget();
-            }
+            if (!isAttemptingToManipulate) hasTarget = RaycastForTarget();
 
             if (hasTarget && isAttemptingToManipulate)
             {
@@ -116,7 +113,6 @@ namespace ScenePhysicsImplementer
             Vec3 forceOriginGlobalPos = unscaledTargetFrame.TransformToParent(localForceOrigin);
             Vec3 forceDir = forceTargetPos - forceOriginGlobalPos;
 
-            MathLib.DebugMessage(forceTargetPos.ToString());
             MBDebug.RenderDebugDirectionArrow(forceOriginGlobalPos, forceDir, Colors.Cyan.ToUnsignedInteger());
 
             targetEntity.ApplyLocalForceToDynamicBody(localForceOrigin, forceDir*targetEntity.Mass*5f);
@@ -125,8 +121,7 @@ namespace ScenePhysicsImplementer
         private void DisplayTargetHelpers(GameEntity targetEntity, Vec3 targetPoint)
         {
             MBDebug.RenderDebugSphere(targetPoint, 0.1f, Colors.Cyan.ToUnsignedInteger());
-            Tuple<Vec3, Vec3> bounds = ObjectPropertiesLib.GetGlobalBoundingBox(targetEntity);
-            //MBDebug.RenderDebugBoxObject(bounds.Item1, bounds.Item2, Colors.Cyan.ToUnsignedInteger());
+
         }
     }
 }

@@ -52,22 +52,6 @@ namespace ScenePhysicsImplementer
             principalMomentsOfInertia = new Vec3(Ixx, Iyy, Izz);
         }
 
-        public static Tuple<Vec3,Vec3> GetGlobalBoundingBox(GameEntity physObject)
-        {
-            Vec3 min = Vec3.Zero;
-            Vec3 max = Vec3.Zero;
-            Vec3 scale = physObject.GetGlobalScale();
-
-            max = physObject.GetBoundingBoxMax();
-            min = physObject.GetBoundingBoxMin();
-
-            MatrixFrame frame = physObject.GetGlobalFrame();
-            max = frame.TransformToParent(max);
-            min = frame.TransformToParent(min);
-
-            return Tuple.Create(min, max);
-        }
-
         public static void SetPhysicsAsSphereBody(GameEntity physObject)
         {
             float sphereRadius = CalculateSphereBodyForObject(physObject);
