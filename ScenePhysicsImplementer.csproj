@@ -261,12 +261,14 @@
     <Compile Include="ConstraintLib.cs" />
     <Compile Include="ConstraintSet.cs" />
     <Compile Include="ConstraintTypes.cs" />
+    <Compile Include="ControllerBase.cs" />
     <Compile Include="PhysicsObject.cs" />
     <Compile Include="SCE_PhysicsObject.cs" />
     <Compile Include="MathLib.cs" />
     <Compile Include="ScenePhysicsImplementerSubModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ObjectPropertiesLib.cs" />
+    <Compile Include="SCE_WheeledVehicleController.cs" />
     <Content Include="SubModule.xml" />
   </ItemGroup>
   <PropertyGroup>

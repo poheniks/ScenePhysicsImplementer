@@ -191,27 +191,6 @@ namespace ScenePhysicsImplementer
             return vec;
         }
 
-        public static Vec3 VectorTransposeXZY(Vec3 vec)
-        {
-            return new Vec3(vec.x, vec.z, vec.y);
-        }
-        public static Vec3 VectorTransposeZXY(Vec3 vec)
-        {
-            return new Vec3(vec.z, vec.x, vec.y);
-        }
-        public static Vec3 VectorTransposeZYX(Vec3 vec)
-        {
-            return new Vec3(vec.z, vec.y, vec.x);
-        }
-        public static Vec3 VectorTransposeYZX(Vec3 vec)
-        {
-            return new Vec3(vec.y, vec.z, vec.x);
-        }
-        public static Vec3 VectorTransposeYXZ(Vec3 vec)
-        {
-            return new Vec3(vec.y, vec.x, vec.z);
-        }
-
         public static Vec3 VectorRound(Vec3 vec, int decimals)
         {
             float x = (float)Math.Round(vec.x, decimals);
@@ -246,21 +225,27 @@ namespace ScenePhysicsImplementer
 
         public static Vec3 VectorSquareRootComponents(Vec3 vec)
         {
-            vec.x = signedPower(vec.x, 0.5f);
-            vec.y = signedPower(vec.y, 0.5f);
-            vec.z = signedPower(vec.z, 0.5f);
+            vec.x = SignedPower(vec.x, 0.5f);
+            vec.y = SignedPower(vec.y, 0.5f);
+            vec.z = SignedPower(vec.z, 0.5f);
             return vec;
         }
 
         public static Vec3 VectorSquareComponents(Vec3 vec)
         {
-            vec.x = signedPower(vec.x, 2f);
-            vec.y = signedPower(vec.y, 2f);
-            vec.z = signedPower(vec.z, 2f);
+            vec.x = SignedPower(vec.x, 2f);
+            vec.y = SignedPower(vec.y, 2f);
+            vec.z = SignedPower(vec.z, 2f);
             return vec;
         }
 
-        public static float signedPower(float x, float y)
+        public static float ClampFloat(ref float val, float min, float max)
+        {
+            val = Math.Max(Math.Min(val, max), min);
+            return val;
+        }
+
+        public static float SignedPower(float x, float y)
         {
             if (x == 0) return 0f;
             return (float)(Math.Pow(x, y)) * Math.Sign(x);

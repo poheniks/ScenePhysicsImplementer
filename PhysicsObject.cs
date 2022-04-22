@@ -7,6 +7,7 @@ namespace ScenePhysicsImplementer
     {
         public bool SetPhysicsBodyAsSphere = false;
         public bool DisableGravity = false;
+        public bool DisableAllCollisions = false;
         public float LinearDamping = 1.0f;
         public float AngularDamping = 1.0f;
 
@@ -58,6 +59,7 @@ namespace ScenePhysicsImplementer
 
             if (SetPhysicsBodyAsSphere) ObjectPropertiesLib.SetPhysicsAsSphereBody(physObject);
             if (DisableGravity) physObject.DisableGravity();
+            if (DisableAllCollisions) physObject.SetBodyFlags(BodyFlags.OnlyCollideWithRaycast);
         }
     }
 }
