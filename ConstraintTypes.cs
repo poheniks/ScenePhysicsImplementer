@@ -54,7 +54,7 @@ namespace ScenePhysicsImplementer
             targetQuat.SafeNormalize();
 
             Quaternion torqueQuat = targetQuat.TransformToLocal(physObjQuat);
-            //torqueQuat = physObjQuat.TransformToParent(torqueQuat);
+
             Vec3 torqueVector;
             float angularDisplacement;
             Quaternion.AxisAngleFromQuaternion(out torqueVector, out angularDisplacement, torqueQuat);
@@ -97,6 +97,8 @@ namespace ScenePhysicsImplementer
         public Vec3 targetFreeAxis { get; private set; }
 
         private Vec3 prevTorqueVector;
+        private Mat3 physObjRotatedMat;
+        private Mat3 targetRotatedMat;
 
         public override void InitializePhysics()
         {
@@ -134,21 +136,20 @@ namespace ScenePhysicsImplementer
             //sets base hinge orientation at scene init
             hingeRotationAxis *= (float)MathLib.DegtoRad;
 
-            Mat3 physObjRotatedMat = physObjMat;
-            Mat3 targetRotatedMat = targetMat;
+            physObjRotatedMat = physObjMat;
+            targetRotatedMat = targetMat;
             physObjRotatedMat.ApplyEulerAngles(hingeRotationAxis);
             targetRotatedMat.ApplyEulerAngles(hingeRotationAxis);
 
             //use forward axis as default free-rotation axis & facing direction
             physObjFreeAxis = physObjRotatedMat.f;
-            targetFreeAxis = targetRotatedMat.f;
+            targetFreeAxis = physObjRotatedMat.f;
         }
 
         private void TurnHinge(Vec3 turnDegrees)
         {
             //sets hinge orientation after scene init
             turnDegrees *= (float)MathLib.DegtoRad;
-            Mat3 targetRotatedMat = targetMat;
 
             targetRotatedMat.ApplyEulerAngles(turnDegrees);
             targetFreeAxis = targetRotatedMat.f;
@@ -159,7 +160,7 @@ namespace ScenePhysicsImplementer
             base.RenderEditorHelpers();
             SetHingeRotationAxis(HingeRotationAxis);
             //show rotation axis
-            MBDebug.RenderDebugLine(physObjGlobalFrame.origin, physObjFreeAxis, Colors.Green.ToUnsignedInteger());
+            MBDebug.RenderDebugDirectionArrow(physObjGlobalFrame.origin, physObjFreeAxis, Colors.Green.ToUnsignedInteger());
             MBDebug.RenderDebugLine(physObjGlobalFrame.origin, -physObjFreeAxis, Colors.Green.ToUnsignedInteger());
         }
 

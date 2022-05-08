@@ -333,7 +333,7 @@ namespace ScenePhysicsImplementer
              *T(z) = F(y)*L(x) - F(x)*L(y)
             */
 
-            //constrain torque composition equation by setting max moment arm to 1, max dir to max torque component
+            //constrain torque composition equation by setting max moment arm to 1, max dir to max input torque component
             //torque = new Vec3(2, 7, 4);
             //T(y) = F(x)*L(z) + F(z)*L(x), where F(x) = T(max); L(z) = 1
             int indexOfMaxTorqueComponent = MathLib.IndexOfAbsMaxVectorComponent(torque);
