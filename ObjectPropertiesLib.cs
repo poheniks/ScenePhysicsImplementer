@@ -19,7 +19,7 @@ namespace ScenePhysicsImplementer
         private GameEntity physObject;
         private float mass;
 
-        public Vec3 principalMomentsOfInertia;   //(pitch, roll, yaw) in terms of Bannerlord local coordinate system
+        public Vec3 principalMomentsOfInertia;   //(pitch, roll, yaw) in terms of object's local coordinate system
 
         public ObjectPropertiesLib(GameEntity v_physObject)
         {
@@ -73,10 +73,11 @@ namespace ScenePhysicsImplementer
         }
 
 
-        public static MatrixFrame AdjustFrameForCOM(MatrixFrame frame, Vec3 centerOfMass)
+        public static MatrixFrame AdjustGlobalFrameForCOM(MatrixFrame frame, Vec3 centerOfMass)
         {
             frame.rotation.MakeUnit();
             Mat3 rot = frame.rotation;
+            //frame.origin += rot.TransformToParent(centerOfMass);
             frame.origin += rot.s * centerOfMass.x + rot.f * centerOfMass.y + rot.u * centerOfMass.z;
             return frame;
         }

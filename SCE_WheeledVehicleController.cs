@@ -11,6 +11,7 @@ namespace ScenePhysicsImplementer
     public class SCE_WheeledVehicleController : ControllerBase
     {
         //editor exposed variables
+        public ControllerAnimations DriverAnimation = ControllerAnimations.None;
         public string SteerHingeTag = "";
         public string DriveHingeTag = "";
 
@@ -20,7 +21,9 @@ namespace ScenePhysicsImplementer
         public float SteerSmoothing = 1f;
         public float DriveTorqueSmoothing = 1f;
         //
+        [EditorVisibleScriptComponentVariable(false)]
         public List<SCE_ConstraintHinge> steerHinges;
+        [EditorVisibleScriptComponentVariable(false)]
         public List<SCE_ConstraintHinge> driveHinges;
 
         private float steerPercent;
@@ -29,17 +32,40 @@ namespace ScenePhysicsImplementer
         private bool hasSteerHinges = false;
         private bool hasDriveHinges = false;
 
+        private static readonly ActionIndexCache actionSitting = ActionIndexCache.Create("act_sit_1");
+        private static readonly ActionIndexCache actionStanding = ActionIndexCache.Create("act_usage_ballista_idle_attacker");
+
+        public enum ControllerAnimations
+        {
+            None = 0,
+            Sitting = 1,
+            Standing = 2
+        }
+
         public override void Initialize()
         {
             base.Initialize();
             SetControllableHinges();
+        }
 
+        public override ActionIndexCache SetUserAnimation()
+        {
+            switch(DriverAnimation)
+            {
+                case ControllerAnimations.None:
+                    return ActionIndexCache.act_none;
+                case ControllerAnimations.Sitting:
+                    return actionSitting;
+                case ControllerAnimations.Standing:
+                    return actionStanding;
+                default:
+                    return ActionIndexCache.act_none;
+            }
         }
 
         protected override void OnEditorTick(float dt)
         {
             base.OnEditorTick(dt);
-            RenderEditorHelpers();
         }
 
         protected override void OnTickParallel(float dt)
@@ -95,7 +121,7 @@ namespace ScenePhysicsImplementer
         private bool FindControllableHinges(string tag, out List<SCE_ConstraintHinge> list)
         {
             list = new List<SCE_ConstraintHinge>();
-            IEnumerable<GameEntity> taggedEntities = GameEntity.Scene.FindEntitiesWithTag(tag);
+            IEnumerable<GameEntity> taggedEntities = Scene.FindEntitiesWithTag(tag);
             foreach(GameEntity entity in taggedEntities)
             {
                 if (entity.HasScriptOfType<SCE_ConstraintHinge>()) list.Add(entity.GetFirstScriptOfType<SCE_ConstraintHinge>());
@@ -104,9 +130,9 @@ namespace ScenePhysicsImplementer
             return false;
         }
 
-        private void RenderEditorHelpers()
+        public override void RenderEditorHelpers()
         {
-            if (!GameEntity.IsSelectedOnEditor() | !ShowEditorHelpers) return;
+            base.RenderEditorHelpers();
             if (hasSteerHinges) RenderControlledHinges(steerHinges, Colors.Green.ToUnsignedInteger());
             if (hasDriveHinges) RenderControlledHinges(driveHinges, Colors.Blue.ToUnsignedInteger());
         }

@@ -83,7 +83,7 @@ namespace ScenePhysicsImplementer
         private void UpdateTargetFrame()
         {
             unscaledTargetFrame = targetEntity.GetGlobalFrame();
-            unscaledTargetFrame = ObjectPropertiesLib.AdjustFrameForCOM(unscaledTargetFrame, Vec3.Zero);
+            unscaledTargetFrame = ObjectPropertiesLib.AdjustGlobalFrameForCOM(unscaledTargetFrame, Vec3.Zero);
         }
 
         private bool RaycastForTarget()
@@ -94,7 +94,9 @@ namespace ScenePhysicsImplementer
             Vec3 collidedPoint = Vec3.Zero;
             Mission.Scene.RayCastForClosestEntityOrTerrain(playerEyePos, rayCollisionPoint, out collisionDistance, out collidedPoint, out targetEntity);
 
-            if (targetEntity == null || !collidedPoint.IsValid || !targetEntity.GetPhysicsState()) return false;
+            targetEntity = CheckForParentPhysObject(targetEntity);
+            if (targetEntity == null || !collidedPoint.IsValid) return false;
+            
             DisplayTargetHelpers(targetEntity, collidedPoint);
 
             UpdateTargetFrame();
@@ -122,6 +124,20 @@ namespace ScenePhysicsImplementer
         {
             MBDebug.RenderDebugSphere(targetPoint, 0.1f, Colors.Cyan.ToUnsignedInteger());
 
+        }
+
+        private GameEntity CheckForParentPhysObject(GameEntity targetEntity)
+        {
+            
+            if (targetEntity == null) return null;
+            if (targetEntity.HasScriptOfType<PhysicsObject>()) return targetEntity;
+            else
+            {
+                GameEntity parent = targetEntity.Parent;
+                if (parent != null) return CheckForParentPhysObject(parent);
+            }
+
+            return null;
         }
     }
 }
