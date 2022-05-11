@@ -72,6 +72,19 @@ namespace ScenePhysicsImplementer
             return mat;
         }
 
+        public static float AverageFloats(List<float> floatList)
+        {
+            int count = floatList.Count;
+            float sumFloats = 0f;
+            if (count == 0) return 0f;
+
+            foreach (float num in floatList)
+            {
+                sumFloats += num;
+            }
+            sumFloats = sumFloats/count;
+            return sumFloats;
+        }
         public static Vec3 AverageVectors(List<Vec3> vectorList)
         {
             int count = vectorList.Count;
