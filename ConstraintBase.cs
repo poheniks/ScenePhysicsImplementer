@@ -20,7 +20,7 @@ namespace ScenePhysicsImplementer
         public float kP = 1f;
         public float kD = 1f;
 
-        public float kPStatic { get; set; } = 50f;
+        public float kPStatic { get; set; } = 50f;  
         public float kDStatic { get; set; } = 2f;
         public Vec3 ForceOffset = new Vec3(0, 0, 0);    //local coordinates, based on CoM
 
@@ -50,6 +50,7 @@ namespace ScenePhysicsImplementer
         
         public bool isValid { get; private set; }
 
+        public float errorFps { get; private set; }
 
         public override TickRequirement GetTickRequirement()
         {
@@ -105,6 +106,10 @@ namespace ScenePhysicsImplementer
             base.OnTick(dt);
             if (!isValid) return;
             UpdateCurrentFrames();
+
+            float error = (144f / Mission.Current.GetAverageFps()) * 0.6f;
+            MathLib.ClampFloat(ref error, 0.75f, 1.25f);
+            errorFps = error;
 
             TickForceReaction(Tuple.Create(Vec3.Zero, CalculateConstraintForce(dt)), DisableParentReaction);
             TickTorqueReaction(CalculateConstraintTorque(dt), DisableParentReaction);
@@ -246,6 +251,7 @@ namespace ScenePhysicsImplementer
             MBDebug.RenderDebugSphere(constrainingObjOrigin, 0.05f, Colors.Magenta.ToUnsignedInteger());
             MBDebug.RenderDebugLine(thisOrigin, dir, Colors.Magenta.ToUnsignedInteger());
             MBDebug.RenderDebugBoxObject(constrainingObject.GlobalBoxMin, constrainingObject.GlobalBoxMax, Colors.Magenta.ToUnsignedInteger());
+
         }
     }
 }

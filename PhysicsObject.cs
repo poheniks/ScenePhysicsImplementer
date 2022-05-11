@@ -9,7 +9,7 @@ namespace ScenePhysicsImplementer
         public SimpleButton SetNoCollideFlagForStaticChildObjects;
         public bool SetPhysicsBodyAsSphere = false;
         public bool DisableGravity = false;
-        public bool DisableAllChildCollisions = false;
+        public bool DisableAllCollisions = false;
         public float LinearDamping = 1.0f;
         public float AngularDamping = 1.0f;
 
@@ -52,17 +52,18 @@ namespace ScenePhysicsImplementer
 
         public virtual void InitializePhysics()
         {
+            if (SetPhysicsBodyAsSphere) ObjectPropertiesLib.SetPhysicsAsSphereBody(physObject);
+
             physObject.EnableDynamicBody();
-            physObject.SetBodyFlags(BodyFlags.Dynamic);
+            physObject.SetBodyFlags(BodyFlags.Dynamic | BodyFlags.Barrier);
             physObject.SetDamping(LinearDamping, AngularDamping);
 
             physObjProperties = new ObjectPropertiesLib(physObject);
             MoI = physObjProperties.principalMomentsOfInertia;
             physObject.SetMassSpaceInertia(MoI);    //simplify mass moments of inertia to a cubic volume based on entity bounding box
 
-            if (SetPhysicsBodyAsSphere) ObjectPropertiesLib.SetPhysicsAsSphereBody(physObject);
             if (DisableGravity) physObject.DisableGravity();
-            if (DisableAllChildCollisions) physObject.SetBodyFlags(BodyFlags.CommonCollisionExcludeFlagsForAgent & ~BodyFlags.Disabled);
+            if (DisableAllCollisions) physObject.SetBodyFlags(BodyFlags.CommonCollisionExcludeFlagsForAgent & ~BodyFlags.Disabled);
         }
 
         protected override void OnEditorVariableChanged(string variableName)

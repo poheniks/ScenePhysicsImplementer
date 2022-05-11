@@ -30,6 +30,117 @@ namespace ScenePhysicsImplementer
         }
     }
 
+    public class SCE_MultiBodyNavMeshLoader : ScriptComponentBehavior
+    {
+        public string NavMeshPrefabName = "";
+        public bool UseExistingNavMeshFaces = false;
+        public SimpleButton LoadNavMeshPrefab;
+
+        private int dynamicNavMeshIDStart = 0;
+        bool firstTick = false;
+        public override TickRequirement GetTickRequirement()
+        {
+            return TickRequirement.TickOccasionally;
+        }
+
+        protected override void OnEditorVariableChanged(string variableName)
+        {
+            base.OnEditorVariableChanged(variableName);
+            if (variableName == nameof(LoadNavMeshPrefab))
+            {
+                if (NavMeshPrefabName.Length > 0) Scene.ImportNavigationMeshPrefab(NavMeshPrefabName, 0);
+            }
+        }
+
+        protected override void OnTickOccasionally(float currentFrameDeltaTime)
+        {
+            base.OnTickOccasionally(currentFrameDeltaTime);
+            if (firstTick) return;
+            foreach (string tag in GameEntity.Tags)
+            {
+                //string format: (index)_(internal/connection/blocker)_(entity tag)
+                string[] splitTag = tag.Split('_');
+                int tagFirstHeader = tag.IndexOf('_');
+                int tagLastHeader = tag.LastIndexOf('_');
+                if (tagFirstHeader == 0 && tagLastHeader == 0 || tagFirstHeader == tagLastHeader)
+                {
+                    MathLib.DebugMessage("Error in SCE_MultiBodyNavMeshLoader. Missing _ header(s)|" + tag, isError: true);
+                    continue;
+                }
+
+                //get face ID index
+                int faceIDIndex;
+                string subTagID = splitTag[0];
+                if (!int.TryParse(subTagID, out faceIDIndex))
+                {
+                    MathLib.DebugMessage("Error in SCE_MultiBodyNavMeshLoader. Tag with non-numeric faceID|" + tag, isError: true);
+                    continue;
+                }
+                else if (faceIDIndex < 0)
+                {
+                    MathLib.DebugMessage("Error in SCE_MultiBodyNavMeshLoader. Tag with negative faceID|" + tag, isError: true);
+                    continue;
+                }
+                faceIDIndex += dynamicNavMeshIDStart;
+
+                //get face type
+                int faceType;
+                string subTagType = splitTag[1];
+                if (!int.TryParse(subTagType, out faceType) || (faceType < 0 || faceType > 2))
+                {
+                    MathLib.DebugMessage("Error in SCE_MultiBodyNavMeshLoader. Tag with non-valid face type. Use integers 0 - 2|" + tag, isError: true);
+                    continue;
+                }
+
+                //get entity
+                string subTagEntity = splitTag[2];
+                GameEntity entity = Scene.FindEntityWithTag(subTagEntity);
+                if (entity == null)
+                {
+                    MathLib.DebugMessage("Error in SCE_MultiBodyNavMeshLoader. No entity found|" + tag, isError: true);
+                    continue;
+                }
+                //attach mesh
+
+                //create child empty entity to attach mesh prefab to
+                //GameEntity emptyEntity = GameEntity.CreateEmpty(Scene);
+                //entity.AddChild(emptyEntity, false);
+                //emptyEntity.RemoveEnginePhysics();
+
+                entity.SetGlobalFrame(GameEntity.GetGlobalFrame());    //set empty entity to mesh prefab indexing entity
+
+                switch (faceType)
+                {
+                    case 0:
+                        entity.AttachNavigationMeshFaces(faceIDIndex, false, false, UseExistingNavMeshFaces); //internal mesh face
+                        break;
+                    case 1:
+                        entity.AttachNavigationMeshFaces(faceIDIndex, true, false, UseExistingNavMeshFaces);  //connecting mesh face
+                        break;
+                    case 2:
+                        entity.AttachNavigationMeshFaces(faceIDIndex, false, true, UseExistingNavMeshFaces);  //blocking mesh face
+                        break;
+                }
+                Scene.SetAbilityOfFacesWithId(faceIDIndex, true);
+
+            }
+            firstTick = true;
+        }
+
+        protected override void OnInit()
+        {
+            base.OnInit();
+            SetScriptComponentToTick(GetTickRequirement());
+
+            if (!UseExistingNavMeshFaces && NavMeshPrefabName.Length > 0)
+            {
+                dynamicNavMeshIDStart = Mission.Current.GetNextDynamicNavMeshIdStart();
+                Scene.ImportNavigationMeshPrefab(NavMeshPrefabName, dynamicNavMeshIDStart);
+            }
+
+        }
+    }
+
     public class ScenePhysicsEditorMissionBehavior : MissionLogic
     {
         //needs cleanup
@@ -58,10 +169,22 @@ namespace ScenePhysicsImplementer
 
             isAttemptingToManipulate = Input.IsKeyDown(InputKey.LeftMouseButton);
 
-            if (!togglePhysicsControl) return;
+            if (Input.IsKeyPressed(InputKey.F3)) DebugNavMeshFaceID();
 
+            if (!togglePhysicsControl) return;
             OnTogglePhysicsManipulate();
+ 
           
+        }
+
+        private void DebugNavMeshFaceID()
+        {
+            Vec3 playerPos = player.Position;
+            int faceID;
+            Mission.Scene.GetNavigationMeshForPosition(ref playerPos, out faceID);
+            MathLib.DebugMessage("ID: " + faceID.ToString());
+            //MathLib.DebugMessage(Mission.Scene.IsAnyFaceWithId(1000054).ToString());
+
         }
 
         private void OnTogglePhysicsManipulate()

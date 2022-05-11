@@ -23,6 +23,7 @@ namespace ScenePhysicsImplementer
             kDStatic = 2.5f;
 
             Vec3 constraintForce = ConstraintLib.VectorPID(displacement, prevDisplacement, dt, kPStatic * kP, kDStatic * kD);
+            constraintForce *= errorFps;
 
             prevDisplacement = displacement;
             return constraintForce;
@@ -73,11 +74,12 @@ namespace ScenePhysicsImplementer
 
             if (torqueSign != prevTorqueSign && (angularDisplacement > (float)Math.PI*0.95f | angularDisplacement < -(float)Math.PI*0.95f))
             {
-                MathLib.DebugMessage("flip");
+                //MathLib.DebugMessage("flip");
                 prevTorqueVector *= -1;
             }
             Vec3 constraintTorque = ConstraintLib.VectorPID(torqueVector, prevTorqueVector, dt, kPStatic * kP, kDStatic * kD);
-            //constraintTorque = Vec3.Zero;
+            constraintTorque *= errorFps;
+
             prevTorqueVector = torqueVector;
             prevTorqueSign = torqueSign;
             return constraintTorque;
@@ -127,6 +129,7 @@ namespace ScenePhysicsImplementer
             kDStatic = 1f;
 
             Vec3 constraintTorque = ConstraintLib.VectorPID(torqueVector, prevTorqueVector, dt, kPStatic * kP, kDStatic * kD);
+            constraintTorque *= errorFps;
 
             prevTorqueVector = torqueVector;
             return constraintTorque;
