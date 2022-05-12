@@ -33,11 +33,11 @@ namespace ScenePhysicsImplementer
     public class SCE_MultiBodyNavMeshLoader : ScriptComponentBehavior
     {
         public string NavMeshPrefabName = "";
-        public bool UseExistingNavMeshFaces = false;
         public SimpleButton LoadNavMeshPrefab;
+        public bool CreateChildEmptyEntityReference = false;
 
         private int dynamicNavMeshIDStart = 0;
-        bool firstTick = false;
+        private Dictionary<GameEntity, GameEntity> parentChildEmptyEntityDict = new Dictionary<GameEntity,GameEntity>();
         public override TickRequirement GetTickRequirement()
         {
             return TickRequirement.TickOccasionally;
@@ -51,14 +51,31 @@ namespace ScenePhysicsImplementer
                 if (NavMeshPrefabName.Length > 0) Scene.ImportNavigationMeshPrefab(NavMeshPrefabName, 0);
             }
         }
+        protected override void OnInit()
+        {
+            base.OnInit();
+            SetScriptComponentToTick(GetTickRequirement());
+
+            if (NavMeshPrefabName.Length > 0)
+            {
+                dynamicNavMeshIDStart = Mission.Current.GetNextDynamicNavMeshIdStart();
+                Scene.ImportNavigationMeshPrefab(NavMeshPrefabName, dynamicNavMeshIDStart);
+            }
+
+        }
 
         protected override void OnTickOccasionally(float currentFrameDeltaTime)
         {
             base.OnTickOccasionally(currentFrameDeltaTime);
-            if (firstTick) return;
+            AttachDynamicNavMesh();
+            SetScriptComponentToTick(TickRequirement.None);
+        }
+
+        private void AttachDynamicNavMesh()
+        {
             foreach (string tag in GameEntity.Tags)
             {
-                //string format: (index)_(internal/connection/blocker)_(entity tag)
+                //string format: (mesh face id)_(internal/connection/blocker)_(entity tag)
                 string[] splitTag = tag.Split('_');
                 int tagFirstHeader = tag.IndexOf('_');
                 int tagLastHeader = tag.LastIndexOf('_');
@@ -68,20 +85,20 @@ namespace ScenePhysicsImplementer
                     continue;
                 }
 
-                //get face ID index
-                int faceIDIndex;
+                //get face ID 
+                int faceID;
                 string subTagID = splitTag[0];
-                if (!int.TryParse(subTagID, out faceIDIndex))
+                if (!int.TryParse(subTagID, out faceID))
                 {
                     MathLib.DebugMessage("Error in SCE_MultiBodyNavMeshLoader. Tag with non-numeric faceID|" + tag, isError: true);
                     continue;
                 }
-                else if (faceIDIndex < 0)
+                else if (faceID < 0)
                 {
                     MathLib.DebugMessage("Error in SCE_MultiBodyNavMeshLoader. Tag with negative faceID|" + tag, isError: true);
                     continue;
                 }
-                faceIDIndex += dynamicNavMeshIDStart;
+                faceID += dynamicNavMeshIDStart;
 
                 //get face type
                 int faceType;
@@ -94,50 +111,43 @@ namespace ScenePhysicsImplementer
 
                 //get entity
                 string subTagEntity = splitTag[2];
-                GameEntity entity = Scene.FindEntityWithTag(subTagEntity);
-                if (entity == null)
+                GameEntity attachingEntity = Scene.FindEntityWithTag(subTagEntity);
+                if (attachingEntity == null)
                 {
                     MathLib.DebugMessage("Error in SCE_MultiBodyNavMeshLoader. No entity found|" + tag, isError: true);
                     continue;
                 }
+
                 //attach mesh
+                if (CreateChildEmptyEntityReference)
+                {
+                    GameEntity parent = attachingEntity;
+                    if (!parentChildEmptyEntityDict.TryGetValue(parent, out attachingEntity)) 
+                    {
+                        GameEntity emptyEntity = GameEntity.CreateEmptyDynamic(Scene); //create child empty entity to attach mesh prefab to
+                        parent.AddChild(emptyEntity, false);
+                        parentChildEmptyEntityDict.Add(parent, emptyEntity);
+                        attachingEntity = emptyEntity;
+                    }
+                }
 
-                //create child empty entity to attach mesh prefab to
-                //GameEntity emptyEntity = GameEntity.CreateEmpty(Scene);
-                //entity.AddChild(emptyEntity, false);
-                //emptyEntity.RemoveEnginePhysics();
-
-                entity.SetGlobalFrame(GameEntity.GetGlobalFrame());    //set empty entity to mesh prefab indexing entity
+                attachingEntity.SetGlobalFrame(GameEntity.GetGlobalFrame());    //set empty entity frame to the scriptcomponent entity that the mesh prefab is localized about
 
                 switch (faceType)
                 {
                     case 0:
-                        entity.AttachNavigationMeshFaces(faceIDIndex, false, false, UseExistingNavMeshFaces); //internal mesh face
+                        attachingEntity.AttachNavigationMeshFaces(faceID, false, false, false); //internal mesh face
                         break;
                     case 1:
-                        entity.AttachNavigationMeshFaces(faceIDIndex, true, false, UseExistingNavMeshFaces);  //connecting mesh face
+                        attachingEntity.AttachNavigationMeshFaces(faceID, true, false, false);  //connecting mesh face
                         break;
                     case 2:
-                        entity.AttachNavigationMeshFaces(faceIDIndex, false, true, UseExistingNavMeshFaces);  //blocking mesh face
+                        attachingEntity.AttachNavigationMeshFaces(faceID, false, true, false);  //blocking mesh face
                         break;
                 }
-                Scene.SetAbilityOfFacesWithId(faceIDIndex, true);
+                Scene.SetAbilityOfFacesWithId(faceID, true);
 
             }
-            firstTick = true;
-        }
-
-        protected override void OnInit()
-        {
-            base.OnInit();
-            SetScriptComponentToTick(GetTickRequirement());
-
-            if (!UseExistingNavMeshFaces && NavMeshPrefabName.Length > 0)
-            {
-                dynamicNavMeshIDStart = Mission.Current.GetNextDynamicNavMeshIdStart();
-                Scene.ImportNavigationMeshPrefab(NavMeshPrefabName, dynamicNavMeshIDStart);
-            }
-
         }
     }
 

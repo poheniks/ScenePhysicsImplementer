@@ -1,6 +1,9 @@
 ﻿using TaleWorlds.Engine;
 using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade;
 using System.Collections.Generic;
+using System.Reflection;
+using System;
 
 namespace ScenePhysicsImplementer
 {
@@ -18,8 +21,7 @@ namespace ScenePhysicsImplementer
         public Vec3 MoI { get; private set; }
         public float mass { get; private set; }
         public Vec3 physObjCoM { get; private set; }  //always in object's local coordinate system, but never scaled with object
-
-        private bool firstTick = false;
+        public List<PhysicsMaterial> physicsMaterialsRemovedOnCollision { get; private set; }
 
         public override TickRequirement GetTickRequirement()
         {
@@ -36,6 +38,7 @@ namespace ScenePhysicsImplementer
             base.OnInit();
             InitializeScene();
             InitializePhysics();
+            InitializePhysicsMaterialTypesOnCollision();
         }
 
         public virtual void InitializeScene()
@@ -55,7 +58,7 @@ namespace ScenePhysicsImplementer
             if (SetPhysicsBodyAsSphere) ObjectPropertiesLib.SetPhysicsAsSphereBody(physObject);
 
             physObject.EnableDynamicBody();
-            physObject.SetBodyFlags(BodyFlags.Dynamic | BodyFlags.Barrier);
+            physObject.SetBodyFlags(BodyFlags.Dynamic);
             physObject.SetDamping(LinearDamping, AngularDamping);
 
             physObjProperties = new ObjectPropertiesLib(physObject);
@@ -84,5 +87,37 @@ namespace ScenePhysicsImplementer
             }
         }
 
+        protected override void OnPhysicsCollision(ref PhysicsContact contact)
+        {
+            base.OnPhysicsCollision(ref contact);
+            for(int i = 0; i < contact.NumberOfContactPairs; i++)
+            {
+                PhysicsContactPair contactPair = contact[i];
+                for (int j = 0; j < contactPair.NumberOfContacts; j++)
+                {
+                    CheckAndRemoveMissilesAfterCollision(contactPair[j]);
+                }
+            }
+        }
+
+        public virtual void InitializePhysicsMaterialTypesOnCollision()
+        {
+            physicsMaterialsRemovedOnCollision = new List<PhysicsMaterial>();
+            physicsMaterialsRemovedOnCollision.Add(PhysicsMaterial.GetFromName("missile"));
+            physicsMaterialsRemovedOnCollision.Add(PhysicsMaterial.GetFromName("wood_weapon"));
+        }
+
+        private void CheckAndRemoveMissilesAfterCollision(PhysicsContactInfo contact)
+        {
+            if (physicsMaterialsRemovedOnCollision.Contains(contact.PhysicsMaterial1))
+            {
+                float rayDistance;
+                GameEntity missile;
+                Scene.RayCastForClosestEntityOrTerrain(contact.Position, contact.Normal * 1f + contact.Position, out rayDistance, out missile, rayThickness: 0.1f, excludeBodyFlags: BodyFlags.Dynamic | BodyFlags.DynamicConvexHull);
+                if (missile == null) return;
+                if (!missile.BodyFlag.HasFlag(BodyFlags.DroppedItem)) return;
+                missile.SetGlobalFrame(MatrixFrame.Zero);
+            }
+        }
     }
 }
