@@ -216,7 +216,7 @@ namespace ScenePhysicsImplementer
         private void UpdateTargetFrame()
         {
             unscaledTargetFrame = targetEntity.GetGlobalFrame();
-            unscaledTargetFrame = ObjectPropertiesLib.AdjustGlobalFrameForCOM(unscaledTargetFrame, Vec3.Zero);
+            unscaledTargetFrame = ObjectPropertiesLib.LocalOffsetAndNormalizeGlobalFrame(unscaledTargetFrame, Vec3.Zero);
         }
 
         private bool RaycastForTarget()

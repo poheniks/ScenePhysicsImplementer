@@ -19,11 +19,10 @@ namespace ScenePhysicsImplementer
             Vec3 displacement = targetGlobalFrame.origin - physObjGlobalFrame.origin;
             displacement *= physObject.Mass;
 
-            kPStatic = 100f;
-            kDStatic = 2.5f;
+            kPStatic = 75f;
+            kDStatic = 2f;
 
             Vec3 constraintForce = ConstraintLib.VectorPID(displacement, prevDisplacement, dt, kPStatic * kP, kDStatic * kD);
-            constraintForce *= errorFps;
 
             prevDisplacement = displacement;
             return constraintForce;
@@ -78,7 +77,6 @@ namespace ScenePhysicsImplementer
                 prevTorqueVector *= -1;
             }
             Vec3 constraintTorque = ConstraintLib.VectorPID(torqueVector, prevTorqueVector, dt, kPStatic * kP, kDStatic * kD);
-            constraintTorque *= errorFps;
 
             prevTorqueVector = torqueVector;
             prevTorqueSign = torqueSign;
@@ -129,7 +127,6 @@ namespace ScenePhysicsImplementer
             kDStatic = 1f;
 
             Vec3 constraintTorque = ConstraintLib.VectorPID(torqueVector, prevTorqueVector, dt, kPStatic * kP, kDStatic * kD);
-            constraintTorque *= errorFps;
 
             prevTorqueVector = torqueVector;
             return constraintTorque;

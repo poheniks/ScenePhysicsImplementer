@@ -22,7 +22,11 @@ namespace ScenePhysicsImplementer
 
         public float kPStatic { get; set; } = 50f;  
         public float kDStatic { get; set; } = 2f;
-        public Vec3 ForceOffset = new Vec3(0, 0, 0);    //local coordinates, based on CoM
+
+        public Vec3 ConstraintOffset = Vec3.Zero;    //local coordinates, based on CoM
+
+        [EditorVisibleScriptComponentVariable(false)]
+        public Vec3 ConstrainingObjectLocalOffset { get; set; }  //for dynamic changes - local to constrainingObject coordinate system
 
         //constraining object
         public GameEntity constrainingObject { get; private set; }
@@ -32,12 +36,17 @@ namespace ScenePhysicsImplementer
         public MatrixFrame targetInitialLocalFrame { get; private set; } //only local frame; used as a frame reference to the constraining object, initialized during scene init
 
         //frames for current tick
+        /*
         private MatrixFrame _constrainingObjGlobalFrame;
         private MatrixFrame _physObjGlobalFrame;
         private MatrixFrame _targetGlobalFrame;
         public MatrixFrame constrainingObjGlobalFrame { get { return _constrainingObjGlobalFrame; } private set { _constrainingObjGlobalFrame = value; } }
         public MatrixFrame physObjGlobalFrame { get { return _physObjGlobalFrame; } private set { _physObjGlobalFrame = value; } }
         public MatrixFrame targetGlobalFrame { get { return _targetGlobalFrame; } private set { _targetGlobalFrame = value; } }
+        */
+        public MatrixFrame constrainingObjGlobalFrame { get; private set; }
+        public MatrixFrame physObjGlobalFrame { get; private set; }
+        public MatrixFrame targetGlobalFrame { get; private set; }
         public Mat3 physObjMat { get; private set; }
         public Mat3 targetMat { get; private set; }
         public Vec3 transformedOffsetForConstrainingObject { get; private set; }    //includes CoM and ForceOffset 
@@ -49,9 +58,6 @@ namespace ScenePhysicsImplementer
         public bool firstFrame { get; private set; } = true;
         
         public bool isValid { get; private set; }
-
-        public float errorFps { get; private set; }
-
         public override TickRequirement GetTickRequirement()
         {
             return TickRequirement.Tick;
@@ -65,7 +71,6 @@ namespace ScenePhysicsImplementer
         protected override void OnInit()
         {
             base.OnInit();
-            InitializePhysics();
         }
 
         public override void InitializeScene()
@@ -97,7 +102,11 @@ namespace ScenePhysicsImplementer
             UpdateCurrentFrames();
 
             firstFrame = false;
-            targetInitialLocalFrame = constrainingObjGlobalFrame.TransformToLocal(physObjGlobalFrame);  //get & set target frame local to constraint object here
+
+            MatrixFrame targetInitialLocalFrame = constrainingObjGlobalFrame.TransformToLocal(physObjGlobalFrame);  //get & set target frame local to constraint object here+
+            targetInitialLocalFrame.origin += ConstrainingObjectLocalOffset;   //for dynamic offsets
+            this.targetInitialLocalFrame = targetInitialLocalFrame;
+
             targetGlobalFrame = constrainingObjGlobalFrame.TransformToParent(targetInitialLocalFrame);
         }
 
@@ -106,10 +115,6 @@ namespace ScenePhysicsImplementer
             base.OnTick(dt);
             if (!isValid) return;
             UpdateCurrentFrames();
-
-            float error = (144f / Mission.Current.GetAverageFps()) * 0.6f;
-            MathLib.ClampFloat(ref error, 0.75f, 1.25f);
-            errorFps = error;
 
             TickForceReaction(Tuple.Create(Vec3.Zero, CalculateConstraintForce(dt)), DisableParentReaction);
             TickTorqueReaction(CalculateConstraintTorque(dt), DisableParentReaction);
@@ -120,25 +125,25 @@ namespace ScenePhysicsImplementer
         public void UpdateCurrentFrames()
         {
 
-            //set & normalize current frames for debugging
+            //set & normalize current frames for debug renders
             physObjOriginGlobalFrame = physObject.GetGlobalFrame();
             constraintObjOriginGlobalFrame = constrainingObject.GetGlobalFrame();
             //unscale original object frames - calling MakeUnit() directly doesn't seem to work??
-            physObjOriginGlobalFrame = ObjectPropertiesLib.AdjustGlobalFrameForCOM(physObjOriginGlobalFrame, Vec3.Zero);
-            constraintObjOriginGlobalFrame = ObjectPropertiesLib.AdjustGlobalFrameForCOM(constraintObjOriginGlobalFrame, Vec3.Zero);
+            physObjOriginGlobalFrame = ObjectPropertiesLib.LocalOffsetAndNormalizeGlobalFrame(physObjOriginGlobalFrame, Vec3.Zero);
+            constraintObjOriginGlobalFrame = ObjectPropertiesLib.LocalOffsetAndNormalizeGlobalFrame(constraintObjOriginGlobalFrame, Vec3.Zero);
 
             //set current frames
             //unscale object frames; everything is in terms of physObj, so adjust this & constraint object frames by this CoM and force offset
 
-            Vec3 physObjGlobalFrameOffset = physObjCoM + ForceOffset;
+            Vec3 physObjGlobalFrameOffset = physObjCoM + ConstraintOffset;
             if (firstFrame | physObject.IsSelectedOnEditor())
             {
                 Vec3 worldOffset = physObjOriginGlobalFrame.rotation.TransformToParent(physObjGlobalFrameOffset);
                 transformedOffsetForConstrainingObject = constraintObjOriginGlobalFrame.rotation.TransformToLocal(worldOffset);
             }
 
-            physObjGlobalFrame = ObjectPropertiesLib.AdjustGlobalFrameForCOM(physObjOriginGlobalFrame, physObjGlobalFrameOffset);
-            constrainingObjGlobalFrame = ObjectPropertiesLib.AdjustGlobalFrameForCOM(constraintObjOriginGlobalFrame, transformedOffsetForConstrainingObject);
+            physObjGlobalFrame = ObjectPropertiesLib.LocalOffsetAndNormalizeGlobalFrame(physObjOriginGlobalFrame, physObjGlobalFrameOffset);
+            constrainingObjGlobalFrame = ObjectPropertiesLib.LocalOffsetAndNormalizeGlobalFrame(constraintObjOriginGlobalFrame, transformedOffsetForConstrainingObject);
 
             if (firstFrame) return; //targetInitialLocalFrame not initalized yet
             targetGlobalFrame = constrainingObjGlobalFrame.TransformToParent(targetInitialLocalFrame);
@@ -180,6 +185,20 @@ namespace ScenePhysicsImplementer
 
             if (!ShowForceDebugging) return;
             RenderForceDebuggers(physObjLocalForcePos, constraintObjLocalForcePos, forceDir);
+        }
+
+        public void DynamicallySetConstrainingObjectAsAgent(Agent agent)
+        {
+            if (agent == null)
+            {
+                isValid = false;
+                return;
+            }
+            constrainingObject = agent.AgentVisuals.GetEntity();
+            DisableParentReaction = true;
+            firstFrame = true;
+            InitializeFrames();
+            isValid = true;
         }
 
         private void FindConstrainingObject()
@@ -239,7 +258,7 @@ namespace ScenePhysicsImplementer
             }
             UpdateCurrentFrames();
 
-            editorConstrainingObjectGlobalFrame = ObjectPropertiesLib.AdjustGlobalFrameForCOM(constrainingObject.GetGlobalFrame(), constrainingObject.CenterOfMass);
+            editorConstrainingObjectGlobalFrame = ObjectPropertiesLib.LocalOffsetAndNormalizeGlobalFrame(constrainingObject.GetGlobalFrame(), constrainingObject.CenterOfMass);
 
             Vec3 thisCoM = physObjOriginGlobalFrame.TransformToParent(physObjCoM);
             Vec3 thisOrigin = physObjGlobalFrame.origin;

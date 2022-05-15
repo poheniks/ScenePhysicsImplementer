@@ -9,6 +9,7 @@ namespace ScenePhysicsImplementer
 {
     public static class ConstraintLib
     {
+        //remove
         public static Vec3 CalculateForceForTranslation(GameEntity parent, GameEntity child, MatrixFrame childInitialFrame, MatrixFrame prevChildGlobalFrame, MatrixFrame prevParentFrame, float dt)
         {
             //dt = Math.Min(Math.Max(dt, 0.006f),0.2f);
@@ -71,7 +72,7 @@ namespace ScenePhysicsImplementer
             return force;
             
         }
-
+        //remove
         public static List<Tuple<Vec3, Vec3>> CalculateForceCouplesForHinge(GameEntity parent, GameEntity child, ObjectPropertiesLib objLib, MatrixFrame childInitialFrame, MatrixFrame prevChildGlobalFrame, MatrixFrame prevParentFrame, Vec3 hingeOrientation, Vec3 hingeRotation, float hingePower, float dt)
         {
             //dt = Math.Min(Math.Max(dt, 0.006f), 0.2f);
@@ -168,7 +169,7 @@ namespace ScenePhysicsImplementer
             return forceCouples;
         }
 
-
+        //remove
         public static List<Tuple<Vec3, Vec3>> CalculateForceCouplesForLockedRotation(GameEntity parent, GameEntity child, ObjectPropertiesLib objLib, MatrixFrame childInitialFrame, MatrixFrame prevChildGlobalFrame, float dt)
         {
             MatrixFrame parentFrame = parent.GetFrame();
@@ -291,7 +292,7 @@ namespace ScenePhysicsImplementer
             if (angle < -pi) return Math.Abs(angle + 2*pi);
             return angle;
         }
-
+        //remove
         public static MatrixFrame AdjustFrameForCOM(MatrixFrame frame, Vec3 centerOfMass)
         {
             Mat3 rot = frame.rotation;

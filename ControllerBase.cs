@@ -12,13 +12,13 @@ namespace ScenePhysicsImplementer
     public abstract class ControllerBase : UsableMissionObject
     {
         public Vec3 UseLocationOffset = Vec3.Zero;
-        public Vec3 UserLookDirection = Vec3.Zero;
+        public Vec3 UseLookDirection = Vec3.Zero;
         public bool ShowEditorHelpers = true;
         public string DescriptionText = "";
         public Vec2 movementInputVector { get; private set; }
 
-        private Vec3 targetUserLocation;
-        private Vec3 targetUserLookDirection;
+        public Vec3 targetUseLocation { get; private set; }
+        public Vec3 targetUseLookDirection { get; private set; }
 
         public abstract ActionIndexCache SetUserAnimation();
 
@@ -76,36 +76,32 @@ namespace ScenePhysicsImplementer
             if (UserAgent != null)
             {
                 movementInputVector = UserAgent.MovementInputVector;
-                SetUserAgentFrame();
+                if (LockUserFrames) SetUserAgentFrame(UserAgent);
             }
         }
 
-        public virtual void SetUserAgentFrame()
+        public virtual void SetUserAgentFrame(Agent agent)
         {
-            if (LockUserFrames)
-            {
-                UpdateUserTargetFrame();
-                UserAgent.TeleportToPosition(targetUserLocation);
-                UserAgent.SetTargetPositionAndDirection(GameEntity.GlobalPosition.AsVec2, targetUserLookDirection);
-            }
+            UpdateUserTargetFrame(UseLocationOffset, UseLookDirection);
+            agent.TeleportToPosition(targetUseLocation);
+            agent.SetTargetPositionAndDirection(GameEntity.GlobalPosition.AsVec2, targetUseLookDirection);
         }
 
-        private void UpdateUserTargetFrame()
+        public void UpdateUserTargetFrame(Vec3 localOffsetPos, Vec3 localOffsetDir)
         {
             Mat3 parentEntityMat = GameEntity.GetGlobalFrame().rotation;
             parentEntityMat.MakeUnit();
 
-            targetUserLocation = GameEntity.GlobalPosition + parentEntityMat.TransformToParent(UseLocationOffset);
+            targetUseLocation = GameEntity.GlobalPosition + parentEntityMat.TransformToParent(localOffsetPos);
 
-            parentEntityMat.ApplyEulerAngles(UserLookDirection * (float)MathLib.DegtoRad);
-            targetUserLookDirection = parentEntityMat.f;
-            
+            parentEntityMat.ApplyEulerAngles(localOffsetDir * (float)MathLib.DegtoRad);
+            targetUseLookDirection = parentEntityMat.f;
         }
 
         public virtual void RenderEditorHelpers()
         {
-            UpdateUserTargetFrame();
-            MBDebug.RenderDebugDirectionArrow(targetUserLocation, targetUserLookDirection, Colors.Magenta.ToUnsignedInteger());
+            UpdateUserTargetFrame(UseLocationOffset, UseLookDirection);
+            MBDebug.RenderDebugDirectionArrow(targetUseLocation, targetUseLookDirection, Colors.Magenta.ToUnsignedInteger());
         }
     }
 }

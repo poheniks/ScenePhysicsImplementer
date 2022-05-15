@@ -72,13 +72,12 @@ namespace ScenePhysicsImplementer
             return sphereRadius;
         }
 
-
-        public static MatrixFrame AdjustGlobalFrameForCOM(MatrixFrame frame, Vec3 centerOfMass)
+        public static MatrixFrame LocalOffsetAndNormalizeGlobalFrame(MatrixFrame frame, Vec3 localOffset)
         {
             frame.rotation.MakeUnit();
             Mat3 rot = frame.rotation;
             //frame.origin += rot.TransformToParent(centerOfMass);
-            frame.origin += rot.s * centerOfMass.x + rot.f * centerOfMass.y + rot.u * centerOfMass.z;
+            frame.origin += rot.s * localOffset.x + rot.f * localOffset.y + rot.u * localOffset.z;
             return frame;
         }
 
