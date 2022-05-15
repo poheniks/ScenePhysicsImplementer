@@ -11,6 +11,7 @@ namespace ScenePhysicsImplementer
     {
         public SimpleButton SetNoCollideFlagForStaticChildObjects;
         public bool SetPhysicsBodyAsSphere = false;
+        public bool RemoveMissilesOnCollision = true;
         public bool DisableGravity = false;
         public bool DisableAllCollisions = false;
         public float LinearDamping = 1.0f;
@@ -21,7 +22,9 @@ namespace ScenePhysicsImplementer
         public Vec3 MoI { get; private set; }
         public float mass { get; private set; }
         public Vec3 physObjCoM { get; private set; }  //always in object's local coordinate system, but never scaled with object
-        public List<PhysicsMaterial> physicsMaterialsRemovedOnCollision { get; private set; }
+
+        [EditorVisibleScriptComponentVariable(false)]
+        public List<PhysicsMaterial> physicsMaterialsRemovedOnCollision;
 
         public override TickRequirement GetTickRequirement()
         {
@@ -59,7 +62,7 @@ namespace ScenePhysicsImplementer
 
             physObject.EnableDynamicBody();
             physObject.SetBodyFlags(BodyFlags.Dynamic);
-            physObject.SetDamping(LinearDamping, AngularDamping);
+            physObject.SetDamping(LinearDamping, AngularDamping);   //damping set through physics engine api - should be tuned last since objects will begin to appear unrealistically heavy
 
             physObjProperties = new ObjectPropertiesLib(physObject);
             MoI = physObjProperties.principalMomentsOfInertia;
@@ -95,7 +98,7 @@ namespace ScenePhysicsImplementer
                 PhysicsContactPair contactPair = contact[i];
                 for (int j = 0; j < contactPair.NumberOfContacts; j++)
                 {
-                    CheckAndRemoveMissilesAfterCollision(contactPair[j]);
+                    if (RemoveMissilesOnCollision) CheckAndRemoveMissilesAfterCollision(contactPair[j]);
                 }
             }
         }
@@ -115,8 +118,8 @@ namespace ScenePhysicsImplementer
                 GameEntity missile;
                 Scene.RayCastForClosestEntityOrTerrain(contact.Position, contact.Normal * 1f + contact.Position, out rayDistance, out missile, rayThickness: 0.1f, excludeBodyFlags: BodyFlags.Dynamic | BodyFlags.DynamicConvexHull);
                 if (missile == null) return;
-                if (!missile.BodyFlag.HasFlag(BodyFlags.DroppedItem)) return;
-                missile.SetGlobalFrame(MatrixFrame.Zero);
+                if (!missile.BodyFlag.HasFlag(BodyFlags.DroppedItem)) return;   //additional check to verify raycasted entity is a missile object
+                missile.SetGlobalFrame(MatrixFrame.Zero);   //deleting or removing physics from missiles crashes game - suspect it is related to how the Mission class handles missiles
             }
         }
     }
