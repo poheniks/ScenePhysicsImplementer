@@ -73,7 +73,7 @@ namespace ScenePhysicsImplementer
 
             if (torqueSign != prevTorqueSign && (angularDisplacement > (float)Math.PI*0.95f | angularDisplacement < -(float)Math.PI*0.95f))
             {
-                //MathLib.DebugMessage("flip");
+                //this is possibly unstable (in terms of constraint stability, not code execution), but have not run into issues yet
                 prevTorqueVector *= -1;
             }
             Vec3 constraintTorque = ConstraintLib.VectorPID(torqueVector, prevTorqueVector, dt, kPStatic * kP, kDStatic * kD);
@@ -87,7 +87,9 @@ namespace ScenePhysicsImplementer
 
     public class SCE_ConstraintHinge : SCE_ConstraintSpherical
     {
+        //editor fields
         public Vec3 HingeRotationAxis = Vec3.Zero;
+
 
         [EditorVisibleScriptComponentVariable(false)]
         public Vec3 HingeTurnDegrees { get; set; }
@@ -104,6 +106,7 @@ namespace ScenePhysicsImplementer
         {
             base.InitializePhysics();
             initialHingeRotation = HingeRotationAxis;
+            SetHingeRotationAxis(HingeRotationAxis);
         }
 
         public override Vec3 CalculateConstraintTorque(float dt)
@@ -148,21 +151,31 @@ namespace ScenePhysicsImplementer
 
         private void TurnHinge(Vec3 turnDegrees)
         {
-            //sets hinge orientation after scene init
+            //dynamically sets hinge direction for controller scripts
             turnDegrees *= (float)MathLib.DegtoRad;
 
             targetRotatedMat.ApplyEulerAngles(turnDegrees);
             targetFreeAxis = targetRotatedMat.f;
         }
 
+        protected override void OnEditorVariableChanged(string variableName)
+        {
+            base.OnEditorVariableChanged(variableName);
+        }
+
         public override void RenderEditorHelpers()
         {
             base.RenderEditorHelpers();
             SetHingeRotationAxis(HingeRotationAxis);
-            //show rotation axis
+            //show rotation axis direction and position
             MBDebug.RenderDebugDirectionArrow(physObjGlobalFrame.origin, physObjFreeAxis, Colors.Green.ToUnsignedInteger());
             MBDebug.RenderDebugLine(physObjGlobalFrame.origin, -physObjFreeAxis, Colors.Green.ToUnsignedInteger());
         }
 
+        public override void DisplayHelpText()
+        {
+            base.DisplayHelpText();
+            MathLib.HelpText(nameof(HingeRotationAxis), "Sets the rotation axis of the hinge");
+        }
     }
 }

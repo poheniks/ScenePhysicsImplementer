@@ -21,11 +21,10 @@ namespace ScenePhysicsImplementer
 
         public Vec3 principalMomentsOfInertia;   //(pitch, roll, yaw) in terms of object's local coordinate system
 
-        public ObjectPropertiesLib(GameEntity v_physObject)
+        public ObjectPropertiesLib(GameEntity physObject)
         {
-            physObject = v_physObject;
-
-            mass = physObject.Mass;
+            this.physObject = physObject;
+            mass = this.physObject.Mass;
             FindPrincipalMoI();
         }
 
@@ -33,6 +32,8 @@ namespace ScenePhysicsImplementer
         {
             //simplified principle moments of inertia (MoI) based on bounding box, about geometric center
             //http://mechanicsmap.psu.edu/websites/centroidtables/centroids3D/centroids3D.html
+
+            //gets bounding box, including child entities - go off of scene editor bounding box; will result in unrealistically high MoI if the bounding box gets stretched by phantom child entities (like an emptyEntity)
             Vec3 max = physObject.GetBoundingBoxMax();
             Vec3 min = physObject.GetBoundingBoxMin();
 
@@ -76,18 +77,18 @@ namespace ScenePhysicsImplementer
         {
             frame.rotation.MakeUnit();
             Mat3 rot = frame.rotation;
-            //frame.origin += rot.TransformToParent(centerOfMass);
-            frame.origin += rot.s * localOffset.x + rot.f * localOffset.y + rot.u * localOffset.z;
+            frame.origin += rot.s * localOffset.x + rot.f * localOffset.y + rot.u * localOffset.z;  //may need to change to: frame.origin += rot.TransformToParent(localOffset);
             return frame;
         }
 
+
+
         /*
          * overly complicated MoI calculations - use a simplified MoI calc for now
-         * current design plan is to hinge constraints about center of mass - if uncentered hinges are required, a full inertia tensor may be required to stabilize the PID gain (similar to mass for translation control)
+         * current design plan is to hinge constraints about center of mass - a full inertia tensor may be required to stabilize the PID gain for uncentered hinges 
         private void FindInertiaTensorAboutCoM()
         {
-            //maybe convert to a PhysicsShape.GetTriangles methodology later - need a way to convert hollow to solid volumes
-            //need to convert from Ixx, Iyy, Izz principal axes to full inertia tensor: https://ocw.mit.edu/courses/aeronautics-and-astronautics/16-07-dynamics-fall-2009/lecture-notes/MIT16_07F09_Lec26.pdf; https://www.youtube.com/watch?v=-chgCHuEI4Y
+            //https://ocw.mit.edu/courses/aeronautics-and-astronautics/16-07-dynamics-fall-2009/lecture-notes/MIT16_07F09_Lec26.pdf; https://www.youtube.com/watch?v=-chgCHuEI4Y
 
             Vec3 max = physObject.GetBoundingBoxMax();
             Vec3 min = physObject.GetBoundingBoxMin();

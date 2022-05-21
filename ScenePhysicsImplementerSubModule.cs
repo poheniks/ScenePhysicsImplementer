@@ -66,7 +66,7 @@ namespace ScenePhysicsImplementer
 
         protected override void OnTickOccasionally(float currentFrameDeltaTime)
         {
-            base.OnTickOccasionally(currentFrameDeltaTime);
+            base.OnTickOccasionally(currentFrameDeltaTime); //can probably execute the following code on OnInit(). This script only ticks once
             AttachDynamicNavMesh();
             SetScriptComponentToTick(TickRequirement.None);
         }
@@ -151,6 +151,7 @@ namespace ScenePhysicsImplementer
         }
     }
 
+    //not intended to be extendable - just used for code development & testing
     public class ScenePhysicsEditorMissionBehavior : MissionLogic
     {
         //needs cleanup
@@ -163,6 +164,8 @@ namespace ScenePhysicsImplementer
         private GameEntity targetEntity;
         private MatrixFrame unscaledTargetFrame;
         float collisionDistance;
+
+
 
         public override void OnMissionTick(float dt)
         {
@@ -179,13 +182,17 @@ namespace ScenePhysicsImplementer
 
             isAttemptingToManipulate = Input.IsKeyDown(InputKey.LeftMouseButton);
 
+            if (Input.IsKeyPressed(InputKey.F4))
+            { 
+
+            }
+
             if (Input.IsKeyPressed(InputKey.F3)) DebugNavMeshFaceID();
 
             if (!togglePhysicsControl) return;
             OnTogglePhysicsManipulate();
- 
-          
         }
+
 
         private void DebugNavMeshFaceID()
         {
@@ -263,7 +270,7 @@ namespace ScenePhysicsImplementer
         {
             
             if (targetEntity == null) return null;
-            if (targetEntity.HasScriptOfType<PhysicsObject>()) return targetEntity;
+            if (targetEntity.HasScriptOfType<SCE_PhysicsObject>()) return targetEntity;
             else
             {
                 GameEntity parent = targetEntity.Parent;

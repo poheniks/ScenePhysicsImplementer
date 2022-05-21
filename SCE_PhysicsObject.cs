@@ -1,282 +1,142 @@
-﻿using System;
-using TaleWorlds.MountAndBlade;
-using TaleWorlds.Engine;
-using TaleWorlds.Localization;
+﻿using TaleWorlds.Engine;
 using TaleWorlds.Library;
-using TaleWorlds.Core;
-using TaleWorlds.InputSystem;
-using TaleWorlds.GauntletUI.PrefabSystem;
+using TaleWorlds.MountAndBlade;
 using System.Collections.Generic;
-using System.Linq;
+using System.Reflection;
+using System;
 
 namespace ScenePhysicsImplementer
 {
-    /* NOTES
-
-     */
-
-    public class SCE_PhysicsObject : UsableMachine
+    public class SCE_PhysicsObject : ScriptComponentBehavior  
     {
+        //editor fields
+        public bool SetPhysicsBodyAsSphere = false;
+        public bool RemoveMissilesOnCollision = true;
+        public bool DisableGravity = false;
+        public bool DisableAllCollisions = false;
+        public float LinearDamping = 1.0f;
+        public float AngularDamping = 1.0f;
+        public SimpleButton SetNoCollideFlagForStaticChildObjects;
+        public SimpleButton ShowHelpText;   //for formatting purposes in the scene editor, place buttons as the last fields
 
-        public bool isParent = false;
-        public bool isUsable = false;
-        public bool enableGravity = false;
-        public bool hingeConstraint = false;
-        public bool isDriveHinge = false;
-        public bool isSteerHinge = false;
-        public bool testCase = false;
+        public GameEntity physObject { get; private set; }
+        public ObjectPropertiesLib physObjProperties { get; private set; }
+        public Vec3 MoI { get; private set; }
+        public float mass { get; private set; }
+        public Vec3 physObjCoM { get; private set; }  //always in object's local coordinate system, but never scaled with object
 
-        private GameEntity physObject;
-        private bool parentInitialized;
-        private List<GameEntity> childPhysObjects = new List<GameEntity>();
-        private bool firstTick = false;
-
-        //child & parent fields
-        List<ConstraintSet> constraintSets = new List<ConstraintSet>();
-
-        //child fields
-        GameEntity parentObject;
-        SCE_PhysicsObject parentScript; 
-        bool childToParentInitialized;
-        MatrixFrame initialFrame;
-
-        private Scene scene;
-
-        //test vehicles
-        private bool isVehicleValid = false;
-        private bool hasActiveDriver = false;
+        [EditorVisibleScriptComponentVariable(false)]
+        public List<PhysicsMaterial> physicsMaterialsRemovedOnCollision;
 
         public override TickRequirement GetTickRequirement()
         {
-            return ScriptComponentBehavior.TickRequirement.TickParallel;
+            return TickRequirement.Tick;
         }
-
-        public override string GetDescriptionText(GameEntity gameEntity = null)
-        {
-            return new TextObject("Object Base", null).ToString();
-        }
-
-        public override TextObject GetActionTextForStandingPoint(UsableMissionObject usableGameObject)
-        {
-            return new TextObject("Pilot", null);
-        }
-        //descriptor overrides
-
         protected override void OnEditorInit()
         {
             base.OnEditorInit();
-            physObject = base.GameEntity;
-            scene = physObject.Scene;
-        }
-
-        protected override void OnEditorVariableChanged(string variableName)
-        {
-            base.OnEditorVariableChanged(variableName);
-    
-        }
-
-        protected override void OnEditorTick(float dt)
-        {
-            base.OnEditorTick(dt);
+            InitializeScene();
         }
 
         protected override void OnInit()
         {
             base.OnInit();
-            base.SetScriptComponentToTick(this.GetTickRequirement());
+            InitializeScene();
+            InitializePhysics();
+            InitializePhysicsMaterialTypesOnCollision();
+        }
 
+        public virtual void InitializeScene()
+        {
             physObject = base.GameEntity;
-            scene = physObject.Scene;
+            mass = physObject.Mass;
+            UpdateCenterOfMass();
+        }
 
-            if (NavMeshPrefabName.Length > 0) AttachDynamicNavmeshToEntity();   //enables dynamic nav meshing
+        public void UpdateCenterOfMass()
+        {
+            physObjCoM = physObject.CenterOfMass;  //does NOT return CoM vector lengths scaled to child matrix frames - CoM vector lengths always global
+        }
 
-            if (isParent) ParentInit();
-            if (!enableGravity) physObject.DisableGravity();
-            if (isUsable) VehicleInit();
+        public virtual void InitializePhysics()
+        {
+            if (SetPhysicsBodyAsSphere) ObjectPropertiesLib.SetPhysicsAsSphereBody(physObject);
 
+            physObject.EnableDynamicBody();
+            physObject.SetBodyFlags(BodyFlags.Dynamic);
+            physObject.SetDamping(LinearDamping, AngularDamping);   //damping set through physics engine api - should be tuned last since objects will begin to appear unrealistically heavy
+
+            physObjProperties = new ObjectPropertiesLib(physObject);
+            MoI = physObjProperties.principalMomentsOfInertia;
+            physObject.SetMassSpaceInertia(MoI);    //simplify mass moments of inertia to a cubic volume based on entity bounding box
+
+            if (DisableGravity) physObject.DisableGravity();
+            if (DisableAllCollisions) physObject.SetBodyFlags(BodyFlags.CommonCollisionExcludeFlagsForAgent & ~BodyFlags.Disabled);
+        }
+
+        protected override void OnEditorVariableChanged(string variableName)
+        {
+            base.OnEditorVariableChanged(variableName);
+            if (variableName == nameof(SetNoCollideFlagForStaticChildObjects)) SetDynamicConvexFlags();
+            if (variableName == nameof(ShowHelpText)) DisplayHelpText();
+        }
+
+        private void SetDynamicConvexFlags()
+        {
+            foreach (GameEntity child in physObject.GetChildren())
+            {
+                IEnumerable<ScriptComponentBehavior> scriptComponentBehaviors = child.GetScriptComponents();
+                IEnumerator<ScriptComponentBehavior> script = scriptComponentBehaviors.GetEnumerator();
+                script.MoveNext();
+                if (script.Current != null) continue;   //only set static child objects to no-collide
+                child.AddBodyFlags(BodyFlags.DynamicConvexHull);    
+            }
         }
 
         protected override void OnPhysicsCollision(ref PhysicsContact contact)
         {
-            //unused for now
-        }
-
-        protected override void OnTickParallel(float dt)
-        {
-            if (!firstTick && (isParent | (!isParent && parentInitialized)))
+            base.OnPhysicsCollision(ref contact);
+            for(int i = 0; i < contact.NumberOfContactPairs; i++)
             {
-                GameEntityPhysicsExtensions.SetDamping(physObject, 1.1f, 1.1f);
-                ObjectPropertiesLib objLib = new ObjectPropertiesLib(physObject);
-                Vec3 prinMoI = objLib.principalMomentsOfInertia;
-                //prinMoI = Vec3.One * 500f;
-                GameEntityPhysicsExtensions.SetMassSpaceInertia(physObject, prinMoI); //MoI axes: (x, y, z) = (s, f, u)
-
-                firstTick = true;
-            }
-            //for child objects
-            if (!isParent && childToParentInitialized)
-            {
-                ChildTickPositioning();
-                foreach (ConstraintSet constraint in constraintSets)
+                PhysicsContactPair contactPair = contact[i];
+                for (int j = 0; j < contactPair.NumberOfContacts; j++)
                 {
-                    constraint.TickConstraint(dt);
+                    if (RemoveMissilesOnCollision) CheckAndRemoveMissilesAfterCollision(contactPair[j]);
                 }
             }
-            if (isParent && isVehicleValid) TickVehicle();
-
-            if (testCase)
-            {
-                
-                Vec3 cforce = new Vec3(0, 0, 0);
-                Vec3 pForce = new Vec3(0, 1, 0);
-                Vec3 tForce = new Vec3(0, 1, 0);
-
-                Vec3 torque = new Vec3(0, 10, 0);
-                MatrixFrame orgFrame = physObject.GetGlobalFrame();
-                MatrixFrame adjGlobalFrame = physObject.GetGlobalFrame();
-                Vec3 CoM = physObject.CenterOfMass * 1f;
-
-                adjGlobalFrame = ConstraintLib.AdjustFrameForCOM(adjGlobalFrame, CoM);
-                adjGlobalFrame.rotation.MakeUnit();
-                
-                Vec3 scale = physObject.GetGlobalScale();
-                //CoM = SCEMath.VectorMultiplyComponents(CoM, physObject.GetGlobalScale());
-                
-
-                Tuple<Vec3, Vec3> forceCouple = ConstraintLib.GenerateGlobalForceCoupleFromGlobalTorque(adjGlobalFrame, torque);
-                Vec3 forcePos = forceCouple.Item1;
-                Vec3 forceDir = forceCouple.Item2;
-
-                forcePos = new Vec3(0, 1, 0);
-                forceDir = orgFrame.rotation.u * 10f;
-                Vec3 offset = new Vec3(0, 1f, 0);
-
-                if (isParent) 
-                {
-
-                }
-                if (!isParent && childToParentInitialized)
-                {
-
-                }
-
-            }
         }
 
-        private void ParentInit()
+        public virtual void InitializePhysicsMaterialTypesOnCollision()
         {
-            IEnumerable<GameEntity> children = physObject.GetChildren();
-            foreach (GameEntity child in children)
-            {
-                SCE_PhysicsObject childBase = (SCE_PhysicsObject)child.GetFirstScriptOfType(this.GetType());
-                if (childBase == null) continue;
-                if (childBase != null)
-                {
-                    if (childBase.isParent) continue;
-                }
-
-                MathLib.DebugMessage("has type " + child.GetOldPrefabName());
-
-                float sphereRadius = ObjectPropertiesLib.CalculateSphereBodyForObject(child);
-                Vec3 unscaledCenterOfMass = MathLib.VectorMultiplyComponents(child.CenterOfMass, MathLib.VectorInverseComponents(child.GetGlobalScale()));
-
-                child.RemovePhysics();
-                child.AddSphereAsBody(unscaledCenterOfMass, sphereRadius*1f, BodyFlags.BodyOwnerEntity);
-                child.EnableDynamicBody();
-                child.SetBodyFlags(BodyFlags.BodyOwnerEntity);
-
-                MatrixFrame childFrame = child.GetFrame();
-
-                childBase.parentObject = physObject;
-                childBase.initialFrame = childFrame;
-                childBase.parentScript = this;
-                childBase.childToParentInitialized = true;
-                childPhysObjects.Add(child);
-
-                if (childBase.testCase) continue;
-
-                ConstraintSet baseConstraint = new ConstraintSet(physObject, child);
-                if (!childBase.hingeConstraint) baseConstraint.AddWeld(childFrame);
-                else baseConstraint.AddHinge(childFrame);
-
-                constraintSets.Add(baseConstraint);
-                childBase.constraintSets.Add(baseConstraint);
-            }
-
-            //ghost = GameEntity.CreateEmpty(scene);
-            //ghost.AddPhysics(physObject.Mass, physObject.CenterOfMass, physObject.GetBodyShape(), Vec3.Zero, Vec3.Zero, physObject.GetBodyShape().GetDominantMaterialForTriangleMesh(0), true, 0);
-            //physObject.AddChild(ghost);
-
-            physObject.EnableDynamicBody();
-            physObject.SetBodyFlags(BodyFlags.Dynamic | BodyFlags.Moveable | BodyFlags.BodyOwnerEntity);
-
-            parentInitialized = true;
+            physicsMaterialsRemovedOnCollision = new List<PhysicsMaterial>();
+            physicsMaterialsRemovedOnCollision.Add(PhysicsMaterial.GetFromName("missile"));
+            physicsMaterialsRemovedOnCollision.Add(PhysicsMaterial.GetFromName("wood_weapon"));
         }
 
-        private void ChildInit()
+        private void CheckAndRemoveMissilesAfterCollision(PhysicsContactInfo contact)
         {
-            
-
+            if (physicsMaterialsRemovedOnCollision.Contains(contact.PhysicsMaterial1))
+            {
+                float rayDistance;
+                GameEntity missile;
+                Scene.RayCastForClosestEntityOrTerrain(contact.Position, contact.Normal * 1f + contact.Position, out rayDistance, out missile, rayThickness: 0.1f, excludeBodyFlags: BodyFlags.Dynamic | BodyFlags.DynamicConvexHull);
+                if (missile == null) return;
+                if (!missile.BodyFlag.HasFlag(BodyFlags.DroppedItem)) return;   //additional check to verify raycasted entity is a missile object
+                missile.SetGlobalFrame(MatrixFrame.Zero);   //deleting or removing physics from missiles crashes game - suspect it is related to how the Mission class handles missiles
+            }
         }
-        
-        private void ChildTickPositioning()
+
+
+        public virtual void DisplayHelpText()
         {
-            MatrixFrame testFrame = initialFrame;
-            MatrixFrame globalFrame = parentObject.GetFrame().TransformToParent(testFrame);
-
-            Quaternion frameQuat = globalFrame.rotation.ToQuaternion();
-            Quaternion rotQuat = MathLib.CreateQuaternionFromTWEulerAngles(new Vec3(0f,0f,0f) * (float)MathLib.DegtoRad);
-            Quaternion newRotation = MathLib.QuaternionMultiply(rotQuat, frameQuat);
-
-            Mat3 frameRot = newRotation.ToMat3;
-            globalFrame.rotation = frameRot;
-
-            int setAng = 2;
-
-            if (setAng == 1)
-            {
-                physObject.SetGlobalFrame(globalFrame);
-                //physObject.DisableDynamicBodySimulation();
-            }
-            //else if (setAng == 2) physObject.EnableDynamicBody();
+            MathLib.HelpText(nameof(SetNoCollideFlagForStaticChildObjects), "Adds the body flag Convex to all child entities without a script component. " +
+    "Physics objects with the Convex body flag will still collide with Convex objects");
+            MathLib.HelpText(nameof(AngularDamping), "Sets engine-level damping for rotational motion. Can stablize constraints, but will lead to unrealistic motion");
+            MathLib.HelpText(nameof(LinearDamping), "Sets engine-level damping for translational motion. Can stablize constraints, but will lead to unrealistic motion");
+            MathLib.HelpText(nameof(DisableAllCollisions), "Updates physics object body flags to disable all types of collision except with the terrain");
+            MathLib.HelpText(nameof(DisableGravity), "Disables gravitational forces from the physics object");
+            MathLib.HelpText(nameof(RemoveMissilesOnCollision), "Removes arrows, javelins, etc that stick to the physics object and cause unrealistic collision physics");
+            MathLib.HelpText(nameof(SetPhysicsBodyAsSphere), "Changes physics collision body to a spherical body, with a diameter encompassing the object bounding box. Use for wheels");
         }
-
-        private void VehicleInit()
-        {
-            isVehicleValid = PilotStandingPoint != null;
-            if (isVehicleValid) Activate();
-        }
-        private void TickVehicle()
-        {
-            if (PilotAgent == null) return;
-
-            List<SCE_PhysicsObject> driveHinges = new List<SCE_PhysicsObject>();
-            List<SCE_PhysicsObject> steerHinges = new List<SCE_PhysicsObject>();
-            if (childPhysObjects.Count > 0)
-            {
-                foreach (GameEntity childObj in childPhysObjects)
-                {
-                    SCE_PhysicsObject objBase = childObj.GetFirstScriptOfType<SCE_PhysicsObject>();
-                    if (objBase != null)
-                    {
-                        if (objBase.isDriveHinge) driveHinges.Add(objBase);
-                        if (objBase.isSteerHinge) steerHinges.Add(objBase);
-                    }
-                }
-            }
-            Vec2 control = PilotAgent.MovementInputVector;
-
-            foreach (SCE_PhysicsObject drive in driveHinges)
-            {
-                drive.constraintSets.FirstOrDefault().hingePower = -control.y * 3f;
-                physObject.ApplyLocalForceToDynamicBody(physObject.CenterOfMass, Vec3.Up * -Math.Abs(control.y) * 1f);
-            }
-            foreach (SCE_PhysicsObject steer in steerHinges)
-            {
-                steer.constraintSets.FirstOrDefault().hingeRotation = new Vec3(0,0,35f*(float)MathLib.DegtoRad)*-control.x;
-            }
-            
-        }
-
     }
 }
