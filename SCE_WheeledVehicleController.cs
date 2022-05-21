@@ -8,9 +8,10 @@ using TaleWorlds.Engine;
 
 namespace ScenePhysicsImplementer
 {
+    //
     public class SCE_WheeledVehicleController : ControllerBase
     {
-        //editor exposed variables
+        //editor fields
         public ControllerAnimations DriverAnimation = ControllerAnimations.None;
         public string SteerHingeTag = "";
         public string DriveHingeTag = "";
@@ -21,6 +22,7 @@ namespace ScenePhysicsImplementer
         public float SteerSmoothing = 1f;
         public float DriveTorqueSmoothing = 1f;
         //
+
         [EditorVisibleScriptComponentVariable(false)]
         public List<SCE_ConstraintHinge> steerHinges;
         [EditorVisibleScriptComponentVariable(false)]
@@ -33,13 +35,11 @@ namespace ScenePhysicsImplementer
         private bool hasDriveHinges = false;
 
         private static readonly ActionIndexCache actionSitting = ActionIndexCache.Create("act_sit_1");
-        private static readonly ActionIndexCache actionStanding = ActionIndexCache.Create("act_usage_ballista_idle_attacker");
 
         public enum ControllerAnimations
         {
             None = 0,
             Sitting = 1,
-            Standing = 2
         }
 
         public override void Initialize()
@@ -56,8 +56,6 @@ namespace ScenePhysicsImplementer
                     return ActionIndexCache.act_none;
                 case ControllerAnimations.Sitting:
                     return actionSitting;
-                case ControllerAnimations.Standing:
-                    return actionStanding;
                 default:
                     return ActionIndexCache.act_none;
             }
@@ -91,14 +89,10 @@ namespace ScenePhysicsImplementer
 
             float step = (dt / SteerSmoothing);
             if (step == 0) return;
-            if (inputDir != 0)
-            {
-                step *= inputDir;
-            }
-            else
-            {
-                step *= Math.Sign(-curPercent);
-            }
+
+            if (inputDir != 0) step *= inputDir;
+            else step *= Math.Sign(-curPercent);
+            
             float newPercent = curPercent + step;
             MathLib.ClampFloat(ref newPercent, -1f, 1f);
 
@@ -145,6 +139,18 @@ namespace ScenePhysicsImplementer
                 Vec3 dir = hinge.physObject.GlobalPosition - GameEntity.GlobalPosition;
                 MBDebug.RenderDebugLine(GameEntity.GlobalPosition, dir, color);
             }
+        }
+
+        public override void DisplayHelpText()
+        {
+            base.DisplayHelpText();
+            MathLib.HelpText(nameof(DriveTorqueSmoothing), "Adjusts how quickly or slowly torque is increased. Value is the time, in seconds, to apply max torque");
+            MathLib.HelpText(nameof(SteerSmoothing), "Adjusts how quickly or slowly steer angle changes. Value is the time, in seconds, to achieve max steer angle");
+            MathLib.HelpText(nameof(DriveTorque), "Changes the amount of power applied to drive wheels");
+            MathLib.HelpText(nameof(SteerAngle), "Changes the max steer angle of steerable wheels");
+            MathLib.HelpText(nameof(DriveHingeTag), $"Tag for finding drive wheel entities. Drive wheel entities must be assigned this tag and the script component {nameof(SCE_ConstraintHinge)}");
+            MathLib.HelpText(nameof(SteerHingeTag), $"Tag for finding steerable wheel entities. Steerable wheel entities must be assigned this tag and the script component { nameof(SCE_ConstraintHinge)}");
+            MathLib.HelpText(nameof(DriverAnimation), "Sets the animation for the user");
         }
     }
 }

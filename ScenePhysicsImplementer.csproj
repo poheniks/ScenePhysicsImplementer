@@ -261,12 +261,10 @@
   <ItemGroup>
     <Compile Include="ConstraintBase.cs" />
     <Compile Include="ConstraintLib.cs" />
-    <Compile Include="ConstraintSet.cs" />
     <Compile Include="ConstraintTypes.cs" />
     <Compile Include="ControllerBase.cs" />
-    <Compile Include="PhysicsObject.cs" />
-    <Compile Include="SCE_ChariotController.cs" />
     <Compile Include="SCE_PhysicsObject.cs" />
+    <Compile Include="SCE_ChariotController.cs" />
     <Compile Include="MathLib.cs" />
     <Compile Include="ScenePhysicsImplementerSubModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

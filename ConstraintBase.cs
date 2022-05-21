@@ -10,15 +10,16 @@ using TaleWorlds.MountAndBlade;
 namespace ScenePhysicsImplementer
 {
     //DO EVERYTHING IN GLOBAL COORDINATES (but not actually everything)
-    public abstract class ConstraintBase : PhysicsObject
+    public abstract class ConstraintBase : SCE_PhysicsObject
     {
-        //scene editor exposed fields
+        //editor fields
         public string ConstrainingObjectTag = "";
         public bool ShowEditorHelpers = true;
         public bool ShowForceDebugging = false;
         public bool DisableParentReaction = false;
         public float kP = 1f;
         public float kD = 1f;
+
 
         public float kPStatic { get; set; } = 50f;  
         public float kDStatic { get; set; } = 2f;
@@ -30,20 +31,11 @@ namespace ScenePhysicsImplementer
 
         //constraining object
         public GameEntity constrainingObject { get; private set; }
-        public PhysicsObject constrainingObjectPhysics { get; private set; }
+        public SCE_PhysicsObject constrainingObjectPhysics { get; private set; }
         public ObjectPropertiesLib constrainingObjProperties { get; private set; }
 
         public MatrixFrame targetInitialLocalFrame { get; private set; } //only local frame; used as a frame reference to the constraining object, initialized during scene init
 
-        //frames for current tick
-        /*
-        private MatrixFrame _constrainingObjGlobalFrame;
-        private MatrixFrame _physObjGlobalFrame;
-        private MatrixFrame _targetGlobalFrame;
-        public MatrixFrame constrainingObjGlobalFrame { get { return _constrainingObjGlobalFrame; } private set { _constrainingObjGlobalFrame = value; } }
-        public MatrixFrame physObjGlobalFrame { get { return _physObjGlobalFrame; } private set { _physObjGlobalFrame = value; } }
-        public MatrixFrame targetGlobalFrame { get { return _targetGlobalFrame; } private set { _targetGlobalFrame = value; } }
-        */
         public MatrixFrame constrainingObjGlobalFrame { get; private set; }
         public MatrixFrame physObjGlobalFrame { get; private set; }
         public MatrixFrame targetGlobalFrame { get; private set; }
@@ -86,7 +78,7 @@ namespace ScenePhysicsImplementer
             base.InitializePhysics();
             if (!isValid) return;
             
-            constrainingObjectPhysics = constrainingObject.GetFirstScriptOfType<PhysicsObject>();
+            constrainingObjectPhysics = constrainingObject.GetFirstScriptOfType<SCE_PhysicsObject>();
             constrainingObjProperties = constrainingObjectPhysics.physObjProperties;
 
             if (!physObject.HasBody() | !constrainingObject.HasBody())
@@ -210,9 +202,9 @@ namespace ScenePhysicsImplementer
                 return;
             }
 
-            if (!constrainingObject.HasScriptOfType<PhysicsObject>())
+            if (!constrainingObject.HasScriptOfType<SCE_PhysicsObject>())
             {
-                constrainingObject.CreateAndAddScriptComponent(nameof(PhysicsObject));
+                constrainingObject.CreateAndAddScriptComponent(nameof(SCE_PhysicsObject));
                 MathLib.DebugMessage("Added PhysicsObject script to constraining object", isImportantInfo: true);
             }
 
@@ -222,7 +214,11 @@ namespace ScenePhysicsImplementer
         protected override void OnEditorVariableChanged(string variableName)
         {
             base.OnEditorVariableChanged(variableName);
-            if (variableName == nameof(ConstrainingObjectTag)) FindConstrainingObject();
+            if (variableName == nameof(ConstrainingObjectTag))
+            {
+                FindConstrainingObject();
+                if (isValid) InitializeFrames();
+            }
         }
 
         protected override void OnEditorTick(float dt)
@@ -271,6 +267,18 @@ namespace ScenePhysicsImplementer
             MBDebug.RenderDebugLine(thisOrigin, dir, Colors.Magenta.ToUnsignedInteger());
             MBDebug.RenderDebugBoxObject(constrainingObject.GlobalBoxMin, constrainingObject.GlobalBoxMax, Colors.Magenta.ToUnsignedInteger());
 
+        }
+
+        public override void DisplayHelpText()
+        {
+            base.DisplayHelpText();
+            MathLib.HelpText(nameof(ConstraintOffset), "Changes the location where the constraint is attached and where constraint forces are applied");
+            MathLib.HelpText(nameof(kD), "Damping gain for constraint forces. Higher values increase constraint stiffness. Recommend using similar values for kP and kD. See PID control systems for more info");
+            MathLib.HelpText(nameof(kP), "Proportional gain for constraint forces. Higher values increase constraint stiffness. Recommend using similar values for kP and kD. See PID control systems for more info");
+            MathLib.HelpText(nameof(DisableParentReaction), "Disables forces to the constraining object");
+            MathLib.HelpText(nameof(ShowForceDebugging), "Renders arrows representing forces and force directions. Only appears in game");
+            MathLib.HelpText(nameof(ShowEditorHelpers), "Renders lines & arrows to the constraining object, objects' center of mass, hinge axis, etc. Only appears in editor");
+            MathLib.HelpText(nameof(ConstrainingObjectTag), $"Tag for the target entity that this entity is constrained to. The target entity must be assigned this tag and the script component {nameof(SCE_PhysicsObject)}");
         }
     }
 }

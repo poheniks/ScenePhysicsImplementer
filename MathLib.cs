@@ -8,6 +8,8 @@ using TaleWorlds.Library;
 
 namespace ScenePhysicsImplementer
 {
+    //math functions and a few MBDebug helpers
+    //matrix functions aren't currently used but i'm not deleting them because it took forever to write. Actually most functions in here aren't used
     public static class MathLib
     {
         public static double DegtoRad
@@ -267,6 +269,16 @@ namespace ScenePhysicsImplementer
         public static float Resultant(float a, float b)
         {
             return (float)Math.Sqrt(Math.Pow(a, 2) + Math.Pow(b, 2));
+        }
+
+        public static void HelpText(string name, string description, bool showAsError = false)
+        {
+            if (showAsError)
+            {
+                MBDebug.ShowError($"{name}: {description}");
+                return;
+            }
+            MBDebug.ShowWarning($"{name}: {description}");
         }
 
         public static void DebugMessage(string message, bool isError = false, bool isImportantInfo = false)

@@ -6,18 +6,18 @@ using TaleWorlds.MountAndBlade;
 
 namespace ScenePhysicsImplementer
 {
+    //code is fairly messy for this scriptComponent. Could possibly abstract the class out to be used as a base for dynamically attaching & instantiating constraints - doesn't need to be horse/chariot related 
     class SCE_ChariotController : ControllerBase
     {
-        public string ChariotLeadTag = "";
-        public string ChariotStandingPosTag = "";
+        //editor fields
+        public string ChariotDrawBarTag = "";
         public float kP = 1f;
         public float kD = 1f;
 
-        public GameEntity chariotLeadObj { get; private set; }
+
+        public GameEntity chariotDrawBarObj { get; private set; }
         public Agent horseAgent { get; private set; }
         public SCE_ConstraintSpherical chariotConstraint { get; private set; }
-
-        private static readonly ActionIndexCache actionSitting = ActionIndexCache.Create("act_sit_1");
 
         public override bool DisableCombatActionsOnUse => false;
 
@@ -39,20 +39,23 @@ namespace ScenePhysicsImplementer
         public override void SetUserAgentFrame(Agent agent)
         {
             base.SetUserAgentFrame(agent);
-            agent.ClearTargetFrame();
+            
+            agent.ClearTargetFrame();   //clear target frame after teleporting agent to give agent free movement again
         }
 
         public override void OnUse(Agent userAgent)
         {
-            base.OnUse(userAgent);
+            //base.OnUse(userAgent);
+            userAgent.SetActionChannel(0, SetUserAnimation(), ignorePriority: true);
             LockUserFrames = false;
+            LockUserPositions = false;
             if (userAgent.HasMount) horseAgent = userAgent.MountAgent;
-            if (horseAgent != null & chariotLeadObj != null)
+            if (horseAgent != null & chariotDrawBarObj != null)
             {
                 isFrameAfterAgentTeleport = false;
                 SetUserAgentFrame(horseAgent);
 
-                if (chariotConstraint == null) AttachConstraintToChariotLead();
+                if (chariotConstraint == null) AttachConstraintToChariotDrawBar();
             }
             
         }
@@ -61,7 +64,7 @@ namespace ScenePhysicsImplementer
         {
             base.OnUseStopped(userAgent, isSuccessful, preferenceIndex);
             horseAgent = null;
-            if (chariotLeadObj != null && chariotConstraint != null)
+            if (chariotDrawBarObj != null && chariotConstraint != null)
             {
                 chariotConstraint.DynamicallySetConstrainingObjectAsAgent(null);
             }
@@ -84,31 +87,31 @@ namespace ScenePhysicsImplementer
         protected override void OnInit()
         {
             base.OnInit();
-            SetChariotLeadEntity();
+            SetChariotDrawBarEntity();
         }
 
-        private void SetChariotLeadEntity()
+        private void SetChariotDrawBarEntity()
         {
-            chariotLeadObj = Scene.FindEntityWithTag(ChariotLeadTag);
-            if (chariotLeadObj == null) MathLib.DebugMessage("No chariot lead entity found. Check ChariotLeadTag: " + ChariotLeadTag, isError: true);
+            chariotDrawBarObj = Scene.FindEntityWithTag(ChariotDrawBarTag);
+            if (chariotDrawBarObj == null) MathLib.DebugMessage($"No chariot drawbar entity found. Check {nameof(ChariotDrawBarTag)}: " + ChariotDrawBarTag, isError: true);
         }
 
         protected override void OnEditorVariableChanged(string variableName)
         {
             base.OnEditorVariableChanged(variableName);
-            if (variableName == nameof(ChariotLeadTag)) SetChariotLeadEntity();
+            if (variableName == nameof(ChariotDrawBarTag)) SetChariotDrawBarEntity();
         }
 
         public override void RenderEditorHelpers()
         {
             base.RenderEditorHelpers();
-            if (chariotLeadObj != null)
+            if (chariotDrawBarObj != null)
             {
                 Vec3 basePos = base.GameEntity.GlobalPosition;
-                Vec3 leadPos = chariotLeadObj.GlobalPosition;
+                Vec3 drawBarPos = chariotDrawBarObj.GlobalPosition;
 
-                MBDebug.RenderDebugSphere(chariotLeadObj.GlobalPosition, 0.05f, Colors.Magenta.ToUnsignedInteger());
-                MBDebug.RenderDebugLine(basePos, leadPos-basePos, Colors.Magenta.ToUnsignedInteger());
+                MBDebug.RenderDebugSphere(chariotDrawBarObj.GlobalPosition, 0.05f, Colors.Magenta.ToUnsignedInteger());
+                MBDebug.RenderDebugLine(basePos, drawBarPos-basePos, Colors.Magenta.ToUnsignedInteger());
                 MBDebug.RenderDebugDirectionArrow(targetUseLocation, targetUseLookDirection, Colors.Magenta.ToUnsignedInteger());
             }
         }
@@ -120,25 +123,25 @@ namespace ScenePhysicsImplementer
             Mat3 horseUnscaledMat = horseAgentUnscaledGlobalFrame.rotation;
 
 
-            Vec3 horseToLeadOffset = horseAgent.GetChestGlobalPosition() - targetUseLocation;
-            horseToLeadOffset = horseUnscaledMat.TransformToLocal(horseToLeadOffset);
+            Vec3 horseToDrawBarOffset = horseAgent.GetChestGlobalPosition() - targetUseLocation;
+            horseToDrawBarOffset = horseUnscaledMat.TransformToLocal(horseToDrawBarOffset);
 
             chariotConstraint.ShowForceDebugging = true;
 
             chariotConstraint.kP = this.kP;
             chariotConstraint.kD = this.kD;
 
-            chariotConstraint.ConstraintOffset = UseLocationOffset;
-            chariotConstraint.ConstrainingObjectLocalOffset = horseToLeadOffset;
+            chariotConstraint.ConstraintOffset = UserLocationOffset;
+            chariotConstraint.ConstrainingObjectLocalOffset = horseToDrawBarOffset;
 
             chariotConstraint.DynamicallySetConstrainingObjectAsAgent(horseAgent);
         }
 
-        private void AttachConstraintToChariotLead()
+        private void AttachConstraintToChariotDrawBar()
         {
 
-            chariotLeadObj.CreateAndAddScriptComponent(nameof(SCE_ConstraintSpherical));
-            IEnumerable<SCE_ConstraintSpherical> constraints = chariotLeadObj.GetScriptComponents<SCE_ConstraintSpherical>();
+            chariotDrawBarObj.CreateAndAddScriptComponent(nameof(SCE_ConstraintSpherical));
+            IEnumerable<SCE_ConstraintSpherical> constraints = chariotDrawBarObj.GetScriptComponents<SCE_ConstraintSpherical>();
             //loop through constraints to find the newly created, unset constraint
             foreach(SCE_ConstraintSpherical constraint in constraints)
             {
@@ -148,5 +151,12 @@ namespace ScenePhysicsImplementer
             }
         }
 
+        public override void DisplayHelpText()
+        {
+            base.DisplayHelpText();
+            MathLib.HelpText(nameof(kD), "Damping gain for constraint forces between horse & chariot draw bar. Higher values increase constraint stiffness. Recommend using similar values for kP and kD. See PID control systems for more info");
+            MathLib.HelpText(nameof(kP), "Proportional gain for constraint forces between horse & chariot draw bar. Higher values increase constraint stiffness. Recommend using similar values for kP and kD. See PID control systems for more info");
+            MathLib.HelpText(nameof(ChariotDrawBarTag), "Tag for finding the chariot draw bar entity, which attaches to the horse agent. The draw bar entity must be assigned this tag");
+        }
     }
 }
