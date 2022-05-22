@@ -263,6 +263,7 @@
     <Compile Include="ConstraintLib.cs" />
     <Compile Include="ConstraintTypes.cs" />
     <Compile Include="ControllerBase.cs" />
+    <Compile Include="SCE_MultiBodyNavMeshLoader.cs" />
     <Compile Include="SCE_PhysicsObject.cs" />
     <Compile Include="SCE_ChariotController.cs" />
     <Compile Include="MathLib.cs" />

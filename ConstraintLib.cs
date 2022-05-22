@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using System.Collections.Generic;
@@ -33,6 +34,14 @@ namespace ScenePhysicsImplementer
             if ( cur < -1 ) return invCurAxis;
             return curAxis;
         }
+        public static MatrixFrame LocalOffsetAndNormalizeGlobalFrame(MatrixFrame frame, Vec3 localOffset)
+        {
+            frame.rotation.MakeUnit();
+            Mat3 rot = frame.rotation;
+            frame.origin += rot.s * localOffset.x + rot.f * localOffset.y + rot.u * localOffset.z;  //may need to change to: frame.origin += rot.TransformToParent(localOffset);
+            return frame;
+        }
+
 
         //i am very proud of this, even if it is mathematically simple :)
         public static Tuple<Vec3,Vec3> GenerateGlobalForceCoupleFromGlobalTorque(MatrixFrame globalFrame, Vec3 torque)

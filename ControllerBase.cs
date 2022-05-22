@@ -24,11 +24,13 @@ namespace ScenePhysicsImplementer
         public Vec3 targetUseLocation { get; private set; }
         public Vec3 targetUseLookDirection { get; private set; }
 
+        private bool editorInitialized = false;
+
         public abstract ActionIndexCache SetUserAnimation();
 
         public override TickRequirement GetTickRequirement()
         {
-            return TickRequirement.TickParallel;
+            return TickRequirement.Tick;
         }
 
         public override string GetDescriptionText(GameEntity gameEntity = null)
@@ -38,6 +40,7 @@ namespace ScenePhysicsImplementer
 
         protected override void OnEditorVariableChanged(string variableName)
         {
+            if (!editorInitialized) return;
             base.OnEditorVariableChanged(variableName);
             if (variableName == nameof(ShowHelpText)) DisplayHelpText();
         }
@@ -77,12 +80,13 @@ namespace ScenePhysicsImplementer
         protected override void OnEditorTick(float dt)
         {
             base.OnEditorTick(dt);
+            if (!editorInitialized) editorInitialized = true;
             if (GameEntity.IsSelectedOnEditor() && ShowEditorHelpers) RenderEditorHelpers(); 
         }
 
-        protected override void OnTickParallel(float dt)
+        protected override void OnTick(float dt)
         {
-            base.OnTickParallel(dt);
+            base.OnTick(dt);
             if (UserAgent != null)
             {
                 movementInputVector = UserAgent.MovementInputVector;
@@ -112,6 +116,7 @@ namespace ScenePhysicsImplementer
         {
             UpdateUserTargetFrame(UserLocationOffset, UserLookDirection);
             MBDebug.RenderDebugDirectionArrow(targetUseLocation, targetUseLookDirection, Colors.Magenta.ToUnsignedInteger());
+            MBDebug.RenderDebugText3D(targetUseLocation + targetUseLookDirection, "User Pos & Dir", screenPosOffsetX: 15, screenPosOffsetY: -10);
         }
 
         public virtual void DisplayHelpText()

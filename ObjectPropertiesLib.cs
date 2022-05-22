@@ -2,6 +2,7 @@
 using TaleWorlds.Library;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
+using TaleWorlds.MountAndBlade;
 using System.Collections.Generic;
 
 namespace ScenePhysicsImplementer
@@ -73,15 +74,21 @@ namespace ScenePhysicsImplementer
             return sphereRadius;
         }
 
-        public static MatrixFrame LocalOffsetAndNormalizeGlobalFrame(MatrixFrame frame, Vec3 localOffset)
+        public static GameEntity FindClosestTaggedEntity(GameEntity physObject, string tag)
         {
-            frame.rotation.MakeUnit();
-            Mat3 rot = frame.rotation;
-            frame.origin += rot.s * localOffset.x + rot.f * localOffset.y + rot.u * localOffset.z;  //may need to change to: frame.origin += rot.TransformToParent(localOffset);
-            return frame;
+            IEnumerable<GameEntity> taggedEntities = physObject.Scene.FindEntitiesWithTag(tag);
+            GameEntity closestEntity = null;
+            Vec3 thisPos = physObject.GlobalPosition;
+            float distance = 10000f;
+            foreach (GameEntity taggedEntity in taggedEntities)
+            {
+                float deltaDistance = taggedEntity.GlobalPosition.Distance(thisPos);
+                if (distance > deltaDistance) closestEntity = taggedEntity;
+                distance = deltaDistance;
+            }
+
+            return closestEntity;
         }
-
-
 
         /*
          * overly complicated MoI calculations - use a simplified MoI calc for now

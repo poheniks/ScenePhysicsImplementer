@@ -13,6 +13,7 @@ namespace ScenePhysicsImplementer
     {
         //editor fields
         public ControllerAnimations DriverAnimation = ControllerAnimations.None;
+        public float SearchDistanceForHinges = 10f;
         public string SteerHingeTag = "";
         public string DriveHingeTag = "";
 
@@ -66,9 +67,9 @@ namespace ScenePhysicsImplementer
             base.OnEditorTick(dt);
         }
 
-        protected override void OnTickParallel(float dt)
+        protected override void OnTick(float dt)
         {
-            base.OnTickParallel(dt);
+            base.OnTick(dt);
             if (hasSteerHinges)
             {
                 UpdateInputPercentage(ref steerPercent, movementInputVector.x, dt);
@@ -103,7 +104,7 @@ namespace ScenePhysicsImplementer
         protected override void OnEditorVariableChanged(string variableName)
         {
             base.OnEditorVariableChanged(variableName);
-            if (variableName == nameof(SteerHingeTag) | variableName == nameof(DriveHingeTag)) SetControllableHinges();
+            if (variableName == nameof(SteerHingeTag) | variableName == nameof(DriveHingeTag) | variableName == nameof(SearchDistanceForHinges)) SetControllableHinges();
         }
 
         private void SetControllableHinges()
@@ -118,6 +119,7 @@ namespace ScenePhysicsImplementer
             IEnumerable<GameEntity> taggedEntities = Scene.FindEntitiesWithTag(tag);
             foreach(GameEntity entity in taggedEntities)
             {
+                if (SearchDistanceForHinges < entity.GlobalPosition.Distance(this.GameEntity.GlobalPosition)) continue; //if entity is too far away, ignore 
                 if (entity.HasScriptOfType<SCE_ConstraintHinge>()) list.Add(entity.GetFirstScriptOfType<SCE_ConstraintHinge>());
             }
             if (list.Count > 0) return true;
@@ -127,17 +129,24 @@ namespace ScenePhysicsImplementer
         public override void RenderEditorHelpers()
         {
             base.RenderEditorHelpers();
-            if (hasSteerHinges) RenderControlledHinges(steerHinges, Colors.Green.ToUnsignedInteger());
-            if (hasDriveHinges) RenderControlledHinges(driveHinges, Colors.Blue.ToUnsignedInteger());
+            if (hasSteerHinges) RenderControlledHinges(steerHinges, Colors.Green.ToUnsignedInteger(), "Steerable wheel");
+            if (hasDriveHinges) RenderControlledHinges(driveHinges, Colors.Blue.ToUnsignedInteger(), "Driving wheel");
+
+            MBDebug.RenderDebugSphere(this.GameEntity.GlobalPosition, SearchDistanceForHinges, Colors.Black.ToUnsignedInteger(), true);
+            MBDebug.RenderDebugText3D(this.GameEntity.GlobalPosition + Vec3.Up*SearchDistanceForHinges, "Hinge search envelope");
         }
 
-        private void RenderControlledHinges(List<SCE_ConstraintHinge> hinges, uint color)
+        private void RenderControlledHinges(List<SCE_ConstraintHinge> hinges, uint color, string adjectiveText)
         {
             foreach (SCE_ConstraintHinge hinge in hinges)
             {
                 if (hinge.physObject == null) continue;
                 Vec3 dir = hinge.physObject.GlobalPosition - GameEntity.GlobalPosition;
-                MBDebug.RenderDebugLine(GameEntity.GlobalPosition, dir, color);
+                MBDebug.RenderDebugLine(this.GameEntity.GlobalPosition, dir, color);
+
+                int yOffset = -10;
+                if (hinges == driveHinges) yOffset = 10;
+                MBDebug.RenderDebugText3D(hinge.GameEntity.GlobalPosition, adjectiveText, screenPosOffsetX: 15, screenPosOffsetY: yOffset);
             }
         }
 
@@ -150,6 +159,7 @@ namespace ScenePhysicsImplementer
             MathLib.HelpText(nameof(SteerAngle), "Changes the max steer angle of steerable wheels");
             MathLib.HelpText(nameof(DriveHingeTag), $"Tag for finding drive wheel entities. Drive wheel entities must be assigned this tag and the script component {nameof(SCE_ConstraintHinge)}");
             MathLib.HelpText(nameof(SteerHingeTag), $"Tag for finding steerable wheel entities. Steerable wheel entities must be assigned this tag and the script component { nameof(SCE_ConstraintHinge)}");
+            MathLib.HelpText(nameof(SearchDistanceForHinges), "Max distance that steerable and drive wheel entities can be located. Any entity exceeding this distance will not be controlled");
             MathLib.HelpText(nameof(DriverAnimation), "Sets the animation for the user");
         }
     }

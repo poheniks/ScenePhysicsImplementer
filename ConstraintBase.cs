@@ -14,11 +14,10 @@ namespace ScenePhysicsImplementer
     {
         //editor fields
         public string ConstrainingObjectTag = "";
-        public bool ShowEditorHelpers = true;
         public bool ShowForceDebugging = false;
         public bool DisableParentReaction = false;
-        public float kP = 1f;
-        public float kD = 1f;
+        public float ConstraintStiffness = 1f;
+        public Vec3 PDGain = new Vec3(1f, 1f, 1f);
 
 
         public float kPStatic { get; set; } = 50f;  
@@ -28,6 +27,8 @@ namespace ScenePhysicsImplementer
 
         [EditorVisibleScriptComponentVariable(false)]
         public Vec3 ConstrainingObjectLocalOffset { get; set; }  //for dynamic changes - local to constrainingObject coordinate system
+
+        public virtual string constraintAdjective { get; set; } //for 3D editor help text
 
         //constraining object
         public GameEntity constrainingObject { get; private set; }
@@ -50,6 +51,7 @@ namespace ScenePhysicsImplementer
         public bool firstFrame { get; private set; } = true;
         
         public bool isValid { get; private set; }
+
         public override TickRequirement GetTickRequirement()
         {
             return TickRequirement.Tick;
@@ -116,13 +118,12 @@ namespace ScenePhysicsImplementer
 
         public void UpdateCurrentFrames()
         {
-
             //set & normalize current frames for debug renders
             physObjOriginGlobalFrame = physObject.GetGlobalFrame();
             constraintObjOriginGlobalFrame = constrainingObject.GetGlobalFrame();
             //unscale original object frames - calling MakeUnit() directly doesn't seem to work??
-            physObjOriginGlobalFrame = ObjectPropertiesLib.LocalOffsetAndNormalizeGlobalFrame(physObjOriginGlobalFrame, Vec3.Zero);
-            constraintObjOriginGlobalFrame = ObjectPropertiesLib.LocalOffsetAndNormalizeGlobalFrame(constraintObjOriginGlobalFrame, Vec3.Zero);
+            physObjOriginGlobalFrame = ConstraintLib.LocalOffsetAndNormalizeGlobalFrame(physObjOriginGlobalFrame, Vec3.Zero);
+            constraintObjOriginGlobalFrame = ConstraintLib.LocalOffsetAndNormalizeGlobalFrame(constraintObjOriginGlobalFrame, Vec3.Zero);
 
             //set current frames
             //unscale object frames; everything is in terms of physObj, so adjust this & constraint object frames by this CoM and force offset
@@ -134,8 +135,8 @@ namespace ScenePhysicsImplementer
                 transformedOffsetForConstrainingObject = constraintObjOriginGlobalFrame.rotation.TransformToLocal(worldOffset);
             }
 
-            physObjGlobalFrame = ObjectPropertiesLib.LocalOffsetAndNormalizeGlobalFrame(physObjOriginGlobalFrame, physObjGlobalFrameOffset);
-            constrainingObjGlobalFrame = ObjectPropertiesLib.LocalOffsetAndNormalizeGlobalFrame(constraintObjOriginGlobalFrame, transformedOffsetForConstrainingObject);
+            physObjGlobalFrame = ConstraintLib.LocalOffsetAndNormalizeGlobalFrame(physObjOriginGlobalFrame, physObjGlobalFrameOffset);
+            constrainingObjGlobalFrame = ConstraintLib.LocalOffsetAndNormalizeGlobalFrame(constraintObjOriginGlobalFrame, transformedOffsetForConstrainingObject);
 
             if (firstFrame) return; //targetInitialLocalFrame not initalized yet
             targetGlobalFrame = constrainingObjGlobalFrame.TransformToParent(targetInitialLocalFrame);
@@ -195,7 +196,7 @@ namespace ScenePhysicsImplementer
 
         private void FindConstrainingObject()
         {
-            constrainingObject = physObject.Scene.FindEntityWithTag(ConstrainingObjectTag);
+            constrainingObject = ObjectPropertiesLib.FindClosestTaggedEntity(physObject, ConstrainingObjectTag);
             if (constrainingObject == null)
             {
                 isValid = false;
@@ -221,11 +222,6 @@ namespace ScenePhysicsImplementer
             }
         }
 
-        protected override void OnEditorTick(float dt)
-        {
-            if (ShowEditorHelpers && physObject.IsSelectedOnEditor()) RenderEditorHelpers();
-        }
-
         public virtual void RenderForceDebuggers(Vec3 physObjLocalForcePos, Vec3 constraintObjLocalForcePos, Vec3 forceDir)
         {
             //debug force locations & directions
@@ -242,42 +238,39 @@ namespace ScenePhysicsImplementer
             MBDebug.RenderDebugDirectionArrow(debugConstraintLoc, -forceDir.NormalizedCopy(), Colors.Black.ToUnsignedInteger());
         }
 
-        public virtual void RenderEditorHelpers()
+        public override void RenderEditorHelpers()
         {
+            base.RenderEditorHelpers();
             if (constrainingObject != null && constrainingObject.Scene == null) FindConstrainingObject();
             if (!isValid) return;
 
-            if (physObjCoM != physObject.CenterOfMass)
-            {
-                UpdateCenterOfMass();
-                InitializeFrames();
-            }
+            if (physObjCoM != physObject.CenterOfMass) InitializeFrames();
             UpdateCurrentFrames();
 
-            editorConstrainingObjectGlobalFrame = ObjectPropertiesLib.LocalOffsetAndNormalizeGlobalFrame(constrainingObject.GetGlobalFrame(), constrainingObject.CenterOfMass);
+            editorConstrainingObjectGlobalFrame = ConstraintLib.LocalOffsetAndNormalizeGlobalFrame(constrainingObject.GetGlobalFrame(), constrainingObject.CenterOfMass);
 
             Vec3 thisCoM = physObjOriginGlobalFrame.TransformToParent(physObjCoM);
             Vec3 thisOrigin = physObjGlobalFrame.origin;
             Vec3 constrainingObjOrigin = editorConstrainingObjectGlobalFrame.origin;
             Vec3 dir = constrainingObjOrigin - thisOrigin;
 
-            MBDebug.RenderDebugSphere(thisCoM, 0.05f, Colors.Blue.ToUnsignedInteger());
             MBDebug.RenderDebugSphere(thisOrigin, 0.05f, Colors.Red.ToUnsignedInteger());
             MBDebug.RenderDebugSphere(constrainingObjOrigin, 0.05f, Colors.Magenta.ToUnsignedInteger());
             MBDebug.RenderDebugLine(thisOrigin, dir, Colors.Magenta.ToUnsignedInteger());
             MBDebug.RenderDebugBoxObject(constrainingObject.GlobalBoxMin, constrainingObject.GlobalBoxMax, Colors.Magenta.ToUnsignedInteger());
 
+            MBDebug.RenderDebugText3D(editorConstrainingObjectGlobalFrame.origin, $"{constraintAdjective} to: {constrainingObject.Name}", screenPosOffsetX: 15, screenPosOffsetY: -10);
+            MBDebug.RenderDebugText3D(editorConstrainingObjectGlobalFrame.origin, $"Constraint stiffness: {ConstraintStiffness}", screenPosOffsetX: 15, screenPosOffsetY: 10);
         }
 
         public override void DisplayHelpText()
         {
             base.DisplayHelpText();
             MathLib.HelpText(nameof(ConstraintOffset), "Changes the location where the constraint is attached and where constraint forces are applied");
-            MathLib.HelpText(nameof(kD), "Damping gain for constraint forces. Higher values increase constraint stiffness. Recommend using similar values for kP and kD. See PID control systems for more info");
-            MathLib.HelpText(nameof(kP), "Proportional gain for constraint forces. Higher values increase constraint stiffness. Recommend using similar values for kP and kD. See PID control systems for more info");
+            MathLib.HelpText(nameof(PDGain), "kP, kI, kD gain for PID tuning. Recommend leaving as 1.0. Note kI not implemented, use X and Z");
+            MathLib.HelpText(nameof(ConstraintStiffness), "Controls how rigid the constraint is. Higher values decrease wobbling, but can be unstable if increased too high");
             MathLib.HelpText(nameof(DisableParentReaction), "Disables forces to the constraining object");
             MathLib.HelpText(nameof(ShowForceDebugging), "Renders arrows representing forces and force directions. Only appears in game");
-            MathLib.HelpText(nameof(ShowEditorHelpers), "Renders lines & arrows to the constraining object, objects' center of mass, hinge axis, etc. Only appears in editor");
             MathLib.HelpText(nameof(ConstrainingObjectTag), $"Tag for the target entity that this entity is constrained to. The target entity must be assigned this tag and the script component {nameof(SCE_PhysicsObject)}");
         }
     }

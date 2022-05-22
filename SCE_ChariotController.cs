@@ -11,9 +11,8 @@ namespace ScenePhysicsImplementer
     {
         //editor fields
         public string ChariotDrawBarTag = "";
-        public float kP = 1f;
-        public float kD = 1f;
-
+        public float ConstraintStiffness = 1f;
+        public Vec3 PDGain = new Vec3(1f, 1f, 1f);
 
         public GameEntity chariotDrawBarObj { get; private set; }
         public Agent horseAgent { get; private set; }
@@ -92,7 +91,7 @@ namespace ScenePhysicsImplementer
 
         private void SetChariotDrawBarEntity()
         {
-            chariotDrawBarObj = Scene.FindEntityWithTag(ChariotDrawBarTag);
+            chariotDrawBarObj = ObjectPropertiesLib.FindClosestTaggedEntity(this.GameEntity, ChariotDrawBarTag);
             if (chariotDrawBarObj == null) MathLib.DebugMessage($"No chariot drawbar entity found. Check {nameof(ChariotDrawBarTag)}: " + ChariotDrawBarTag, isError: true);
         }
 
@@ -119,17 +118,14 @@ namespace ScenePhysicsImplementer
         private void SetChariotConstraint()
         {
             GameEntity horseEntity = horseAgent.AgentVisuals.GetEntity();
-            MatrixFrame horseAgentUnscaledGlobalFrame = ObjectPropertiesLib.LocalOffsetAndNormalizeGlobalFrame(horseEntity.GetGlobalFrame(), Vec3.Zero);
+            MatrixFrame horseAgentUnscaledGlobalFrame = ConstraintLib.LocalOffsetAndNormalizeGlobalFrame(horseEntity.GetGlobalFrame(), Vec3.Zero);
             Mat3 horseUnscaledMat = horseAgentUnscaledGlobalFrame.rotation;
-
 
             Vec3 horseToDrawBarOffset = horseAgent.GetChestGlobalPosition() - targetUseLocation;
             horseToDrawBarOffset = horseUnscaledMat.TransformToLocal(horseToDrawBarOffset);
 
-            chariotConstraint.ShowForceDebugging = true;
-
-            chariotConstraint.kP = this.kP;
-            chariotConstraint.kD = this.kD;
+            chariotConstraint.ConstraintStiffness = this.ConstraintStiffness;
+            chariotConstraint.PDGain = this.PDGain;
 
             chariotConstraint.ConstraintOffset = UserLocationOffset;
             chariotConstraint.ConstrainingObjectLocalOffset = horseToDrawBarOffset;
@@ -139,7 +135,6 @@ namespace ScenePhysicsImplementer
 
         private void AttachConstraintToChariotDrawBar()
         {
-
             chariotDrawBarObj.CreateAndAddScriptComponent(nameof(SCE_ConstraintSpherical));
             IEnumerable<SCE_ConstraintSpherical> constraints = chariotDrawBarObj.GetScriptComponents<SCE_ConstraintSpherical>();
             //loop through constraints to find the newly created, unset constraint
@@ -154,8 +149,8 @@ namespace ScenePhysicsImplementer
         public override void DisplayHelpText()
         {
             base.DisplayHelpText();
-            MathLib.HelpText(nameof(kD), "Damping gain for constraint forces between horse & chariot draw bar. Higher values increase constraint stiffness. Recommend using similar values for kP and kD. See PID control systems for more info");
-            MathLib.HelpText(nameof(kP), "Proportional gain for constraint forces between horse & chariot draw bar. Higher values increase constraint stiffness. Recommend using similar values for kP and kD. See PID control systems for more info");
+            MathLib.HelpText(nameof(PDGain), "kP, kI, kD gain for PID tuning. Recommend leaving as 1.0. Note kI not implemented, use X and Z");
+            MathLib.HelpText(nameof(ConstraintStiffness), "Controls how rigid the constraint is. Higher values decrease wobbling, but can be unstable if increased too high");
             MathLib.HelpText(nameof(ChariotDrawBarTag), "Tag for finding the chariot draw bar entity, which attaches to the horse agent. The draw bar entity must be assigned this tag");
         }
     }

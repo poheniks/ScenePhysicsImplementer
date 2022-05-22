@@ -13,6 +13,13 @@ namespace ScenePhysicsImplementer
     public class SCE_ConstraintSpherical : ConstraintBase
     {
         private Vec3 prevDisplacement;
+        public override string constraintAdjective
+        {
+            get { return "Spherical constrained"; }
+            set { }
+        }
+
+
         public override Vec3 CalculateConstraintForce(float dt)
         {
             //force to lock translational movement
@@ -22,10 +29,10 @@ namespace ScenePhysicsImplementer
             kPStatic = 75f;
             kDStatic = 2f;
 
-            Vec3 constraintForce = ConstraintLib.VectorPID(displacement, prevDisplacement, dt, kPStatic * kP, kDStatic * kD);
+            Vec3 constraintForce = ConstraintLib.VectorPID(displacement, prevDisplacement, dt, kPStatic * PDGain.x, kDStatic * PDGain.z);
 
             prevDisplacement = displacement;
-            return constraintForce;
+            return constraintForce * ConstraintStiffness;
         }
 
         public override void RenderForceDebuggers(Vec3 physObjLocalForcePos, Vec3 constraintObjLocalForcePos, Vec3 forceDir)
@@ -43,6 +50,12 @@ namespace ScenePhysicsImplementer
 
     public class SCE_ConstraintWeld : SCE_ConstraintSpherical
     {
+        public override string constraintAdjective
+        {
+            get { return "Welded"; }
+            set { }
+        }
+
         private Vec3 prevTorqueVector;
         private int prevTorqueSign;
         public override Vec3 CalculateConstraintTorque(float dt)
@@ -76,13 +89,12 @@ namespace ScenePhysicsImplementer
                 //this is possibly unstable (in terms of constraint stability, not code execution), but have not run into issues yet
                 prevTorqueVector *= -1;
             }
-            Vec3 constraintTorque = ConstraintLib.VectorPID(torqueVector, prevTorqueVector, dt, kPStatic * kP, kDStatic * kD);
+            Vec3 constraintTorque = ConstraintLib.VectorPID(torqueVector, prevTorqueVector, dt, kPStatic * PDGain.x, kDStatic * PDGain.z);
 
             prevTorqueVector = torqueVector;
             prevTorqueSign = torqueSign;
-            return constraintTorque;
+            return constraintTorque * ConstraintStiffness;
         }
-
     }
 
     public class SCE_ConstraintHinge : SCE_ConstraintSpherical
@@ -90,6 +102,11 @@ namespace ScenePhysicsImplementer
         //editor fields
         public Vec3 HingeRotationAxis = Vec3.Zero;
 
+        public override string constraintAdjective
+        {
+            get { return "Hinged"; }
+            set { }
+        }
 
         [EditorVisibleScriptComponentVariable(false)]
         public Vec3 HingeTurnDegrees { get; set; }
@@ -129,10 +146,10 @@ namespace ScenePhysicsImplementer
             kPStatic = 55f;
             kDStatic = 1f;
 
-            Vec3 constraintTorque = ConstraintLib.VectorPID(torqueVector, prevTorqueVector, dt, kPStatic * kP, kDStatic * kD);
+            Vec3 constraintTorque = ConstraintLib.VectorPID(torqueVector, prevTorqueVector, dt, kPStatic * PDGain.x, kDStatic * PDGain.z);
 
             prevTorqueVector = torqueVector;
-            return constraintTorque;
+            return constraintTorque * ConstraintStiffness;
         }
         public void SetHingeRotationAxis(Vec3 hingeRotationAxis)
         {
@@ -166,10 +183,13 @@ namespace ScenePhysicsImplementer
         public override void RenderEditorHelpers()
         {
             base.RenderEditorHelpers();
+
             SetHingeRotationAxis(HingeRotationAxis);
             //show rotation axis direction and position
             MBDebug.RenderDebugDirectionArrow(physObjGlobalFrame.origin, physObjFreeAxis, Colors.Green.ToUnsignedInteger());
             MBDebug.RenderDebugLine(physObjGlobalFrame.origin, -physObjFreeAxis, Colors.Green.ToUnsignedInteger());
+            
+            MBDebug.RenderDebugText3D(physObjGlobalFrame.origin + physObjFreeAxis, "Rotation axis", screenPosOffsetX: 15, screenPosOffsetY: -10);
         }
 
         public override void DisplayHelpText()

@@ -10,10 +10,11 @@ namespace ScenePhysicsImplementer
     public class SCE_PhysicsObject : ScriptComponentBehavior  
     {
         //editor fields
+        public bool ShowEditorHelpers = true;
         public bool SetPhysicsBodyAsSphere = false;
         public bool RemoveMissilesOnCollision = true;
         public bool DisableGravity = false;
-        public bool DisableAllCollisions = false;
+        public bool ApplyRealisticGravity = false;
         public float LinearDamping = 1.0f;
         public float AngularDamping = 1.0f;
         public SimpleButton SetNoCollideFlagForStaticChildObjects;
@@ -28,6 +29,8 @@ namespace ScenePhysicsImplementer
         [EditorVisibleScriptComponentVariable(false)]
         public List<PhysicsMaterial> physicsMaterialsRemovedOnCollision;
 
+        private bool editorInitialized = false;
+
         public override TickRequirement GetTickRequirement()
         {
             return TickRequirement.Tick;
@@ -35,6 +38,7 @@ namespace ScenePhysicsImplementer
         protected override void OnEditorInit()
         {
             base.OnEditorInit();
+            base.SetScriptComponentToTick(GetTickRequirement());
             InitializeScene();
         }
 
@@ -44,6 +48,19 @@ namespace ScenePhysicsImplementer
             InitializeScene();
             InitializePhysics();
             InitializePhysicsMaterialTypesOnCollision();
+        }
+
+        protected override void OnEditorTick(float dt)
+        {
+            base.OnEditorTick(dt);
+            if (!editorInitialized) editorInitialized = true;
+            if (ShowEditorHelpers && physObject.IsSelectedOnEditor()) RenderEditorHelpers();
+        }
+
+        protected override void OnTick(float dt)
+        {
+            base.OnTick(dt);
+            if (ApplyRealisticGravity) ApplyGravitionalForce();
         }
 
         public virtual void InitializeScene()
@@ -70,12 +87,18 @@ namespace ScenePhysicsImplementer
             MoI = physObjProperties.principalMomentsOfInertia;
             physObject.SetMassSpaceInertia(MoI);    //simplify mass moments of inertia to a cubic volume based on entity bounding box
 
-            if (DisableGravity) physObject.DisableGravity();
-            if (DisableAllCollisions) physObject.SetBodyFlags(BodyFlags.CommonCollisionExcludeFlagsForAgent & ~BodyFlags.Disabled);
+            if (DisableGravity | ApplyRealisticGravity) physObject.DisableGravity();
+        }
+
+        private void ApplyGravitionalForce()
+        {
+            Vec3 gravity = new Vec3(0,0,-9.81f/1f) * mass;
+            physObject.ApplyLocalForceToDynamicBody(physObjCoM, gravity);
         }
 
         protected override void OnEditorVariableChanged(string variableName)
         {
+            if (!editorInitialized) return;
             base.OnEditorVariableChanged(variableName);
             if (variableName == nameof(SetNoCollideFlagForStaticChildObjects)) SetDynamicConvexFlags();
             if (variableName == nameof(ShowHelpText)) DisplayHelpText();
@@ -126,6 +149,22 @@ namespace ScenePhysicsImplementer
             }
         }
 
+        public virtual void RenderEditorHelpers()
+        {
+            UpdateCenterOfMass();
+            MatrixFrame CoMAdjustedGlobalFrame = physObject.GetGlobalFrame();
+            CoMAdjustedGlobalFrame = ConstraintLib.LocalOffsetAndNormalizeGlobalFrame(CoMAdjustedGlobalFrame, physObjCoM);
+            MBDebug.RenderDebugSphere(CoMAdjustedGlobalFrame.origin, 0.05f, Colors.Blue.ToUnsignedInteger());
+            MBDebug.RenderDebugText3D(CoMAdjustedGlobalFrame.origin, $"Mass: {mass}", screenPosOffsetX: 15, screenPosOffsetY: -10);
+
+            if (SetPhysicsBodyAsSphere)
+            {
+                Vec3 max = MathLib.VectorMultiplyComponents(physObject.GetBoundingBoxMax(), physObject.GetGlobalScale());
+                Vec3 min = MathLib.VectorMultiplyComponents(physObject.GetBoundingBoxMin(), physObject.GetGlobalScale());
+                float sphereRadius = MathLib.AverageVectors(new List<Vec3>() { max, min }).Length;
+                MBDebug.RenderDebugSphere(CoMAdjustedGlobalFrame.origin, sphereRadius, Colors.Blue.ToUnsignedInteger(), true);
+            }
+        }
 
         public virtual void DisplayHelpText()
         {
@@ -133,10 +172,11 @@ namespace ScenePhysicsImplementer
     "Physics objects with the Convex body flag will still collide with Convex objects");
             MathLib.HelpText(nameof(AngularDamping), "Sets engine-level damping for rotational motion. Can stablize constraints, but will lead to unrealistic motion");
             MathLib.HelpText(nameof(LinearDamping), "Sets engine-level damping for translational motion. Can stablize constraints, but will lead to unrealistic motion");
-            MathLib.HelpText(nameof(DisableAllCollisions), "Updates physics object body flags to disable all types of collision except with the terrain");
+            MathLib.HelpText(nameof(ApplyRealisticGravity), "Disables regular gravitational forces and applys a more realistic (stronger) gravity");
             MathLib.HelpText(nameof(DisableGravity), "Disables gravitational forces from the physics object");
             MathLib.HelpText(nameof(RemoveMissilesOnCollision), "Removes arrows, javelins, etc that stick to the physics object and cause unrealistic collision physics");
             MathLib.HelpText(nameof(SetPhysicsBodyAsSphere), "Changes physics collision body to a spherical body, with a diameter encompassing the object bounding box. Use for wheels");
+            MathLib.HelpText(nameof(ShowEditorHelpers), "Renders lines & arrows to the constraining object, objects' center of mass, hinge axis, etc. Only appears in editor");
         }
     }
 }
