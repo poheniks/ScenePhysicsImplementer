@@ -34,6 +34,7 @@ namespace ScenePhysicsImplementer
             if ( cur < -1 ) return invCurAxis;
             return curAxis;
         }
+
         public static MatrixFrame LocalOffsetAndNormalizeGlobalFrame(MatrixFrame frame, Vec3 localOffset)
         {
             frame.rotation.MakeUnit();
@@ -42,16 +43,14 @@ namespace ScenePhysicsImplementer
             return frame;
         }
 
-
         //i am very proud of this, even if it is mathematically simple :)
         public static Tuple<Vec3,Vec3> GenerateGlobalForceCoupleFromGlobalTorque(MatrixFrame globalFrame, Vec3 torque)
         {
             Vec3 forcePos = Vec3.Zero;
             Vec3 forceDir = Vec3.Zero;
-            if (!torque.IsNonZero) return Tuple.Create(forcePos, forceDir); //physics break without a zero-check
+            if (!torque.IsNonZero) return Tuple.Create(forcePos, forceDir); //physics will break without a zero-check
 
-            //globalFrame.rotation.MakeUnit();
-            torque = globalFrame.rotation.TransformToLocal(torque);
+            torque = globalFrame.rotation.TransformToLocal(torque); //localize global torque input
 
             //generate torque about entity local rotation (s, f, u)
             //(x, y, z) = (s, f, u)

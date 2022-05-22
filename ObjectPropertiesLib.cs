@@ -39,6 +39,7 @@ namespace ScenePhysicsImplementer
             Vec3 min = physObject.GetBoundingBoxMin();
 
             //adjust for scaling - local bounding box dimensions are not affected by scale
+            //note - GetGlobalScale() returns the object's global scale in terms of its local coordinates
             max = MathLib.VectorMultiplyComponents(max, physObject.GetGlobalScale());
             min = MathLib.VectorMultiplyComponents(min, physObject.GetGlobalScale());
 
@@ -56,33 +57,45 @@ namespace ScenePhysicsImplementer
 
         public static void SetPhysicsAsSphereBody(GameEntity physObject)
         {
-            float sphereRadius = CalculateSphereBodyForObject(physObject);
-            Vec3 unscaledCenterOfMass = MathLib.VectorMultiplyComponents(physObject.CenterOfMass, MathLib.VectorInverseComponents(physObject.GetGlobalScale()));
+            //note - method seems unstable when scaling some objects that are parented; radius is much larger than it should. Wheels work okay, but editor cubes seem to have issues
+            Vec3 objGlobalScale = physObject.GetGlobalScale();
+            float scaleFactor = objGlobalScale[MathLib.IndexOfAbsMinVectorComponent(objGlobalScale)] / objGlobalScale[MathLib.IndexOfAbsMaxVectorComponent(objGlobalScale)];
+
+            float sphereRadius = CalculateSphereBodyRadiusForObject(physObject, getScaled: false);
+            sphereRadius *= scaleFactor;    //inverse scale of sphere radius, because the phys body gets rescaled when initialized anyways
+            Vec3 unscaledCenterOfMass = MathLib.VectorMultiplyComponents(physObject.CenterOfMass, MathLib.VectorInverseComponents(objGlobalScale));
 
             physObject.RemovePhysics();
-            physObject.AddSphereAsBody(unscaledCenterOfMass, sphereRadius * 1f, BodyFlags.BodyOwnerEntity);
+            physObject.AddSphereAsBody(unscaledCenterOfMass, sphereRadius, BodyFlags.BodyOwnerEntity);
             physObject.EnableDynamicBody();
             physObject.SetBodyFlags(BodyFlags.BodyOwnerEntity);
         }
 
-        public static float CalculateSphereBodyForObject(GameEntity physObject)
+        public static float CalculateSphereBodyRadiusForObject(GameEntity physObject, bool getScaled = false)
         {
-            float sphereRadius = MathLib.AverageVectors(new List<Vec3>() { physObject.GetBoundingBoxMax(), physObject.GetBoundingBoxMin() }).Length;
-            Vec3 objGlobalScale = physObject.GetGlobalScale();
-            float scaleFactor = objGlobalScale[MathLib.IndexOfAbsMinVectorComponent(objGlobalScale)] / objGlobalScale[MathLib.IndexOfAbsMaxVectorComponent(objGlobalScale)];
-            sphereRadius *= scaleFactor;
+            Vec3 avgBounds = MathLib.AverageVectors(new List<Vec3>() { physObject.GetBoundingBoxMax(), MathLib.VectorAbs(physObject.GetBoundingBoxMin()) });
+            if (getScaled) avgBounds = MathLib.VectorMultiplyComponents(avgBounds, physObject.GetGlobalScale());
+            float sphereRadius = avgBounds[MathLib.IndexOfAbsMaxVectorComponent(avgBounds)];
+
             return sphereRadius;
         }
 
         public static GameEntity FindClosestTaggedEntity(GameEntity physObject, string tag)
         {
+            //tag system for finding entities breaks when copying or placing saved prefabs due to duplicate tags - this method is only a bandaid and still susceptible to breaking
+            if (tag.Length == 0) return null;
+
             IEnumerable<GameEntity> taggedEntities = physObject.Scene.FindEntitiesWithTag(tag);
             GameEntity closestEntity = null;
+
             Vec3 thisPos = physObject.GlobalPosition;
             float distance = 10000f;
+
             foreach (GameEntity taggedEntity in taggedEntities)
             {
                 float deltaDistance = taggedEntity.GlobalPosition.Distance(thisPos);
+                if(!taggedEntity.IsVisibleIncludeParents()) continue;   //a copy, phantom entity seems to spawn when placing prefabs - check for phantom entities here
+
                 if (distance > deltaDistance) closestEntity = taggedEntity;
                 distance = deltaDistance;
             }
@@ -138,5 +151,5 @@ namespace ScenePhysicsImplementer
             
         }
         */
+        }
     }
-}

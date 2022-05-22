@@ -11,6 +11,7 @@ namespace ScenePhysicsImplementer
 {
     public class SCE_MultiBodyNavMeshLoader : ScriptComponentBehavior
     {
+        public bool ShowEditorHelpers = true;
         public string NavMeshPrefabName = "";
         public SimpleButton LoadNavMeshPrefab;
         public bool CreateChildEmptyEntityReference = false;
@@ -28,10 +29,7 @@ namespace ScenePhysicsImplementer
         {
             if (!editorInitialized) return;
             base.OnEditorVariableChanged(variableName);
-            if (variableName == nameof(LoadNavMeshPrefab))
-            {
-                if (NavMeshPrefabName.Length > 0) Scene.ImportNavigationMeshPrefab(NavMeshPrefabName, 0);
-            }
+            if (variableName == nameof(LoadNavMeshPrefab)) LoadNavMeshIntoSceneEditor();
         }
 
         protected override void OnEditorInit()
@@ -44,7 +42,7 @@ namespace ScenePhysicsImplementer
         {
             base.OnEditorTick(dt);
             if (!editorInitialized) editorInitialized = true;
-            SetScriptComponentToTick(TickRequirement.None);
+            if (ShowEditorHelpers && this.GameEntity.IsSelectedOnEditor()) AttachDynamicNavMesh(loopForEditorHelpers: true);
         }
 
         protected override void OnInit()
@@ -59,8 +57,23 @@ namespace ScenePhysicsImplementer
                 AttachDynamicNavMesh();
             }
         }
+
+        private void LoadNavMeshIntoSceneEditor()
+        {
+            if (NavMeshPrefabName.Length == 0) return;
+            Scene.ImportNavigationMeshPrefab(NavMeshPrefabName, 0);
+            AttachDynamicNavMesh();
+
+            foreach(KeyValuePair<GameEntity, GameEntity> parentChild in parentChildEmptyEntityDict)
+            {
+                GameEntity child = parentChild.Value;
+                child.Remove(0);
+            }
+
+            parentChildEmptyEntityDict.Clear();
+        }
         
-        private void AttachDynamicNavMesh()
+        private void AttachDynamicNavMesh(bool loopForEditorHelpers = false)
         {
             foreach (string tag in GameEntity.Tags)
             {
@@ -107,6 +120,12 @@ namespace ScenePhysicsImplementer
                     continue;
                 }
 
+                if (loopForEditorHelpers)
+                {
+                    RenderEditorHelpers(tag, faceID, faceType, attachingEntity);
+                    continue;
+                }
+
                 //attach mesh
                 if (CreateChildEmptyEntityReference)
                 {
@@ -128,7 +147,7 @@ namespace ScenePhysicsImplementer
                         attachingEntity.AttachNavigationMeshFaces(faceID, false, false, false); //internal mesh face
                         break;
                     case 1:
-                        attachingEntity.AttachNavigationMeshFaces(faceID, true, false, false);  //connecting mesh face
+                        attachingEntity.AttachNavigationMeshFaces(faceID, !attachingEntity.Scene.IsEditorScene(), false, false);  //connecting mesh face; do NOT assign as a connecting mesh if mesh is loaded in scene editor - unstable
                         break;
                     case 2:
                         attachingEntity.AttachNavigationMeshFaces(faceID, false, true, false);  //blocking mesh face
@@ -137,6 +156,36 @@ namespace ScenePhysicsImplementer
                 Scene.SetAbilityOfFacesWithId(faceID, true);
 
             }
+        }
+
+        public void RenderEditorHelpers(string tag, int faceID, int faceType, GameEntity attachingEntity)
+        {
+            string typeOfFace = "INVALID";
+            uint textColor = Colors.White.ToUnsignedInteger();
+            int yOffset = -60;
+            switch(faceType)
+            {
+                case 0:
+                    typeOfFace = "Internal";
+                    yOffset = 0;
+                    break;
+                case 1:
+                    typeOfFace = "Connector";
+                    yOffset = -40;
+                    break;
+                case 2:
+                    typeOfFace = "Blocker";
+                    yOffset = -20;
+                    break;
+            }
+
+            if (typeOfFace == "INVALID") textColor = Colors.Red.ToUnsignedInteger();
+
+            Vec3 centerOfBounds = MathLib.AverageVectors(new List<Vec3>() { attachingEntity.GlobalBoxMin, attachingEntity.GlobalBoxMax });
+
+            MBDebug.RenderDebugBoxObject(attachingEntity.GlobalBoxMin, attachingEntity.GlobalBoxMax, depthCheck: true);
+            MBDebug.RenderDebugText3D(centerOfBounds, $"FaceID: {faceID}|Type: {typeOfFace}", color: textColor, screenPosOffsetX: -100, screenPosOffsetY: yOffset);
+            MBDebug.RenderDebugText3D(centerOfBounds, $"Attaching: {attachingEntity.Name}", color: textColor, screenPosOffsetX: -100, screenPosOffsetY: 20);
         }
     }
 }

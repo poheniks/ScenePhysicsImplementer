@@ -120,6 +120,8 @@ namespace ScenePhysicsImplementer
             foreach(GameEntity entity in taggedEntities)
             {
                 if (SearchDistanceForHinges < entity.GlobalPosition.Distance(this.GameEntity.GlobalPosition)) continue; //if entity is too far away, ignore 
+                if (!entity.IsVisibleIncludeParents()) continue;    //FindEntitiesWithTag seems to pick up phantom copies of objects when placing prefabs
+
                 if (entity.HasScriptOfType<SCE_ConstraintHinge>()) list.Add(entity.GetFirstScriptOfType<SCE_ConstraintHinge>());
             }
             if (list.Count > 0) return true;
@@ -129,6 +131,7 @@ namespace ScenePhysicsImplementer
         public override void RenderEditorHelpers()
         {
             base.RenderEditorHelpers();
+            SetControllableHinges();
             if (hasSteerHinges) RenderControlledHinges(steerHinges, Colors.Green.ToUnsignedInteger(), "Steerable wheel");
             if (hasDriveHinges) RenderControlledHinges(driveHinges, Colors.Blue.ToUnsignedInteger(), "Driving wheel");
 

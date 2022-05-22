@@ -155,13 +155,11 @@ namespace ScenePhysicsImplementer
             MatrixFrame CoMAdjustedGlobalFrame = physObject.GetGlobalFrame();
             CoMAdjustedGlobalFrame = ConstraintLib.LocalOffsetAndNormalizeGlobalFrame(CoMAdjustedGlobalFrame, physObjCoM);
             MBDebug.RenderDebugSphere(CoMAdjustedGlobalFrame.origin, 0.05f, Colors.Blue.ToUnsignedInteger());
-            MBDebug.RenderDebugText3D(CoMAdjustedGlobalFrame.origin, $"Mass: {mass}", screenPosOffsetX: 15, screenPosOffsetY: -10);
+            MBDebug.RenderDebugText3D(CoMAdjustedGlobalFrame.origin, $"Center of Mass: {mass}", screenPosOffsetX: 15, screenPosOffsetY: -30);
 
             if (SetPhysicsBodyAsSphere)
             {
-                Vec3 max = MathLib.VectorMultiplyComponents(physObject.GetBoundingBoxMax(), physObject.GetGlobalScale());
-                Vec3 min = MathLib.VectorMultiplyComponents(physObject.GetBoundingBoxMin(), physObject.GetGlobalScale());
-                float sphereRadius = MathLib.AverageVectors(new List<Vec3>() { max, min }).Length;
+                float sphereRadius = ObjectPropertiesLib.CalculateSphereBodyRadiusForObject(physObject, getScaled: true);
                 MBDebug.RenderDebugSphere(CoMAdjustedGlobalFrame.origin, sphereRadius, Colors.Blue.ToUnsignedInteger(), true);
             }
         }

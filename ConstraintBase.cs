@@ -241,7 +241,7 @@ namespace ScenePhysicsImplementer
         public override void RenderEditorHelpers()
         {
             base.RenderEditorHelpers();
-            if (constrainingObject != null && constrainingObject.Scene == null) FindConstrainingObject();
+            if (constrainingObject == null || (constrainingObject != null && !constrainingObject.IsVisibleIncludeParents())) FindConstrainingObject();    //check for phantom entities - see ObjectPropertiesLib.FindClosestTaggedEntity()
             if (!isValid) return;
 
             if (physObjCoM != physObject.CenterOfMass) InitializeFrames();
@@ -250,17 +250,17 @@ namespace ScenePhysicsImplementer
             editorConstrainingObjectGlobalFrame = ConstraintLib.LocalOffsetAndNormalizeGlobalFrame(constrainingObject.GetGlobalFrame(), constrainingObject.CenterOfMass);
 
             Vec3 thisCoM = physObjOriginGlobalFrame.TransformToParent(physObjCoM);
-            Vec3 thisOrigin = physObjGlobalFrame.origin;
+            Vec3 thisConstraintCenter = physObjGlobalFrame.origin;
             Vec3 constrainingObjOrigin = editorConstrainingObjectGlobalFrame.origin;
-            Vec3 dir = constrainingObjOrigin - thisOrigin;
+            Vec3 dir = constrainingObjOrigin - thisConstraintCenter;
 
-            MBDebug.RenderDebugSphere(thisOrigin, 0.05f, Colors.Red.ToUnsignedInteger());
+            MBDebug.RenderDebugSphere(thisConstraintCenter, 0.05f, Colors.Red.ToUnsignedInteger());
             MBDebug.RenderDebugSphere(constrainingObjOrigin, 0.05f, Colors.Magenta.ToUnsignedInteger());
-            MBDebug.RenderDebugLine(thisOrigin, dir, Colors.Magenta.ToUnsignedInteger());
+            MBDebug.RenderDebugLine(thisConstraintCenter, dir, Colors.Magenta.ToUnsignedInteger());
             MBDebug.RenderDebugBoxObject(constrainingObject.GlobalBoxMin, constrainingObject.GlobalBoxMax, Colors.Magenta.ToUnsignedInteger());
 
             MBDebug.RenderDebugText3D(editorConstrainingObjectGlobalFrame.origin, $"{constraintAdjective} to: {constrainingObject.Name}", screenPosOffsetX: 15, screenPosOffsetY: -10);
-            MBDebug.RenderDebugText3D(editorConstrainingObjectGlobalFrame.origin, $"Constraint stiffness: {ConstraintStiffness}", screenPosOffsetX: 15, screenPosOffsetY: 10);
+            MBDebug.RenderDebugText3D(editorConstrainingObjectGlobalFrame.origin, $"Stiffness: {ConstraintStiffness}", screenPosOffsetX: 15, screenPosOffsetY: 10);
         }
 
         public override void DisplayHelpText()
