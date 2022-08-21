@@ -6,11 +6,12 @@ using TaleWorlds.Library;
 using TaleWorlds.Core;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Localization;
+using TaleWorlds.MountAndBlade.Network.Messages;
 
 namespace ScenePhysicsImplementer
 {
     //probably needs work to be extendable-friendly
-    public abstract class ControllerBase : UsableMissionObject
+    public abstract class ControllerBase : UsableMissionObject 
     {
         //editor fields
         public Vec3 UserLocationOffset = Vec3.Zero;
@@ -53,9 +54,9 @@ namespace ScenePhysicsImplementer
 
         protected override void OnInit()
         {
+            
             base.OnInit();
             Initialize();
-
         }
 
         public override void OnUse(Agent userAgent)
@@ -74,7 +75,7 @@ namespace ScenePhysicsImplementer
 
         public virtual void Initialize()
         {
-            base.SetScriptComponentToTick(this.GetTickRequirement());
+            //base.SetScriptComponentToTick(this.GetTickRequirement());
         }
 
         protected override void OnEditorTick(float dt)

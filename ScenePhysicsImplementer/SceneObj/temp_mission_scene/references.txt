@@ -1,0 +1,27 @@
+26
+mesh arabian_platform_wooden_c
+mesh barrier
+mesh battania_castle_keep_wood_stake_b
+mesh battania_keep_door_case_a
+mesh bd_cart_wheel_b
+mesh editor_cube
+mesh empire_garden_door_a_close
+mesh empire_garden_door_b_close
+mesh empire_garden_door_d_close
+mesh empire_garden_door_e_close
+mesh khuzait_platform_wooden_c
+mesh sturgia_castle_log_a
+mesh wooden_platform_plank_f_column
+prefab attacker_spawn_visual
+prefab battania_castle_keep_wood_stake_b
+prefab mp_spawnpoint
+prefab spawn_visual
+texture cg_50c_5b
+texture ground_grass_c_d
+texture ground_grass_c_h
+texture ground_grass_c_n
+texture ground_grass_c_s
+texture lens_dirt
+texture lens_star
+texture semi_cloudy_2
+texture sun_core2

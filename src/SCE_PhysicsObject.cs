@@ -4,10 +4,11 @@ using TaleWorlds.MountAndBlade;
 using System.Collections.Generic;
 using System.Reflection;
 using System;
+using NetworkMessages.FromServer;
 
 namespace ScenePhysicsImplementer
 {
-    public class SCE_PhysicsObject : ScriptComponentBehavior  
+    public class SCE_PhysicsObject : MissionObject
     {
         //editor fields
         public bool ShowEditorHelpers = true;
@@ -45,6 +46,7 @@ namespace ScenePhysicsImplementer
         protected override void OnInit()
         {
             base.OnInit();
+            if (GameNetwork.IsClient) return;
             InitializeScene();
             InitializePhysics();
             InitializePhysicsMaterialTypesOnCollision();
@@ -60,6 +62,7 @@ namespace ScenePhysicsImplementer
         protected override void OnTick(float dt)
         {
             base.OnTick(dt);
+            if (GameNetwork.IsClient) return;
             if (ApplyRealisticGravity) ApplyGravitionalForce();
         }
 

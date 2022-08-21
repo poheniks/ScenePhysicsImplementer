@@ -1,0 +1,2559 @@
+<?xml version="1.0"?>
+<scene name="temp_mission_scene" version="2">
+	<flora_bounding_rect min="0.000, 0.000" max="0.000, 0.000"/>
+	<levels>
+		<level name="base" mask="1"/>
+	</levels>
+	<environment_properties>
+		<property name="nav_mesh_auto_generated_" value="true"/>
+		<property name="physics_world_min" value="0.000, 0.000"/>
+		<property name="physics_world_max_" value="400.000, 400.000"/>
+		<property name="north_angle" value="0.000"/>
+		<property name="is_indoors" value="false"/>
+		<property name="disable_flora_billboards" value="false"/>
+		<property name="ground_color" value="0.000, 0.000, 0.000"/>
+		<property name="prt_multiplier" value="1.000"/>
+		<property name="prt_point_light_multiplier" value="1.000"/>
+		<property name="fog_start_distance" value="50.000"/>
+		<property name="prt_color_contrast" value="1.000"/>
+		<property name="scene_scale_multiplier" value="1.000"/>
+		<property name="prt_intensity_contrast" value="1.000"/>
+		<property name="prt_fallback_probe_index" value="-1, -1, -1"/>
+		<property name="enforced_color_grade" value=""/>
+		<property name="gi_data_exists" value="false"/>
+		<atmosphere_properties>
+			<property name="atmosphere_name" value="scene_atmosphere"/>
+			<property name="wind" value="1.000, 0.000"/>
+			<property name="scene_fog_falloff_offset" value="0.000"/>
+		</atmosphere_properties>
+		<water_properties version="1">
+			<property name="water_level" value="-100.000"/>
+			<property name="water_strength" value="5.000"/>
+			<property name="water_wind_dependency" value="1.000"/>
+			<property name="water_material" value="water_default"/>
+			<property name="water_shallow_color" value="1.000, 1.000, 1.000"/>
+			<property name="water_deep_color" value="1.000, 1.000, 1.000"/>
+			<property name="water_exists" value="false"/>
+			<property name="place_water_probe" value="true"/>
+		</water_properties>
+		<out_of_bounds_effects_properties>
+			<property name="vignette_color" value="0.000, 0.500, 1.000"/>
+			<property name="vignette_alpha" value="0.000"/>
+		</out_of_bounds_effects_properties>
+	</environment_properties>
+	<entities>
+		<game_entity prefab="mp_spawnpoint">
+			<tags>
+				<tag name="defenderSpawn"/>
+			</tags>
+			<transform position="58.594, 36.222, 0.000" rotation_euler="0.000, 0.000, 0.000"/>
+		</game_entity>
+		<game_entity prefab="mp_spawnpoint">
+			<tags>
+				<tag name="attackerSpawn"/>
+			</tags>
+			<transform position="79.065, 100.877, 0.000" rotation_euler="0.000, 0.000, 0.000"/>
+		</game_entity>
+		<game_entity name="editor_cube" old_prefab_name="editor_cube" mobility="1">
+			<flags>
+				<flag name="record_to_scene_replay" value="true"/>
+			</flags>
+			<transform position="82.416, 39.774, 1.039" rotation_euler="0.000, 0.000, 0.000"/>
+			<physics shape="bo_editor_cube" center_of_mass="0.000, 0.000, 0.500"/>
+			<components>
+				<meta_mesh_component name="editor_cube"/>
+			</components>
+			<scripts>
+				<script name="SCE_ConstraintWeld">
+					<variables>
+						<variable name="ConstrainingObjectTag" value="cube2"/>
+						<variable name="ShowForceDebugging" value="false"/>
+						<variable name="DisableParentReaction" value="false"/>
+						<variable name="ConstraintStiffness" value="1.000"/>
+						<variable name="PDGain" value="1.000, 1.000, 1.000, -1.000"/>
+						<variable name="ConstraintOffset" value="0.000, 0.000, 0.000, -1.000"/>
+						<variable name="ShowEditorHelpers" value="true"/>
+						<variable name="SetPhysicsBodyAsSphere" value="true"/>
+						<variable name="RemoveMissilesOnCollision" value="true"/>
+						<variable name="DisableGravity" value="false"/>
+						<variable name="ApplyRealisticGravity" value="false"/>
+						<variable name="LinearDamping" value="1.000"/>
+						<variable name="AngularDamping" value="1.000"/>
+						<variable name="NavMeshPrefabName" value=""/>
+					</variables>
+				</script>
+			</scripts>
+		</game_entity>
+		<game_entity prefab="mp_spawnpoint">
+			<tags>
+				<tag name="defenderSpawn"/>
+			</tags>
+			<transform position="51.959, 36.024, 0.000" rotation_euler="0.000, 0.000, 0.000"/>
+		</game_entity>
+		<game_entity name="editor_cube" old_prefab_name="editor_cube" mobility="1">
+			<flags>
+				<flag name="record_to_scene_replay" value="true"/>
+			</flags>
+			<transform position="72.743, 39.793, 6.093" rotation_euler="0.000, 0.000, 0.000" scale="2.000, 2.000, 2.000"/>
+			<physics shape="bo_editor_cube" center_of_mass="0.000, 0.000, 1.000"/>
+			<components>
+				<meta_mesh_component name="editor_cube"/>
+			</components>
+			<scripts>
+				<script name="SCE_ConstraintWeld">
+					<variables>
+						<variable name="ConstrainingObjectTag" value="cube1"/>
+						<variable name="ShowForceDebugging" value="false"/>
+						<variable name="DisableParentReaction" value="false"/>
+						<variable name="ConstraintStiffness" value="1.000"/>
+						<variable name="PDGain" value="1.000, 1.000, 1.000, -1.000"/>
+						<variable name="ConstraintOffset" value="0.000, 0.000, 0.000, -1.000"/>
+						<variable name="ShowEditorHelpers" value="true"/>
+						<variable name="SetPhysicsBodyAsSphere" value="false"/>
+						<variable name="RemoveMissilesOnCollision" value="true"/>
+						<variable name="DisableGravity" value="false"/>
+						<variable name="ApplyRealisticGravity" value="false"/>
+						<variable name="LinearDamping" value="1.000"/>
+						<variable name="AngularDamping" value="1.000"/>
+						<variable name="NavMeshPrefabName" value=""/>
+					</variables>
+				</script>
+			</scripts>
+		</game_entity>
+		<game_entity prefab="mp_spawnpoint">
+			<tags>
+				<tag name="defenderSpawn"/>
+			</tags>
+			<transform position="55.548, 36.307, 0.000" rotation_euler="0.000, 0.000, 0.000"/>
+		</game_entity>
+		<game_entity name="thiscube" old_prefab_name="editor_cube" mobility="1">
+			<flags>
+				<flag name="record_to_scene_replay" value="true"/>
+			</flags>
+			<transform position="72.722, 39.775, 1.039" rotation_euler="0.000, 0.000, 0.000" scale="2.000, 2.000, 2.000"/>
+			<physics shape="bo_editor_cube" center_of_mass="0.000, 0.000, 1.000"/>
+			<components>
+				<meta_mesh_component name="editor_cube"/>
+			</components>
+			<scripts>
+				<script name="SCE_ConstraintWeld">
+					<variables>
+						<variable name="ConstrainingObjectTag" value="cube1"/>
+						<variable name="ShowForceDebugging" value="false"/>
+						<variable name="DisableParentReaction" value="false"/>
+						<variable name="ConstraintStiffness" value="1.000"/>
+						<variable name="PDGain" value="1.000, 1.000, 1.000, -1.000"/>
+						<variable name="ConstraintOffset" value="0.000, 0.000, 0.000, -1.000"/>
+						<variable name="ShowEditorHelpers" value="true"/>
+						<variable name="SetPhysicsBodyAsSphere" value="false"/>
+						<variable name="RemoveMissilesOnCollision" value="true"/>
+						<variable name="DisableGravity" value="false"/>
+						<variable name="ApplyRealisticGravity" value="false"/>
+						<variable name="LinearDamping" value="1.000"/>
+						<variable name="AngularDamping" value="1.000"/>
+						<variable name="NavMeshPrefabName" value=""/>
+					</variables>
+				</script>
+			</scripts>
+			<children>
+				<game_entity name="battania_castle_keep_wood_stake_b" old_prefab_name="battania_castle_keep_wood_stake_b" mobility="1">
+					<transform position="0.045, 0.653, 1.602" rotation_euler="0.000, 0.000, 0.000" scale="0.282, 0.500, 0.500"/>
+					<physics shape="bo_battania_castle_keep_wood_stake_b">
+						<body_flags>
+							<body_flag name="dynamic_convex_hull"/>
+						</body_flags>
+					</physics>
+					<components>
+						<meta_mesh_component name="battania_castle_keep_wood_stake_b"/>
+					</components>
+				</game_entity>
+				<game_entity name="battania_castle_keep_wood_stake_b" old_prefab_name="battania_castle_keep_wood_stake_b" mobility="1">
+					<transform position="0.045, 0.653, 0.969" rotation_euler="0.000, 0.000, 0.000" scale="0.282, 0.500, 0.500"/>
+					<physics shape="bo_battania_castle_keep_wood_stake_b">
+						<body_flags>
+							<body_flag name="dynamic_convex_hull"/>
+						</body_flags>
+					</physics>
+					<components>
+						<meta_mesh_component name="battania_castle_keep_wood_stake_b"/>
+					</components>
+				</game_entity>
+				<game_entity prefab="battania_castle_keep_wood_stake_b" mobility="1" _index_="2">
+					<transform position="0.045, 0.653, 0.321" rotation_euler="0.000, 0.000, 0.000" scale="0.282, 0.500, 0.500"/>
+					<physics>
+						<body_flags>
+							<body_flag name="dynamic_convex_hull"/>
+						</body_flags>
+					</physics>
+				</game_entity>
+			</children>
+		</game_entity>
+		<game_entity name="editor_cube" old_prefab_name="editor_cube" mobility="1">
+			<flags>
+				<flag name="record_to_scene_replay" value="true"/>
+			</flags>
+			<tags>
+				<tag name="cube2"/>
+			</tags>
+			<transform position="82.413, 39.773, 2.789" rotation_euler="0.000, 0.000, 0.000"/>
+			<physics shape="bo_editor_cube"/>
+			<components>
+				<meta_mesh_component name="editor_cube"/>
+			</components>
+			<scripts>
+				<script name="SCE_PhysicsObject">
+					<variables>
+						<variable name="ShowEditorHelpers" value="true"/>
+						<variable name="SetPhysicsBodyAsSphere" value="true"/>
+						<variable name="RemoveMissilesOnCollision" value="true"/>
+						<variable name="DisableGravity" value="false"/>
+						<variable name="ApplyRealisticGravity" value="false"/>
+						<variable name="LinearDamping" value="1.000"/>
+						<variable name="AngularDamping" value="1.000"/>
+						<variable name="NavMeshPrefabName" value=""/>
+					</variables>
+				</script>
+			</scripts>
+		</game_entity>
+		<game_entity prefab="spawn_visual">
+			<transform position="44.038, 25.564, 0.963" rotation_euler="0.000, 0.000, 0.000"/>
+			<children>
+				<game_entity _index_="0">
+					<transform position="-3.969, -1.182, -0.963"/>
+				</game_entity>
+				<game_entity _index_="1">
+					<transform position="-2.468, 2.268, -0.963"/>
+				</game_entity>
+				<game_entity _index_="2">
+					<transform position="2.622, -0.157, -0.963"/>
+				</game_entity>
+				<game_entity _index_="3">
+					<transform position="-2.180, -1.822, -0.963"/>
+				</game_entity>
+				<game_entity _index_="4">
+					<transform position="-2.824, -3.409, -0.963"/>
+				</game_entity>
+				<game_entity _index_="5">
+					<transform position="-4.053, 1.637, -0.963"/>
+				</game_entity>
+			</children>
+		</game_entity>
+		<game_entity name="envmap_probe" old_prefab_name="" mobility="1">
+			<visibility_masks>
+				<visibility_mask name="no_shadow" value="true"/>
+				<visibility_mask name="visible_only_when_editing" value="true"/>
+			</visibility_masks>
+			<transform position="20.000, 0.000, 5.000" rotation_euler="0.000, 0.000, 0.000"/>
+			<scripts>
+				<script name="ReflectionCapturer">
+					<variables>
+						<variable name="IsGlobal" value="true"/>
+						<variable name="IsParallaxCorrected" value="false"/>
+						<variable name="AmbientMultiplier" value="1.000"/>
+						<variable name="AttenuationCoef" value="20.000"/>
+						<variable name="BoxOffset" value="0.000, 0.000, 0.000, 0.000"/>
+					</variables>
+				</script>
+			</scripts>
+		</game_entity>
+		<game_entity name="editor_cube" old_prefab_name="editor_cube" mobility="1">
+			<flags>
+				<flag name="record_to_scene_replay" value="true"/>
+			</flags>
+			<tags>
+				<tag name="cube1"/>
+			</tags>
+			<transform position="72.743, 39.793, 3.734" rotation_euler="0.000, 0.000, 0.000" scale="2.000, 2.000, 2.000"/>
+			<physics shape="bo_editor_cube" center_of_mass="0.000, 0.000, 1.000"/>
+			<components>
+				<meta_mesh_component name="editor_cube"/>
+			</components>
+			<scripts>
+				<script name="SCE_PhysicsObject">
+					<variables>
+						<variable name="ShowEditorHelpers" value="true"/>
+						<variable name="SetPhysicsBodyAsSphere" value="false"/>
+						<variable name="RemoveMissilesOnCollision" value="true"/>
+						<variable name="DisableGravity" value="false"/>
+						<variable name="ApplyRealisticGravity" value="false"/>
+						<variable name="LinearDamping" value="1.000"/>
+						<variable name="AngularDamping" value="1.000"/>
+						<variable name="NavMeshPrefabName" value=""/>
+					</variables>
+				</script>
+			</scripts>
+		</game_entity>
+		<game_entity prefab="mp_spawnpoint">
+			<tags>
+				<tag name="attackerSpawn"/>
+			</tags>
+			<transform position="76.034, 100.245, 0.000" rotation_euler="0.000, 0.000, 0.000"/>
+		</game_entity>
+		<game_entity prefab="mp_spawnpoint">
+			<tags>
+				<tag name="attackerSpawn"/>
+			</tags>
+			<transform position="72.150, 100.020, 0.000" rotation_euler="0.000, 0.000, 0.000"/>
+		</game_entity>
+		<game_entity name="train_set" old_prefab_name="train_set" mobility="1">
+			<flags>
+				<flag name="record_to_scene_replay" value="true"/>
+			</flags>
+			<tags>
+				<tag name="1_1_rampmesh"/>
+				<tag name="2_0_rampmesh"/>
+				<tag name="3_0_passcart2mesh"/>
+				<tag name="5_0_passcart1mesh"/>
+				<tag name="7_0_headcartmesh"/>
+				<tag name="11_2_passcart2mesh"/>
+				<tag name="12_2_passcart1mesh"/>
+				<tag name="13_2_headcartmesh"/>
+				<tag name="4_0_connector23mesh"/>
+				<tag name="6_0_connector12mesh"/>
+			</tags>
+			<transform position="60.979, 56.307, 3.333" rotation_euler="0.000, 0.000, 0.000"/>
+			<scripts>
+				<script name="SCE_MultiBodyNavMeshLoader">
+					<variables>
+						<variable name="ShowEditorHelpers" value="true"/>
+						<variable name="NavMeshPrefabName" value="train_set"/>
+						<variable name="CreateChildEmptyEntityReference" value="true"/>
+					</variables>
+				</script>
+			</scripts>
+			<children>
+				<game_entity name="head_cart" old_prefab_name="head_cart" mobility="1">
+					<flags>
+						<flag name="record_to_scene_replay" value="true"/>
+					</flags>
+					<transform position="0.000, 8.073, -0.001"/>
+					<children>
+						<game_entity name="editor_cube" old_prefab_name="editor_cube" mobility="1">
+							<tags>
+								<tag name="cart"/>
+								<tag name="headcartmesh"/>
+							</tags>
+							<transform rotation_euler="0.000, 0.000, 0.000" scale="4.000, 7.778, 0.250"/>
+							<physics shape="bo_editor_cube" override_material="wood_nonstick" mass="135.000"/>
+							<components>
+								<meta_mesh_component name="editor_cube">
+									<mesh name="editor_cube" material="plank_b2"/>
+								</meta_mesh_component>
+							</components>
+							<scripts>
+								<script name="SCE_PhysicsObject">
+									<variables>
+										<variable name="ShowEditorHelpers" value="true"/>
+										<variable name="SetPhysicsBodyAsSphere" value="false"/>
+										<variable name="RemoveMissilesOnCollision" value="true"/>
+										<variable name="DisableGravity" value="false"/>
+										<variable name="ApplyRealisticGravity" value="false"/>
+										<variable name="LinearDamping" value="1.000"/>
+										<variable name="AngularDamping" value="1.000"/>
+										<variable name="NavMeshPrefabName" value=""/>
+									</variables>
+								</script>
+							</scripts>
+							<children>
+								<game_entity name="battania_castle_keep_wood_stake_b" old_prefab_name="battania_castle_keep_wood_stake_b" mobility="1">
+									<transform position="0.000, 0.510, 0.142" rotation_euler="0.000, 0.000, 0.000" scale="0.247, 0.125, 4.000"/>
+									<physics shape="bo_battania_castle_keep_wood_stake_b">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_castle_keep_wood_stake_b"/>
+									</components>
+								</game_entity>
+								<game_entity name="arabian_platform_wooden_c" old_prefab_name="arabian_platform_wooden_c" mobility="1">
+									<transform position="0.002, 0.007, 1.036" rotation_euler="0.000, 0.000, 0.000" scale="0.224, 0.270, 1.000"/>
+									<physics shape="bo_arabian_platform_wooden_c" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="arabian_platform_wooden_c"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_e_close" old_prefab_name="empire_garden_door_e_close" mobility="1">
+									<transform position="0.488, -0.223, 1.844" rotation_euler="0.000, 0.000, 1.571" scale="0.150, 0.250, 3.492"/>
+									<physics shape="bo_empire_garden_door_e_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+											<body_flag name="only_collide_with_raycast"/>
+											<body_flag name="dont_transfer_to_physics_engine"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_e_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_e_close" old_prefab_name="empire_garden_door_e_close" mobility="1">
+									<transform position="-0.490, -0.236, 1.839" rotation_euler="0.000, 0.000, -1.571" scale="0.150, 0.250, 3.492"/>
+									<physics shape="bo_empire_garden_door_e_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+											<body_flag name="only_collide_with_raycast"/>
+											<body_flag name="dont_transfer_to_physics_engine"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_e_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_e_close" old_prefab_name="empire_garden_door_e_close" mobility="1">
+									<transform position="0.488, 0.266, 1.844" rotation_euler="0.000, 0.000, 1.571" scale="0.150, 0.250, 3.492"/>
+									<physics shape="bo_empire_garden_door_e_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+											<body_flag name="only_collide_with_raycast"/>
+											<body_flag name="dont_transfer_to_physics_engine"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_e_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_e_close" old_prefab_name="empire_garden_door_e_close" mobility="1">
+									<transform position="-0.490, 0.250, 1.839" rotation_euler="0.000, 0.000, -1.571" scale="0.150, 0.250, 3.492"/>
+									<physics shape="bo_empire_garden_door_e_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+											<body_flag name="only_collide_with_raycast"/>
+											<body_flag name="dont_transfer_to_physics_engine"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_e_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="arabian_platform_wooden_c" old_prefab_name="arabian_platform_wooden_c" mobility="1">
+									<transform position="0.002, 0.020, 11.837" rotation_euler="0.000, 0.000, 0.000" scale="0.211, 0.275, 4.365"/>
+									<physics shape="bo_arabian_platform_wooden_c" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="arabian_platform_wooden_c"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_castle_keep_wood_stake_b" old_prefab_name="battania_castle_keep_wood_stake_b" mobility="1">
+									<transform position="0.497, 0.012, 0.138" rotation_euler="0.000, 0.000, 1.571" scale="0.235, 0.250, 4.000"/>
+									<physics shape="bo_battania_castle_keep_wood_stake_b">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_castle_keep_wood_stake_b"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_castle_keep_wood_stake_b" old_prefab_name="battania_castle_keep_wood_stake_b" mobility="1">
+									<transform position="-0.496, 0.012, 0.138" rotation_euler="0.000, 0.000, -1.571" scale="0.235, 0.250, 4.000"/>
+									<physics shape="bo_battania_castle_keep_wood_stake_b">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_castle_keep_wood_stake_b"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_keep_door_case_a" old_prefab_name="battania_keep_door_case_a" mobility="1">
+									<transform position="-0.250, -0.387, -3.455" rotation_euler="0.000, 1.571, 3.141" scale="2.143, 0.150, 0.055"/>
+									<physics shape="bo_battania_keep_door_case_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_keep_door_case_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_d_close" old_prefab_name="empire_garden_door_d_close" mobility="1">
+									<transform position="-0.365, 0.505, 1.786" rotation_euler="0.000, 0.000, 3.140" scale="0.130, 0.129, 3.492"/>
+									<physics shape="bo_empire_garden_door_d_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_d_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_d_close" old_prefab_name="empire_garden_door_d_close" mobility="1">
+									<transform position="0.380, 0.505, 1.786" rotation_euler="0.000, 0.000, 3.140" scale="0.130, 0.129, 3.492"/>
+									<physics shape="bo_empire_garden_door_d_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_d_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_keep_door_case_a" old_prefab_name="battania_keep_door_case_a" mobility="1">
+									<transform position="0.007, -0.481, 0.718" rotation_euler="0.000, 0.000, 0.000" scale="0.343, 0.145, 4.576"/>
+									<physics shape="bo_battania_keep_door_case_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+											<body_flag name="dont_transfer_to_physics_engine"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_keep_door_case_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_keep_door_case_a" old_prefab_name="battania_keep_door_case_a" mobility="1">
+									<transform position="0.007, 0.501, 4.458" rotation_euler="0.000, 0.000, 0.000" scale="0.386, 0.170, 3.032"/>
+									<physics shape="bo_battania_keep_door_case_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+											<body_flag name="dont_transfer_to_physics_engine"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_keep_door_case_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_castle_keep_wood_stake_b" old_prefab_name="battania_castle_keep_wood_stake_b" mobility="1">
+									<transform position="0.239, 0.015, 0.866" rotation_euler="1.571, -3.142, -1.571" scale="0.236, 4.000, 0.250"/>
+									<physics shape="bo_battania_castle_keep_wood_stake_b">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_castle_keep_wood_stake_b"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_castle_keep_wood_stake_b" old_prefab_name="battania_castle_keep_wood_stake_b" mobility="1">
+									<transform position="-0.493, 0.015, 0.866" rotation_euler="1.571, -3.142, -1.571" scale="0.236, 4.000, 0.250"/>
+									<physics shape="bo_battania_castle_keep_wood_stake_b">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_castle_keep_wood_stake_b"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_d_close" old_prefab_name="empire_garden_door_d_close" mobility="1">
+									<transform position="-0.365, -0.481, 6.642" rotation_euler="0.000, 3.141, -0.002" scale="0.130, 0.129, 4.632"/>
+									<physics shape="bo_empire_garden_door_d_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_d_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_d_close" old_prefab_name="empire_garden_door_d_close" mobility="1">
+									<transform position="0.380, -0.481, 6.642" rotation_euler="0.000, 3.141, -0.002" scale="0.130, 0.129, 4.632"/>
+									<physics shape="bo_empire_garden_door_d_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_d_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="wooden_platform_plank_f_column" old_prefab_name="wooden_platform_plank_f_column" mobility="1">
+									<transform position="-0.289, 0.385, -4.838" rotation_euler="0.000, 0.000, 0.000" scale="0.250, 0.129, 0.984"/>
+									<physics shape="bo_wooden_platform_plank_f_column">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="wooden_platform_plank_f_column"/>
+									</components>
+								</game_entity>
+								<game_entity name="wooden_platform_plank_f_column" old_prefab_name="wooden_platform_plank_f_column" mobility="1">
+									<transform position="0.286, 0.385, -4.837" rotation_euler="0.000, 0.000, 0.000" scale="0.250, 0.129, 0.984"/>
+									<physics shape="bo_wooden_platform_plank_f_column">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="wooden_platform_plank_f_column"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_keep_door_case_a" old_prefab_name="battania_keep_door_case_a" mobility="1">
+									<transform position="-0.250, 0.385, -3.455" rotation_euler="0.000, 1.571, 3.141" scale="2.143, 0.150, 0.055"/>
+									<physics shape="bo_battania_keep_door_case_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_keep_door_case_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_keep_door_case_a" old_prefab_name="battania_keep_door_case_a" mobility="1">
+									<transform position="0.247, 0.385, -3.457" rotation_euler="0.000, 1.571, 0.000" scale="2.143, 0.150, 0.055"/>
+									<physics shape="bo_battania_keep_door_case_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_keep_door_case_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_keep_door_case_a" old_prefab_name="battania_keep_door_case_a" mobility="1">
+									<transform position="0.247, 0.000, -3.457" rotation_euler="0.000, 1.571, 0.000" scale="2.143, 0.150, 0.055"/>
+									<physics shape="bo_battania_keep_door_case_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_keep_door_case_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="wooden_platform_plank_f_column" old_prefab_name="wooden_platform_plank_f_column" mobility="1">
+									<transform position="0.286, 0.000, -4.837" rotation_euler="0.000, 0.000, 0.000" scale="0.250, 0.129, 0.984"/>
+									<physics shape="bo_wooden_platform_plank_f_column">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="wooden_platform_plank_f_column"/>
+									</components>
+								</game_entity>
+								<game_entity name="wooden_platform_plank_f_column" old_prefab_name="wooden_platform_plank_f_column" mobility="1">
+									<transform position="-0.289, 0.000, -4.838" rotation_euler="0.000, 0.000, 0.000" scale="0.250, 0.129, 0.984"/>
+									<physics shape="bo_wooden_platform_plank_f_column">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="wooden_platform_plank_f_column"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_keep_door_case_a" old_prefab_name="battania_keep_door_case_a" mobility="1">
+									<transform position="-0.250, 0.000, -3.455" rotation_euler="0.000, 1.571, 3.141" scale="2.143, 0.150, 0.055"/>
+									<physics shape="bo_battania_keep_door_case_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_keep_door_case_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_keep_door_case_a" old_prefab_name="battania_keep_door_case_a" mobility="1">
+									<transform position="0.247, -0.386, -3.457" rotation_euler="0.000, 1.571, 0.000" scale="2.143, 0.150, 0.055"/>
+									<physics shape="bo_battania_keep_door_case_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_keep_door_case_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="wooden_platform_plank_f_column" old_prefab_name="wooden_platform_plank_f_column" mobility="1">
+									<transform position="0.286, -0.386, -4.837" rotation_euler="0.000, 0.000, 0.000" scale="0.250, 0.129, 0.984"/>
+									<physics shape="bo_wooden_platform_plank_f_column">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="wooden_platform_plank_f_column"/>
+									</components>
+								</game_entity>
+								<game_entity name="wooden_platform_plank_f_column" old_prefab_name="wooden_platform_plank_f_column" mobility="1">
+									<transform position="-0.289, -0.386, -4.838" rotation_euler="0.000, 0.000, 0.000" scale="0.250, 0.129, 0.984"/>
+									<physics shape="bo_wooden_platform_plank_f_column">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="wooden_platform_plank_f_column"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_keep_door_case_a" old_prefab_name="battania_keep_door_case_a" mobility="1">
+									<transform position="0.000, -0.483, 0.287" rotation_euler="0.000, 3.141, 3.141" scale="0.500, 0.150, 1.200"/>
+									<physics shape="bo_battania_keep_door_case_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_keep_door_case_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="sturgia_castle_log_a" old_prefab_name="sturgia_castle_log_a" mobility="1">
+									<transform position="-0.453, 0.386, -3.575" rotation_euler="0.000, 1.574, 0.000" scale="2.800, 0.090, 0.260"/>
+									<physics shape="bo_sturgia_castle_log_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="sturgia_castle_log_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="sturgia_castle_log_a" old_prefab_name="sturgia_castle_log_a" mobility="1">
+									<transform position="-0.453, 0.000, -3.575" rotation_euler="0.000, 1.574, 0.000" scale="2.800, 0.090, 0.260"/>
+									<physics shape="bo_sturgia_castle_log_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="sturgia_castle_log_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="sturgia_castle_log_a" old_prefab_name="sturgia_castle_log_a" mobility="1">
+									<transform position="-0.453, -0.385, -3.575" rotation_euler="0.000, 1.574, 0.000" scale="2.800, 0.090, 0.260"/>
+									<physics shape="bo_sturgia_castle_log_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="sturgia_castle_log_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_b_close" old_prefab_name="empire_garden_door_b_close" mobility="1">
+									<transform position="-0.215, 0.387, -0.067" rotation_euler="0.000, 3.141, -3.141" scale="0.315, 0.129, 2.220"/>
+									<physics shape="bo_empire_garden_door_b_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_b_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_b_close" old_prefab_name="empire_garden_door_b_close" mobility="1">
+									<transform position="-0.215, 0.000, -0.067" rotation_euler="0.000, 3.141, -3.141" scale="0.315, 0.129, 2.220"/>
+									<physics shape="bo_empire_garden_door_b_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_b_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_b_close" old_prefab_name="empire_garden_door_b_close" mobility="1">
+									<transform position="-0.215, -0.386, -0.067" rotation_euler="0.000, 3.141, -3.141" scale="0.315, 0.129, 2.220"/>
+									<physics shape="bo_empire_garden_door_b_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_b_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_a_close" old_prefab_name="empire_garden_door_a_close" mobility="1">
+									<transform position="-0.284, 0.197, 0.348" rotation_euler="0.000, 3.141, -1.571" scale="0.126, 0.250, 4.054"/>
+									<physics shape="bo_empire_garden_door_a_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_a_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_a_close" old_prefab_name="empire_garden_door_a_close" mobility="1">
+									<transform position="-0.284, -0.182, 0.348" rotation_euler="0.000, 3.141, -1.571" scale="0.126, 0.250, 4.054"/>
+									<physics shape="bo_empire_garden_door_a_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_a_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_a_close" old_prefab_name="empire_garden_door_a_close" mobility="1">
+									<transform position="0.288, 0.197, 0.348" rotation_euler="0.000, 3.141, -1.571" scale="0.126, 0.250, 4.054"/>
+									<physics shape="bo_empire_garden_door_a_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_a_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_a_close" old_prefab_name="empire_garden_door_a_close" mobility="1">
+									<transform position="0.288, -0.182, 0.348" rotation_euler="0.000, 3.141, -1.571" scale="0.126, 0.250, 4.054"/>
+									<physics shape="bo_empire_garden_door_a_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_a_close"/>
+									</components>
+								</game_entity>
+							</children>
+						</game_entity>
+						<game_entity name="bd_cart_wheel_b" old_prefab_name="bd_cart_wheel_b" mobility="1">
+							<tags>
+								<tag name="drive"/>
+								<tag name="steer"/>
+							</tags>
+							<transform position="-1.900, 0.000, -1.600" rotation_euler="0.000, 0.000, -1.571" scale="0.800, 4.000, 0.800"/>
+							<physics shape="bo_bd_cart_wheel_b" override_material="wood_nonstick" mass="50.000" center_of_mass="0.000, 0.040, 0.700"/>
+							<components>
+								<meta_mesh_component name="bd_cart_wheel_b"/>
+							</components>
+							<scripts>
+								<script name="SCE_ConstraintHinge">
+									<variables>
+										<variable name="HingeRotationAxis" value="0.000, 0.000, 0.000, -1.000"/>
+										<variable name="ConstrainingObjectTag" value="cart"/>
+										<variable name="ShowForceDebugging" value="false"/>
+										<variable name="DisableParentReaction" value="false"/>
+										<variable name="ConstraintStiffness" value="0.900"/>
+										<variable name="PDGain" value="1.000, 1.000, 1.000, -1.000"/>
+										<variable name="ConstraintOffset" value="0.000, 0.000, 0.000, -1.000"/>
+										<variable name="ShowEditorHelpers" value="true"/>
+										<variable name="SetPhysicsBodyAsSphere" value="false"/>
+										<variable name="RemoveMissilesOnCollision" value="true"/>
+										<variable name="DisableGravity" value="false"/>
+										<variable name="ApplyRealisticGravity" value="false"/>
+										<variable name="LinearDamping" value="1.000"/>
+										<variable name="AngularDamping" value="1.000"/>
+										<variable name="NavMeshPrefabName" value=""/>
+									</variables>
+								</script>
+							</scripts>
+						</game_entity>
+						<game_entity name="bd_cart_wheel_b" old_prefab_name="bd_cart_wheel_b" mobility="1">
+							<tags>
+								<tag name="drive"/>
+								<tag name="steer"/>
+							</tags>
+							<transform position="-1.900, 3.000, -1.600" rotation_euler="0.000, 0.000, -1.571" scale="0.800, 4.000, 0.800"/>
+							<physics shape="bo_bd_cart_wheel_b" override_material="wood_nonstick" mass="50.000" center_of_mass="0.000, 0.040, 0.700"/>
+							<components>
+								<meta_mesh_component name="bd_cart_wheel_b"/>
+							</components>
+							<scripts>
+								<script name="SCE_ConstraintHinge">
+									<variables>
+										<variable name="HingeRotationAxis" value="0.000, 0.000, 0.000, -1.000"/>
+										<variable name="ConstrainingObjectTag" value="cart"/>
+										<variable name="ShowForceDebugging" value="false"/>
+										<variable name="DisableParentReaction" value="false"/>
+										<variable name="ConstraintStiffness" value="0.900"/>
+										<variable name="PDGain" value="1.000, 1.000, 1.000, -1.000"/>
+										<variable name="ConstraintOffset" value="0.000, 0.000, 0.000, -1.000"/>
+										<variable name="ShowEditorHelpers" value="true"/>
+										<variable name="SetPhysicsBodyAsSphere" value="false"/>
+										<variable name="RemoveMissilesOnCollision" value="true"/>
+										<variable name="DisableGravity" value="false"/>
+										<variable name="ApplyRealisticGravity" value="false"/>
+										<variable name="LinearDamping" value="1.000"/>
+										<variable name="AngularDamping" value="1.000"/>
+										<variable name="NavMeshPrefabName" value=""/>
+									</variables>
+								</script>
+							</scripts>
+						</game_entity>
+						<game_entity name="bd_cart_wheel_b" old_prefab_name="bd_cart_wheel_b" mobility="1">
+							<tags>
+								<tag name="drive"/>
+							</tags>
+							<transform position="-1.900, -3.000, -1.600" rotation_euler="0.000, 0.000, -1.571" scale="0.800, 4.000, 0.800"/>
+							<physics shape="bo_bd_cart_wheel_b" override_material="wood_nonstick" mass="50.000" center_of_mass="0.000, 0.040, 0.700"/>
+							<components>
+								<meta_mesh_component name="bd_cart_wheel_b"/>
+							</components>
+							<scripts>
+								<script name="SCE_ConstraintHinge">
+									<variables>
+										<variable name="HingeRotationAxis" value="0.000, 0.000, 0.000, -1.000"/>
+										<variable name="ConstrainingObjectTag" value="cart"/>
+										<variable name="ShowForceDebugging" value="false"/>
+										<variable name="DisableParentReaction" value="false"/>
+										<variable name="ConstraintStiffness" value="0.900"/>
+										<variable name="PDGain" value="1.000, 1.000, 1.000, -1.000"/>
+										<variable name="ConstraintOffset" value="0.000, 0.000, 0.000, -1.000"/>
+										<variable name="ShowEditorHelpers" value="true"/>
+										<variable name="SetPhysicsBodyAsSphere" value="false"/>
+										<variable name="RemoveMissilesOnCollision" value="true"/>
+										<variable name="DisableGravity" value="false"/>
+										<variable name="ApplyRealisticGravity" value="false"/>
+										<variable name="LinearDamping" value="1.000"/>
+										<variable name="AngularDamping" value="1.000"/>
+										<variable name="NavMeshPrefabName" value=""/>
+									</variables>
+								</script>
+							</scripts>
+						</game_entity>
+						<game_entity name="bd_cart_wheel_b" old_prefab_name="bd_cart_wheel_b" mobility="1">
+							<tags>
+								<tag name="drive"/>
+								<tag name="steer"/>
+							</tags>
+							<transform position="1.900, 3.000, -1.600" rotation_euler="0.000, 0.000, 1.571" scale="0.800, 4.000, 0.800"/>
+							<physics shape="bo_bd_cart_wheel_b" override_material="wood_nonstick" mass="50.000" center_of_mass="0.000, 0.040, 0.700"/>
+							<components>
+								<meta_mesh_component name="bd_cart_wheel_b"/>
+							</components>
+							<scripts>
+								<script name="SCE_ConstraintHinge">
+									<variables>
+										<variable name="HingeRotationAxis" value="0.000, 0.000, 180.000, 340282346638528859811704183484516925440.000"/>
+										<variable name="ConstrainingObjectTag" value="cart"/>
+										<variable name="ShowForceDebugging" value="false"/>
+										<variable name="DisableParentReaction" value="false"/>
+										<variable name="ConstraintStiffness" value="0.900"/>
+										<variable name="PDGain" value="1.000, 1.000, 1.000, -1.000"/>
+										<variable name="ConstraintOffset" value="0.000, 0.000, 0.000, -1.000"/>
+										<variable name="ShowEditorHelpers" value="true"/>
+										<variable name="SetPhysicsBodyAsSphere" value="false"/>
+										<variable name="RemoveMissilesOnCollision" value="true"/>
+										<variable name="DisableGravity" value="false"/>
+										<variable name="ApplyRealisticGravity" value="false"/>
+										<variable name="LinearDamping" value="1.000"/>
+										<variable name="AngularDamping" value="1.000"/>
+										<variable name="NavMeshPrefabName" value=""/>
+									</variables>
+								</script>
+							</scripts>
+						</game_entity>
+						<game_entity name="bd_cart_wheel_b" old_prefab_name="bd_cart_wheel_b" mobility="1">
+							<tags>
+								<tag name="drive"/>
+								<tag name="steer"/>
+							</tags>
+							<transform position="1.900, 0.000, -1.600" rotation_euler="0.000, 0.000, 1.571" scale="0.800, 4.000, 0.800"/>
+							<physics shape="bo_bd_cart_wheel_b" override_material="wood_nonstick" mass="50.000" center_of_mass="0.000, 0.040, 0.700"/>
+							<components>
+								<meta_mesh_component name="bd_cart_wheel_b"/>
+							</components>
+							<scripts>
+								<script name="SCE_ConstraintHinge">
+									<variables>
+										<variable name="HingeRotationAxis" value="0.000, 0.000, 180.000, 340282346638528859811704183484516925440.000"/>
+										<variable name="ConstrainingObjectTag" value="cart"/>
+										<variable name="ShowForceDebugging" value="false"/>
+										<variable name="DisableParentReaction" value="false"/>
+										<variable name="ConstraintStiffness" value="0.900"/>
+										<variable name="PDGain" value="1.000, 1.000, 1.000, -1.000"/>
+										<variable name="ConstraintOffset" value="0.000, 0.000, 0.000, -1.000"/>
+										<variable name="ShowEditorHelpers" value="true"/>
+										<variable name="SetPhysicsBodyAsSphere" value="false"/>
+										<variable name="RemoveMissilesOnCollision" value="true"/>
+										<variable name="DisableGravity" value="false"/>
+										<variable name="ApplyRealisticGravity" value="false"/>
+										<variable name="LinearDamping" value="1.000"/>
+										<variable name="AngularDamping" value="1.000"/>
+										<variable name="NavMeshPrefabName" value=""/>
+									</variables>
+								</script>
+							</scripts>
+						</game_entity>
+						<game_entity name="bd_cart_wheel_b" old_prefab_name="bd_cart_wheel_b" mobility="1">
+							<tags>
+								<tag name="drive"/>
+							</tags>
+							<transform position="1.900, -3.000, -1.600" rotation_euler="0.000, 0.000, 1.571" scale="0.800, 4.000, 0.800"/>
+							<physics shape="bo_bd_cart_wheel_b" override_material="wood_nonstick" mass="50.000" center_of_mass="0.000, 0.040, 0.700"/>
+							<components>
+								<meta_mesh_component name="bd_cart_wheel_b"/>
+							</components>
+							<scripts>
+								<script name="SCE_ConstraintHinge">
+									<variables>
+										<variable name="HingeRotationAxis" value="0.000, 0.000, 180.000, 340282346638528859811704183484516925440.000"/>
+										<variable name="ConstrainingObjectTag" value="cart"/>
+										<variable name="ShowForceDebugging" value="false"/>
+										<variable name="DisableParentReaction" value="false"/>
+										<variable name="ConstraintStiffness" value="0.900"/>
+										<variable name="PDGain" value="1.000, 1.000, 1.000, -1.000"/>
+										<variable name="ConstraintOffset" value="0.000, 0.000, 0.000, -1.000"/>
+										<variable name="ShowEditorHelpers" value="true"/>
+										<variable name="SetPhysicsBodyAsSphere" value="false"/>
+										<variable name="RemoveMissilesOnCollision" value="true"/>
+										<variable name="DisableGravity" value="false"/>
+										<variable name="ApplyRealisticGravity" value="false"/>
+										<variable name="LinearDamping" value="1.000"/>
+										<variable name="AngularDamping" value="1.000"/>
+										<variable name="NavMeshPrefabName" value=""/>
+									</variables>
+								</script>
+							</scripts>
+						</game_entity>
+					</children>
+				</game_entity>
+				<game_entity name="cart_connector" old_prefab_name="cart_connector" mobility="1">
+					<flags>
+						<flag name="record_to_scene_replay" value="true"/>
+					</flags>
+					<transform position="-0.003, 4.840, -0.400"/>
+					<children>
+						<game_entity name="connector" old_prefab_name="connector" mobility="1">
+							<flags>
+								<flag name="record_to_scene_replay" value="true"/>
+							</flags>
+							<tags>
+								<tag name="connector12mesh"/>
+							</tags>
+							<transform rotation_euler="1.571, -3.142, -3.142" scale="1.760, 1.000, 0.914"/>
+							<physics shape="bo_sturgia_castle_log_a" override_material="wood_nonstick" mass="25.000" center_of_mass="0.000, 0.000, 1.450"/>
+							<components>
+								<meta_mesh_component name="sturgia_castle_log_a"/>
+							</components>
+							<scripts>
+								<script name="SCE_ConstraintHinge">
+									<variables>
+										<variable name="HingeRotationAxis" value="0.000, 0.000, 0.000, 340282346638528859811704183484516925440.000"/>
+										<variable name="ConstrainingObjectTag" value="cart"/>
+										<variable name="ShowForceDebugging" value="false"/>
+										<variable name="DisableParentReaction" value="false"/>
+										<variable name="ConstraintStiffness" value="0.900"/>
+										<variable name="PDGain" value="1.000, 1.000, 1.000, -1.000"/>
+										<variable name="ConstraintOffset" value="0.000, 0.000, -1.200, 340282346638528859811704183484516925440.000"/>
+										<variable name="ShowEditorHelpers" value="true"/>
+										<variable name="SetPhysicsBodyAsSphere" value="false"/>
+										<variable name="RemoveMissilesOnCollision" value="true"/>
+										<variable name="DisableGravity" value="true"/>
+										<variable name="ApplyRealisticGravity" value="false"/>
+										<variable name="LinearDamping" value="1.000"/>
+										<variable name="AngularDamping" value="1.000"/>
+										<variable name="NavMeshPrefabName" value=""/>
+									</variables>
+								</script>
+								<script name="SCE_ConstraintWeld">
+									<variables>
+										<variable name="ConstrainingObjectTag" value="passcart"/>
+										<variable name="ShowForceDebugging" value="false"/>
+										<variable name="DisableParentReaction" value="false"/>
+										<variable name="ConstraintStiffness" value="0.900"/>
+										<variable name="PDGain" value="1.000, 1.000, 1.000, -1.000"/>
+										<variable name="ConstraintOffset" value="0.000, 0.000, 1.200, 340282346638528859811704183484516925440.000"/>
+										<variable name="ShowEditorHelpers" value="true"/>
+										<variable name="SetPhysicsBodyAsSphere" value="false"/>
+										<variable name="RemoveMissilesOnCollision" value="true"/>
+										<variable name="DisableGravity" value="true"/>
+										<variable name="ApplyRealisticGravity" value="false"/>
+										<variable name="LinearDamping" value="1.000"/>
+										<variable name="AngularDamping" value="1.000"/>
+										<variable name="NavMeshPrefabName" value=""/>
+									</variables>
+								</script>
+							</scripts>
+							<children>
+								<game_entity name="khuzait_platform_wooden_c" old_prefab_name="khuzait_platform_wooden_c" mobility="1">
+									<transform position="0.000, 0.241, 1.700" rotation_euler="-1.571, -3.142, 3.142" scale="0.408, 0.950, 1.704"/>
+									<physics shape="bo_khuzait_platform_wooden_c" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="khuzait_platform_wooden_c"/>
+									</components>
+								</game_entity>
+								<game_entity name="_barrier_ai_04x04m" old_prefab_name="_barrier_ai_04x04m" mobility="1">
+									<visibility_masks>
+										<visibility_mask name="visible_only_when_editing" value="true"/>
+									</visibility_masks>
+									<transform position="-0.488, 0.328, 1.666" rotation_euler="0.002, 1.571, 1.571" scale="2.089, 0.568, 1.469"/>
+									<physics shape="bo_barrier">
+										<body_flags>
+											<body_flag name="ai_limiter"/>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="barrier"/>
+									</components>
+								</game_entity>
+								<game_entity name="_barrier_ai_04x04m" old_prefab_name="_barrier_ai_04x04m" mobility="1">
+									<visibility_masks>
+										<visibility_mask name="visible_only_when_editing" value="true"/>
+									</visibility_masks>
+									<transform position="0.506, 0.328, 1.665" rotation_euler="-0.002, -1.571, -1.571" scale="2.089, 0.568, 1.469"/>
+									<physics shape="bo_barrier">
+										<body_flags>
+											<body_flag name="ai_limiter"/>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="barrier"/>
+									</components>
+								</game_entity>
+							</children>
+						</game_entity>
+					</children>
+				</game_entity>
+				<game_entity name="passenger_cart1" old_prefab_name="passenger_cart1" mobility="1">
+					<flags>
+						<flag name="record_to_scene_replay" value="true"/>
+					</flags>
+					<children>
+						<game_entity name="editor_cube" old_prefab_name="editor_cube" mobility="1">
+							<tags>
+								<tag name="passcart"/>
+								<tag name="passcart1mesh"/>
+							</tags>
+							<transform rotation_euler="0.000, 0.000, 0.000" scale="4.000, 5.006, 0.250"/>
+							<physics shape="bo_editor_cube" override_material="wood_nonstick" mass="75.000"/>
+							<components>
+								<meta_mesh_component name="editor_cube">
+									<mesh name="editor_cube" material="plank_b2"/>
+								</meta_mesh_component>
+							</components>
+							<scripts>
+								<script name="SCE_PhysicsObject">
+									<variables>
+										<variable name="ShowEditorHelpers" value="true"/>
+										<variable name="SetPhysicsBodyAsSphere" value="false"/>
+										<variable name="RemoveMissilesOnCollision" value="true"/>
+										<variable name="DisableGravity" value="false"/>
+										<variable name="ApplyRealisticGravity" value="false"/>
+										<variable name="LinearDamping" value="1.000"/>
+										<variable name="AngularDamping" value="1.000"/>
+										<variable name="NavMeshPrefabName" value=""/>
+									</variables>
+								</script>
+							</scripts>
+							<children>
+								<game_entity name="battania_castle_keep_wood_stake_b" old_prefab_name="battania_castle_keep_wood_stake_b" mobility="1">
+									<transform position="-0.493, 0.005, 0.866" rotation_euler="1.571, -3.142, -1.571" scale="0.225, 4.000, 0.250"/>
+									<physics shape="bo_battania_castle_keep_wood_stake_b">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_castle_keep_wood_stake_b"/>
+									</components>
+								</game_entity>
+								<game_entity name="arabian_platform_wooden_c" old_prefab_name="arabian_platform_wooden_c" mobility="1">
+									<transform position="0.002, 0.007, 1.036" rotation_euler="0.000, 0.000, 0.000" scale="0.224, 0.270, 1.000"/>
+									<physics shape="bo_arabian_platform_wooden_c" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="arabian_platform_wooden_c"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_e_close" old_prefab_name="empire_garden_door_e_close" mobility="1">
+									<transform position="0.488, 0.017, 1.844" rotation_euler="0.000, 0.000, 1.571" scale="0.285, 0.250, 3.492"/>
+									<physics shape="bo_empire_garden_door_e_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+											<body_flag name="only_collide_with_raycast"/>
+											<body_flag name="dont_transfer_to_physics_engine"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_e_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_e_close" old_prefab_name="empire_garden_door_e_close" mobility="1">
+									<transform position="-0.490, -0.008, 1.839" rotation_euler="0.000, 0.000, -1.571" scale="0.285, 0.250, 3.492"/>
+									<physics shape="bo_empire_garden_door_e_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+											<body_flag name="only_collide_with_raycast"/>
+											<body_flag name="dont_transfer_to_physics_engine"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_e_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_d_close" old_prefab_name="empire_garden_door_d_close" mobility="1">
+									<transform position="0.380, -0.477, 6.642" rotation_euler="0.000, 3.141, -0.002" scale="0.130, 0.129, 4.632"/>
+									<physics shape="bo_empire_garden_door_d_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_d_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_d_close" old_prefab_name="empire_garden_door_d_close" mobility="1">
+									<transform position="-0.365, -0.477, 6.642" rotation_euler="0.000, 3.141, -0.002" scale="0.130, 0.129, 4.632"/>
+									<physics shape="bo_empire_garden_door_d_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_d_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="arabian_platform_wooden_c" old_prefab_name="arabian_platform_wooden_c" mobility="1">
+									<transform position="0.002, 0.020, 11.837" rotation_euler="0.000, 0.000, 0.000" scale="0.211, 0.275, 4.365"/>
+									<physics shape="bo_arabian_platform_wooden_c" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="arabian_platform_wooden_c"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_castle_keep_wood_stake_b" old_prefab_name="battania_castle_keep_wood_stake_b" mobility="1">
+									<transform position="0.497, 0.012, 0.138" rotation_euler="0.000, 0.000, 1.571" scale="0.235, 0.250, 4.000"/>
+									<physics shape="bo_battania_castle_keep_wood_stake_b">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_castle_keep_wood_stake_b"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_castle_keep_wood_stake_b" old_prefab_name="battania_castle_keep_wood_stake_b" mobility="1">
+									<transform position="-0.496, 0.012, 0.138" rotation_euler="0.000, 0.000, -1.571" scale="0.229, 0.250, 4.000"/>
+									<physics shape="bo_battania_castle_keep_wood_stake_b">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_castle_keep_wood_stake_b"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_castle_keep_wood_stake_b" old_prefab_name="battania_castle_keep_wood_stake_b" mobility="1">
+									<transform position="0.239, 0.005, 0.866" rotation_euler="1.571, -3.142, -1.571" scale="0.225, 4.000, 0.250"/>
+									<physics shape="bo_battania_castle_keep_wood_stake_b">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_castle_keep_wood_stake_b"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_d_close" old_prefab_name="empire_garden_door_d_close" mobility="1">
+									<transform position="-0.365, 0.489, 6.642" rotation_euler="0.000, 3.141, 3.141" scale="0.130, 0.129, 4.632"/>
+									<physics shape="bo_empire_garden_door_d_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_d_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_keep_door_case_a" old_prefab_name="battania_keep_door_case_a" mobility="1">
+									<transform position="0.007, -0.481, 0.718" rotation_euler="0.000, 0.000, 0.000" scale="0.343, 0.145, 4.576"/>
+									<physics shape="bo_battania_keep_door_case_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+											<body_flag name="dont_transfer_to_physics_engine"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_keep_door_case_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_d_close" old_prefab_name="empire_garden_door_d_close" mobility="1">
+									<transform position="0.380, 0.489, 6.642" rotation_euler="0.000, 3.141, 3.141" scale="0.130, 0.129, 4.632"/>
+									<physics shape="bo_empire_garden_door_d_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_d_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_keep_door_case_a" old_prefab_name="battania_keep_door_case_a" mobility="1">
+									<transform position="0.007, 0.484, 0.718" rotation_euler="0.000, 0.000, 0.000" scale="0.343, 0.145, 4.576"/>
+									<physics shape="bo_battania_keep_door_case_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+											<body_flag name="dont_transfer_to_physics_engine"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_keep_door_case_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="sturgia_castle_log_a" old_prefab_name="sturgia_castle_log_a" mobility="1">
+									<transform position="-0.453, 0.000, -3.575" rotation_euler="0.000, 1.574, 0.000" scale="2.800, 0.140, 0.260"/>
+									<physics shape="bo_sturgia_castle_log_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="sturgia_castle_log_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_b_close" old_prefab_name="empire_garden_door_b_close" mobility="1">
+									<transform position="-0.215, 0.000, -0.067" rotation_euler="0.000, 3.141, -3.141" scale="0.315, 0.200, 2.220"/>
+									<physics shape="bo_empire_garden_door_b_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_b_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="wooden_platform_plank_f_column" old_prefab_name="wooden_platform_plank_f_column" mobility="1">
+									<transform position="-0.289, 0.000, -4.838" rotation_euler="0.000, 0.000, 0.000" scale="0.250, 0.200, 0.984"/>
+									<physics shape="bo_wooden_platform_plank_f_column">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="wooden_platform_plank_f_column"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_keep_door_case_a" old_prefab_name="battania_keep_door_case_a" mobility="1">
+									<transform position="-0.250, 0.000, -3.455" rotation_euler="0.000, 1.571, 3.141" scale="2.143, 0.233, 0.055"/>
+									<physics shape="bo_battania_keep_door_case_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_keep_door_case_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="wooden_platform_plank_f_column" old_prefab_name="wooden_platform_plank_f_column" mobility="1">
+									<transform position="0.286, 0.000, -4.837" rotation_euler="0.000, 0.000, 0.000" scale="0.250, 0.200, 0.984"/>
+									<physics shape="bo_wooden_platform_plank_f_column">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="wooden_platform_plank_f_column"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_keep_door_case_a" old_prefab_name="battania_keep_door_case_a" mobility="1">
+									<transform position="0.247, 0.000, -3.457" rotation_euler="0.000, 1.571, 0.000" scale="2.143, 0.233, 0.055"/>
+									<physics shape="bo_battania_keep_door_case_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_keep_door_case_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_keep_door_case_a" old_prefab_name="battania_keep_door_case_a" mobility="1">
+									<transform position="0.000, 0.469, 0.283" rotation_euler="0.000, 3.141, 3.141" scale="0.500, 0.234, 1.200"/>
+									<physics shape="bo_battania_keep_door_case_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_keep_door_case_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_keep_door_case_a" old_prefab_name="battania_keep_door_case_a" mobility="1">
+									<transform position="0.000, -0.472, 0.283" rotation_euler="0.000, 3.141, 3.141" scale="0.500, 0.234, 1.200"/>
+									<physics shape="bo_battania_keep_door_case_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_keep_door_case_a"/>
+									</components>
+								</game_entity>
+							</children>
+						</game_entity>
+						<game_entity name="bd_cart_wheel_b" old_prefab_name="bd_cart_wheel_b" mobility="1">
+							<transform position="-1.900, 0.000, -1.600" rotation_euler="0.000, 0.000, -1.571" scale="0.800, 4.000, 0.800"/>
+							<physics shape="bo_bd_cart_wheel_b" override_material="wood_nonstick" mass="50.000" center_of_mass="0.000, 0.040, 0.700"/>
+							<components>
+								<meta_mesh_component name="bd_cart_wheel_b"/>
+							</components>
+							<scripts>
+								<script name="SCE_ConstraintHinge">
+									<variables>
+										<variable name="HingeRotationAxis" value="0.000, 0.000, 0.000, -1.000"/>
+										<variable name="ConstrainingObjectTag" value="passcart"/>
+										<variable name="ShowForceDebugging" value="false"/>
+										<variable name="DisableParentReaction" value="false"/>
+										<variable name="ConstraintStiffness" value="0.900"/>
+										<variable name="PDGain" value="1.000, 1.000, 1.000, -1.000"/>
+										<variable name="ConstraintOffset" value="0.000, 0.000, 0.000, -1.000"/>
+										<variable name="ShowEditorHelpers" value="true"/>
+										<variable name="SetPhysicsBodyAsSphere" value="false"/>
+										<variable name="RemoveMissilesOnCollision" value="true"/>
+										<variable name="DisableGravity" value="false"/>
+										<variable name="ApplyRealisticGravity" value="false"/>
+										<variable name="LinearDamping" value="1.000"/>
+										<variable name="AngularDamping" value="1.000"/>
+										<variable name="NavMeshPrefabName" value=""/>
+									</variables>
+								</script>
+							</scripts>
+						</game_entity>
+						<game_entity name="bd_cart_wheel_b" old_prefab_name="bd_cart_wheel_b" mobility="1">
+							<transform position="1.900, 0.000, -1.600" rotation_euler="0.000, 0.000, 1.571" scale="0.800, 4.000, 0.800"/>
+							<physics shape="bo_bd_cart_wheel_b" override_material="wood_nonstick" mass="50.000" center_of_mass="0.000, 0.040, 0.700"/>
+							<components>
+								<meta_mesh_component name="bd_cart_wheel_b"/>
+							</components>
+							<scripts>
+								<script name="SCE_ConstraintHinge">
+									<variables>
+										<variable name="HingeRotationAxis" value="0.000, 0.000, 180.000, 340282346638528859811704183484516925440.000"/>
+										<variable name="ConstrainingObjectTag" value="passcart"/>
+										<variable name="ShowForceDebugging" value="false"/>
+										<variable name="DisableParentReaction" value="false"/>
+										<variable name="ConstraintStiffness" value="0.900"/>
+										<variable name="PDGain" value="1.000, 1.000, 1.000, -1.000"/>
+										<variable name="ConstraintOffset" value="0.000, 0.000, 0.000, -1.000"/>
+										<variable name="ShowEditorHelpers" value="true"/>
+										<variable name="SetPhysicsBodyAsSphere" value="false"/>
+										<variable name="RemoveMissilesOnCollision" value="true"/>
+										<variable name="DisableGravity" value="false"/>
+										<variable name="ApplyRealisticGravity" value="false"/>
+										<variable name="LinearDamping" value="1.000"/>
+										<variable name="AngularDamping" value="1.000"/>
+										<variable name="NavMeshPrefabName" value=""/>
+									</variables>
+								</script>
+							</scripts>
+						</game_entity>
+					</children>
+				</game_entity>
+				<game_entity name="cart_connector12" old_prefab_name="cart_connector12" mobility="1">
+					<flags>
+						<flag name="record_to_scene_replay" value="true"/>
+					</flags>
+					<transform position="-0.003, -1.959, -0.400"/>
+					<children>
+						<game_entity name="connector" old_prefab_name="connector" mobility="1">
+							<flags>
+								<flag name="record_to_scene_replay" value="true"/>
+							</flags>
+							<tags>
+								<tag name="connector23mesh"/>
+							</tags>
+							<transform rotation_euler="1.571, -3.142, -3.142" scale="1.760, 1.000, 0.914"/>
+							<physics shape="bo_sturgia_castle_log_a" override_material="wood_nonstick" mass="25.000" center_of_mass="0.000, 0.000, 1.450"/>
+							<components>
+								<meta_mesh_component name="sturgia_castle_log_a"/>
+							</components>
+							<scripts>
+								<script name="SCE_ConstraintHinge">
+									<variables>
+										<variable name="HingeRotationAxis" value="0.000, 0.000, 0.000, 340282346638528859811704183484516925440.000"/>
+										<variable name="ConstrainingObjectTag" value="passcart"/>
+										<variable name="ShowForceDebugging" value="false"/>
+										<variable name="DisableParentReaction" value="false"/>
+										<variable name="ConstraintStiffness" value="0.900"/>
+										<variable name="PDGain" value="1.000, 1.000, 1.000, -1.000"/>
+										<variable name="ConstraintOffset" value="0.000, 1.000, -1.200, 340282346638528859811704183484516925440.000"/>
+										<variable name="ShowEditorHelpers" value="true"/>
+										<variable name="SetPhysicsBodyAsSphere" value="false"/>
+										<variable name="RemoveMissilesOnCollision" value="true"/>
+										<variable name="DisableGravity" value="true"/>
+										<variable name="ApplyRealisticGravity" value="false"/>
+										<variable name="LinearDamping" value="1.000"/>
+										<variable name="AngularDamping" value="1.000"/>
+										<variable name="NavMeshPrefabName" value=""/>
+									</variables>
+								</script>
+								<script name="SCE_ConstraintWeld">
+									<variables>
+										<variable name="ConstrainingObjectTag" value="passcart2"/>
+										<variable name="ShowForceDebugging" value="false"/>
+										<variable name="DisableParentReaction" value="false"/>
+										<variable name="ConstraintStiffness" value="0.900"/>
+										<variable name="PDGain" value="1.000, 1.000, 1.000, -1.000"/>
+										<variable name="ConstraintOffset" value="0.000, 0.000, 1.200, 340282346638528859811704183484516925440.000"/>
+										<variable name="ShowEditorHelpers" value="true"/>
+										<variable name="SetPhysicsBodyAsSphere" value="false"/>
+										<variable name="RemoveMissilesOnCollision" value="true"/>
+										<variable name="DisableGravity" value="true"/>
+										<variable name="ApplyRealisticGravity" value="false"/>
+										<variable name="LinearDamping" value="1.000"/>
+										<variable name="AngularDamping" value="1.000"/>
+										<variable name="NavMeshPrefabName" value=""/>
+									</variables>
+								</script>
+							</scripts>
+							<children>
+								<game_entity name="khuzait_platform_wooden_c" old_prefab_name="khuzait_platform_wooden_c" mobility="1">
+									<transform position="0.000, 0.241, 1.700" rotation_euler="-1.571, -3.142, 3.142" scale="0.408, 0.950, 1.704"/>
+									<physics shape="bo_khuzait_platform_wooden_c" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="khuzait_platform_wooden_c"/>
+									</components>
+								</game_entity>
+								<game_entity name="empty_object" old_prefab_name="empty_object" mobility="1">
+									<flags>
+										<flag name="record_to_scene_replay" value="true"/>
+									</flags>
+									<transform rotation_euler="-1.571, -3.142, 3.142" scale="0.568, 1.094, 1.000"/>
+								</game_entity>
+								<game_entity name="_barrier_ai_04x04m" old_prefab_name="_barrier_ai_04x04m" mobility="1">
+									<visibility_masks>
+										<visibility_mask name="visible_only_when_editing" value="true"/>
+									</visibility_masks>
+									<transform position="0.506, 0.328, 1.733" rotation_euler="-0.002, -1.571, -1.571" scale="2.089, 0.568, 1.469"/>
+									<physics shape="bo_barrier">
+										<body_flags>
+											<body_flag name="ai_limiter"/>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="barrier"/>
+									</components>
+								</game_entity>
+								<game_entity name="_barrier_ai_04x04m" old_prefab_name="_barrier_ai_04x04m" mobility="1">
+									<visibility_masks>
+										<visibility_mask name="visible_only_when_editing" value="true"/>
+									</visibility_masks>
+									<transform position="-0.488, 0.328, 1.735" rotation_euler="0.002, 1.571, 1.571" scale="2.089, 0.568, 1.469"/>
+									<physics shape="bo_barrier">
+										<body_flags>
+											<body_flag name="ai_limiter"/>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="barrier"/>
+									</components>
+								</game_entity>
+							</children>
+						</game_entity>
+					</children>
+				</game_entity>
+				<game_entity name="passenger_cart2" old_prefab_name="passenger_cart2" mobility="1">
+					<flags>
+						<flag name="record_to_scene_replay" value="true"/>
+					</flags>
+					<transform position="0.000, -6.987, 0.000"/>
+					<children>
+						<game_entity name="editor_cube" old_prefab_name="editor_cube" mobility="1">
+							<tags>
+								<tag name="passcart2"/>
+								<tag name="passcart2mesh"/>
+							</tags>
+							<transform rotation_euler="0.000, 0.000, 0.000" scale="4.000, 5.006, 0.250"/>
+							<physics shape="bo_editor_cube" override_material="wood_nonstick" mass="75.000"/>
+							<components>
+								<meta_mesh_component name="editor_cube">
+									<mesh name="editor_cube" material="plank_b2"/>
+								</meta_mesh_component>
+							</components>
+							<scripts>
+								<script name="SCE_PhysicsObject">
+									<variables>
+										<variable name="ShowEditorHelpers" value="true"/>
+										<variable name="SetPhysicsBodyAsSphere" value="false"/>
+										<variable name="RemoveMissilesOnCollision" value="true"/>
+										<variable name="DisableGravity" value="false"/>
+										<variable name="ApplyRealisticGravity" value="false"/>
+										<variable name="LinearDamping" value="1.000"/>
+										<variable name="AngularDamping" value="1.000"/>
+										<variable name="NavMeshPrefabName" value=""/>
+									</variables>
+								</script>
+							</scripts>
+							<children>
+								<game_entity name="battania_castle_keep_wood_stake_b" old_prefab_name="battania_castle_keep_wood_stake_b" mobility="1">
+									<transform position="-0.493, 0.005, 0.866" rotation_euler="1.571, -3.142, -1.571" scale="0.225, 4.000, 0.250"/>
+									<physics shape="bo_battania_castle_keep_wood_stake_b">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_castle_keep_wood_stake_b"/>
+									</components>
+								</game_entity>
+								<game_entity name="arabian_platform_wooden_c" old_prefab_name="arabian_platform_wooden_c" mobility="1">
+									<transform position="0.002, 0.007, 1.036" rotation_euler="0.000, 0.000, 0.000" scale="0.224, 0.270, 1.000"/>
+									<physics shape="bo_arabian_platform_wooden_c" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="arabian_platform_wooden_c"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_e_close" old_prefab_name="empire_garden_door_e_close" mobility="1">
+									<transform position="0.488, 0.017, 1.844" rotation_euler="0.000, 0.000, 1.571" scale="0.285, 0.250, 3.492"/>
+									<physics shape="bo_empire_garden_door_e_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+											<body_flag name="only_collide_with_raycast"/>
+											<body_flag name="dont_transfer_to_physics_engine"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_e_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_e_close" old_prefab_name="empire_garden_door_e_close" mobility="1">
+									<transform position="-0.490, -0.008, 1.839" rotation_euler="0.000, 0.000, -1.571" scale="0.285, 0.250, 3.492"/>
+									<physics shape="bo_empire_garden_door_e_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+											<body_flag name="only_collide_with_raycast"/>
+											<body_flag name="dont_transfer_to_physics_engine"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_e_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_d_close" old_prefab_name="empire_garden_door_d_close" mobility="1">
+									<transform position="0.380, -0.477, 6.642" rotation_euler="0.000, 3.141, -0.002" scale="0.130, 0.129, 4.632"/>
+									<physics shape="bo_empire_garden_door_d_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_d_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_d_close" old_prefab_name="empire_garden_door_d_close" mobility="1">
+									<transform position="-0.365, -0.477, 6.642" rotation_euler="0.000, 3.141, -0.002" scale="0.130, 0.129, 4.632"/>
+									<physics shape="bo_empire_garden_door_d_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_d_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="arabian_platform_wooden_c" old_prefab_name="arabian_platform_wooden_c" mobility="1">
+									<transform position="0.002, 0.020, 11.837" rotation_euler="0.000, 0.000, 0.000" scale="0.211, 0.275, 4.365"/>
+									<physics shape="bo_arabian_platform_wooden_c" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="arabian_platform_wooden_c"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_castle_keep_wood_stake_b" old_prefab_name="battania_castle_keep_wood_stake_b" mobility="1">
+									<transform position="0.497, 0.012, 0.138" rotation_euler="0.000, 0.000, 1.571" scale="0.235, 0.250, 4.000"/>
+									<physics shape="bo_battania_castle_keep_wood_stake_b">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_castle_keep_wood_stake_b"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_castle_keep_wood_stake_b" old_prefab_name="battania_castle_keep_wood_stake_b" mobility="1">
+									<transform position="-0.496, 0.012, 0.138" rotation_euler="0.000, 0.000, -1.571" scale="0.229, 0.250, 4.000"/>
+									<physics shape="bo_battania_castle_keep_wood_stake_b">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_castle_keep_wood_stake_b"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_castle_keep_wood_stake_b" old_prefab_name="battania_castle_keep_wood_stake_b" mobility="1">
+									<transform position="0.239, 0.005, 0.866" rotation_euler="1.571, -3.142, -1.571" scale="0.225, 4.000, 0.250"/>
+									<physics shape="bo_battania_castle_keep_wood_stake_b">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_castle_keep_wood_stake_b"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_d_close" old_prefab_name="empire_garden_door_d_close" mobility="1">
+									<transform position="-0.365, 0.489, 6.642" rotation_euler="0.000, 3.141, 3.141" scale="0.130, 0.129, 4.632"/>
+									<physics shape="bo_empire_garden_door_d_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_d_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_keep_door_case_a" old_prefab_name="battania_keep_door_case_a" mobility="1">
+									<transform position="0.007, -0.481, 0.718" rotation_euler="0.000, 0.000, 0.000" scale="0.343, 0.145, 4.576"/>
+									<physics shape="bo_battania_keep_door_case_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+											<body_flag name="dont_transfer_to_physics_engine"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_keep_door_case_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_d_close" old_prefab_name="empire_garden_door_d_close" mobility="1">
+									<transform position="0.380, 0.489, 6.642" rotation_euler="0.000, 3.141, 3.141" scale="0.130, 0.129, 4.632"/>
+									<physics shape="bo_empire_garden_door_d_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_d_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_keep_door_case_a" old_prefab_name="battania_keep_door_case_a" mobility="1">
+									<transform position="0.007, 0.484, 0.718" rotation_euler="0.000, 0.000, 0.000" scale="0.343, 0.145, 4.576"/>
+									<physics shape="bo_battania_keep_door_case_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+											<body_flag name="dont_transfer_to_physics_engine"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_keep_door_case_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="sturgia_castle_log_a" old_prefab_name="sturgia_castle_log_a" mobility="1">
+									<transform position="-0.453, 0.000, -3.575" rotation_euler="0.000, 1.574, 0.000" scale="2.800, 0.140, 0.260"/>
+									<physics shape="bo_sturgia_castle_log_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="sturgia_castle_log_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="empire_garden_door_b_close" old_prefab_name="empire_garden_door_b_close" mobility="1">
+									<transform position="-0.215, 0.000, -0.067" rotation_euler="0.000, 3.141, -3.141" scale="0.315, 0.200, 2.220"/>
+									<physics shape="bo_empire_garden_door_b_close" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="empire_garden_door_b_close"/>
+									</components>
+								</game_entity>
+								<game_entity name="wooden_platform_plank_f_column" old_prefab_name="wooden_platform_plank_f_column" mobility="1">
+									<transform position="-0.289, 0.000, -4.838" rotation_euler="0.000, 0.000, 0.000" scale="0.250, 0.200, 0.984"/>
+									<physics shape="bo_wooden_platform_plank_f_column">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="wooden_platform_plank_f_column"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_keep_door_case_a" old_prefab_name="battania_keep_door_case_a" mobility="1">
+									<transform position="-0.250, 0.000, -3.455" rotation_euler="0.000, 1.571, 3.141" scale="2.143, 0.233, 0.055"/>
+									<physics shape="bo_battania_keep_door_case_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_keep_door_case_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="wooden_platform_plank_f_column" old_prefab_name="wooden_platform_plank_f_column" mobility="1">
+									<transform position="0.286, 0.000, -4.837" rotation_euler="0.000, 0.000, 0.000" scale="0.250, 0.200, 0.984"/>
+									<physics shape="bo_wooden_platform_plank_f_column">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="wooden_platform_plank_f_column"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_keep_door_case_a" old_prefab_name="battania_keep_door_case_a" mobility="1">
+									<transform position="0.247, 0.000, -3.457" rotation_euler="0.000, 1.571, 0.000" scale="2.143, 0.233, 0.055"/>
+									<physics shape="bo_battania_keep_door_case_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_keep_door_case_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_keep_door_case_a" old_prefab_name="battania_keep_door_case_a" mobility="1">
+									<transform position="0.000, 0.469, 0.283" rotation_euler="0.000, 3.141, 3.141" scale="0.500, 0.234, 1.200"/>
+									<physics shape="bo_battania_keep_door_case_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_keep_door_case_a"/>
+									</components>
+								</game_entity>
+								<game_entity name="battania_keep_door_case_a" old_prefab_name="battania_keep_door_case_a" mobility="1">
+									<transform position="0.000, -0.472, 0.283" rotation_euler="0.000, 3.141, 3.141" scale="0.500, 0.234, 1.200"/>
+									<physics shape="bo_battania_keep_door_case_a">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="battania_keep_door_case_a"/>
+									</components>
+								</game_entity>
+							</children>
+						</game_entity>
+						<game_entity name="bd_cart_wheel_b" old_prefab_name="bd_cart_wheel_b" mobility="1">
+							<transform position="-1.900, 0.000, -1.600" rotation_euler="0.000, 0.000, -1.571" scale="0.800, 4.000, 0.800"/>
+							<physics shape="bo_bd_cart_wheel_b" override_material="wood_nonstick" mass="50.000" center_of_mass="0.000, 0.040, 0.700"/>
+							<components>
+								<meta_mesh_component name="bd_cart_wheel_b"/>
+							</components>
+							<scripts>
+								<script name="SCE_ConstraintHinge">
+									<variables>
+										<variable name="HingeRotationAxis" value="0.000, 0.000, 0.000, -1.000"/>
+										<variable name="ConstrainingObjectTag" value="passcart2"/>
+										<variable name="ShowForceDebugging" value="false"/>
+										<variable name="DisableParentReaction" value="false"/>
+										<variable name="ConstraintStiffness" value="0.900"/>
+										<variable name="PDGain" value="1.000, 1.000, 1.000, -1.000"/>
+										<variable name="ConstraintOffset" value="0.000, 0.000, 0.000, -1.000"/>
+										<variable name="ShowEditorHelpers" value="true"/>
+										<variable name="SetPhysicsBodyAsSphere" value="false"/>
+										<variable name="RemoveMissilesOnCollision" value="true"/>
+										<variable name="DisableGravity" value="false"/>
+										<variable name="ApplyRealisticGravity" value="false"/>
+										<variable name="LinearDamping" value="1.000"/>
+										<variable name="AngularDamping" value="1.000"/>
+										<variable name="NavMeshPrefabName" value=""/>
+									</variables>
+								</script>
+							</scripts>
+						</game_entity>
+						<game_entity name="bd_cart_wheel_b" old_prefab_name="bd_cart_wheel_b" mobility="1">
+							<transform position="1.900, 0.000, -1.600" rotation_euler="0.000, 0.000, 1.571" scale="0.800, 4.000, 0.800"/>
+							<physics shape="bo_bd_cart_wheel_b" override_material="wood_nonstick" mass="50.000" center_of_mass="0.000, 0.040, 0.700"/>
+							<components>
+								<meta_mesh_component name="bd_cart_wheel_b"/>
+							</components>
+							<scripts>
+								<script name="SCE_ConstraintHinge">
+									<variables>
+										<variable name="HingeRotationAxis" value="0.000, 0.000, 180.000, 340282346638528859811704183484516925440.000"/>
+										<variable name="ConstrainingObjectTag" value="passcart2"/>
+										<variable name="ShowForceDebugging" value="false"/>
+										<variable name="DisableParentReaction" value="false"/>
+										<variable name="ConstraintStiffness" value="0.900"/>
+										<variable name="PDGain" value="1.000, 1.000, 1.000, -1.000"/>
+										<variable name="ConstraintOffset" value="0.000, 0.000, 0.000, -1.000"/>
+										<variable name="ShowEditorHelpers" value="true"/>
+										<variable name="SetPhysicsBodyAsSphere" value="false"/>
+										<variable name="RemoveMissilesOnCollision" value="true"/>
+										<variable name="DisableGravity" value="false"/>
+										<variable name="ApplyRealisticGravity" value="false"/>
+										<variable name="LinearDamping" value="1.000"/>
+										<variable name="AngularDamping" value="1.000"/>
+										<variable name="NavMeshPrefabName" value=""/>
+									</variables>
+								</script>
+							</scripts>
+						</game_entity>
+					</children>
+				</game_entity>
+				<game_entity name="cart_ramp" old_prefab_name="cart_ramp" mobility="1">
+					<flags>
+						<flag name="record_to_scene_replay" value="true"/>
+					</flags>
+					<transform position="-0.003, -9.300, -0.400" rotation_euler="0.406, 0.000, 0.000"/>
+					<children>
+						<game_entity name="ramp" old_prefab_name="ramp" mobility="1">
+							<flags>
+								<flag name="record_to_scene_replay" value="true"/>
+							</flags>
+							<tags>
+								<tag name="rampmesh"/>
+							</tags>
+							<transform position="-0.010, -0.004, 0.004" rotation_euler="1.571, -3.142, -3.142" scale="0.990, 0.974, 0.886"/>
+							<physics shape="bo_sturgia_castle_log_a" override_material="wood_nonstick" mass="25.000" center_of_mass="0.000, 0.000, 1.450"/>
+							<components>
+								<meta_mesh_component name="sturgia_castle_log_a"/>
+							</components>
+							<scripts>
+								<script name="SCE_ConstraintHinge">
+									<variables>
+										<variable name="HingeRotationAxis" value="0.000, 0.000, 90.000, 340282346638528859811704183484516925440.000"/>
+										<variable name="ConstrainingObjectTag" value="passcart2"/>
+										<variable name="ShowForceDebugging" value="false"/>
+										<variable name="DisableParentReaction" value="false"/>
+										<variable name="ConstraintStiffness" value="0.900"/>
+										<variable name="PDGain" value="1.000, 1.000, 1.000, -1.000"/>
+										<variable name="ConstraintOffset" value="0.000, 0.000, -1.200, 340282346638528859811704183484516925440.000"/>
+										<variable name="ShowEditorHelpers" value="true"/>
+										<variable name="SetPhysicsBodyAsSphere" value="false"/>
+										<variable name="RemoveMissilesOnCollision" value="true"/>
+										<variable name="DisableGravity" value="false"/>
+										<variable name="ApplyRealisticGravity" value="false"/>
+										<variable name="LinearDamping" value="1.000"/>
+										<variable name="AngularDamping" value="1.000"/>
+										<variable name="NavMeshPrefabName" value=""/>
+									</variables>
+								</script>
+							</scripts>
+							<children>
+								<game_entity name="khuzait_platform_wooden_c" old_prefab_name="khuzait_platform_wooden_c" mobility="1">
+									<transform position="0.000, 0.283, 2.120" rotation_euler="-1.571, -3.142, 3.142" scale="0.797, 1.265, 2.338"/>
+									<physics shape="bo_khuzait_platform_wooden_c" override_material="wood">
+										<body_flags>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="khuzait_platform_wooden_c"/>
+									</components>
+								</game_entity>
+								<game_entity name="_barrier_ai_04x04m" old_prefab_name="_barrier_ai_04x04m" mobility="1">
+									<visibility_masks>
+										<visibility_mask name="visible_only_when_editing" value="true"/>
+									</visibility_masks>
+									<transform position="-0.993, 0.227, 1.388" non_orthogonal_rotation_mat="-0.000729, 0.009178, -0.999958, -1.000000, -0.000000, 0.000910, 0.000130, 0.983862, 0.178930" scale="4.221, 1.123, 1.030"/>
+									<physics shape="bo_barrier">
+										<body_flags>
+											<body_flag name="ai_limiter"/>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="barrier"/>
+									</components>
+								</game_entity>
+								<game_entity name="_barrier_ai_04x04m" old_prefab_name="_barrier_ai_04x04m" mobility="1">
+									<visibility_masks>
+										<visibility_mask name="visible_only_when_editing" value="true"/>
+									</visibility_masks>
+									<transform position="0.973, 0.227, 1.386" non_orthogonal_rotation_mat="0.000729, -0.009178, 0.999958, 1.000000, 0.000000, -0.000910, 0.000130, 0.983862, 0.178929" scale="4.221, 1.123, 1.030"/>
+									<physics shape="bo_barrier">
+										<body_flags>
+											<body_flag name="ai_limiter"/>
+											<body_flag name="dynamic_convex_hull"/>
+										</body_flags>
+									</physics>
+									<components>
+										<meta_mesh_component name="barrier"/>
+									</components>
+								</game_entity>
+							</children>
+						</game_entity>
+					</children>
+				</game_entity>
+			</children>
+		</game_entity>
+		<game_entity name="editor_cube" old_prefab_name="editor_cube" mobility="1">
+			<flags>
+				<flag name="record_to_scene_replay" value="true"/>
+			</flags>
+			<tags>
+				<tag name="cube3"/>
+			</tags>
+			<transform position="86.037, 39.773, 2.789" rotation_euler="0.000, 0.000, 0.000"/>
+			<physics shape="bo_editor_cube"/>
+			<components>
+				<meta_mesh_component name="editor_cube"/>
+			</components>
+			<scripts>
+				<script name="SCE_PhysicsObject">
+					<variables>
+						<variable name="ShowEditorHelpers" value="true"/>
+						<variable name="SetPhysicsBodyAsSphere" value="true"/>
+						<variable name="RemoveMissilesOnCollision" value="true"/>
+						<variable name="DisableGravity" value="false"/>
+						<variable name="ApplyRealisticGravity" value="false"/>
+						<variable name="LinearDamping" value="1.000"/>
+						<variable name="AngularDamping" value="1.000"/>
+						<variable name="NavMeshPrefabName" value=""/>
+					</variables>
+				</script>
+			</scripts>
+		</game_entity>
+		<game_entity name="editor_cube" old_prefab_name="editor_cube" mobility="1">
+			<flags>
+				<flag name="record_to_scene_replay" value="true"/>
+			</flags>
+			<transform position="86.040, 39.774, 1.039" rotation_euler="0.000, 0.000, 0.000"/>
+			<physics shape="bo_editor_cube" center_of_mass="0.000, 0.000, 1.000"/>
+			<components>
+				<meta_mesh_component name="editor_cube"/>
+			</components>
+			<scripts>
+				<script name="SCE_ConstraintWeld">
+					<variables>
+						<variable name="ConstrainingObjectTag" value="cube3"/>
+						<variable name="ShowForceDebugging" value="false"/>
+						<variable name="DisableParentReaction" value="false"/>
+						<variable name="ConstraintStiffness" value="1.000"/>
+						<variable name="PDGain" value="1.000, 1.000, 1.000, -1.000"/>
+						<variable name="ConstraintOffset" value="0.000, 0.000, 0.000, -1.000"/>
+						<variable name="ShowEditorHelpers" value="true"/>
+						<variable name="SetPhysicsBodyAsSphere" value="true"/>
+						<variable name="RemoveMissilesOnCollision" value="true"/>
+						<variable name="DisableGravity" value="false"/>
+						<variable name="ApplyRealisticGravity" value="false"/>
+						<variable name="LinearDamping" value="1.000"/>
+						<variable name="AngularDamping" value="1.000"/>
+						<variable name="NavMeshPrefabName" value=""/>
+					</variables>
+				</script>
+			</scripts>
+		</game_entity>
+		<game_entity name="editor_cube" old_prefab_name="editor_cube" mobility="1">
+			<flags>
+				<flag name="record_to_scene_replay" value="true"/>
+			</flags>
+			<transform position="79.912, 39.774, 1.039" rotation_euler="0.000, 0.000, 0.000"/>
+			<physics shape="bo_editor_cube"/>
+			<components>
+				<meta_mesh_component name="editor_cube"/>
+			</components>
+			<scripts>
+				<script name="SCE_ConstraintWeld">
+					<variables>
+						<variable name="ConstrainingObjectTag" value="cube4"/>
+						<variable name="ShowForceDebugging" value="false"/>
+						<variable name="DisableParentReaction" value="false"/>
+						<variable name="ConstraintStiffness" value="1.000"/>
+						<variable name="PDGain" value="1.000, 1.000, 1.000, -1.000"/>
+						<variable name="ConstraintOffset" value="0.000, 0.000, 0.000, -1.000"/>
+						<variable name="ShowEditorHelpers" value="true"/>
+						<variable name="SetPhysicsBodyAsSphere" value="true"/>
+						<variable name="RemoveMissilesOnCollision" value="true"/>
+						<variable name="DisableGravity" value="false"/>
+						<variable name="ApplyRealisticGravity" value="false"/>
+						<variable name="LinearDamping" value="1.000"/>
+						<variable name="AngularDamping" value="1.000"/>
+						<variable name="NavMeshPrefabName" value=""/>
+					</variables>
+				</script>
+			</scripts>
+		</game_entity>
+		<game_entity name="editor_cube" old_prefab_name="editor_cube" mobility="1">
+			<flags>
+				<flag name="record_to_scene_replay" value="true"/>
+			</flags>
+			<tags>
+				<tag name="cube4"/>
+			</tags>
+			<transform position="79.909, 39.773, 2.789" rotation_euler="0.000, 0.000, 0.000"/>
+			<physics shape="bo_editor_cube"/>
+			<components>
+				<meta_mesh_component name="editor_cube"/>
+			</components>
+			<scripts>
+				<script name="SCE_PhysicsObject">
+					<variables>
+						<variable name="ShowEditorHelpers" value="true"/>
+						<variable name="SetPhysicsBodyAsSphere" value="true"/>
+						<variable name="RemoveMissilesOnCollision" value="true"/>
+						<variable name="DisableGravity" value="false"/>
+						<variable name="ApplyRealisticGravity" value="false"/>
+						<variable name="LinearDamping" value="1.000"/>
+						<variable name="AngularDamping" value="1.000"/>
+						<variable name="NavMeshPrefabName" value=""/>
+					</variables>
+				</script>
+			</scripts>
+		</game_entity>
+	</entities>
+	<terrain enabled="true" node_dimension_x="4" node_dimension_y="4" node_size="100.000" lod_multiplier="1.000" min_height="-100.000" max_height="500.000" vista_normalmap="" vista_diffuse_name="" vista_diffuse_blend_type="0" vista_diffuse_blend_amount="0.000" vista_layer_detail_distance="35.000" vista_albedo_multiplier="0.670" vista_detail_albedo_name="" vista_detail_normal_name="" vista_detail_tile="20.000" vista_tileset="" colormap_detail_level="0" ao_intensity="4.000">
+		<outer_mesh>
+			<variable name="outer_mesh_name" value=""/>
+			<variable name="diffuse1_texture_name" value=""/>
+			<variable name="diffuse2_texture_name" value=""/>
+			<variable name="diffuse3_texture_name" value=""/>
+			<variable name="areamap_texture_name" value=""/>
+			<variable name="splatmap_texture_name" value=""/>
+			<variable name="splatmap_normal_name" value=""/>
+			<variable name="horizon_mesh_diffuse_1_multiplier" value="1.000"/>
+			<variable name="horizon_mesh_diffuse_2_multiplier" value="1.000"/>
+			<variable name="horizon_mesh_diffuse_3_multiplier" value="1.000"/>
+			<variable name="horizon_mesh_areamap_tile_multiplier" value="1.000"/>
+			<variable name="horizon_mesh_areamap_power" value="1.000"/>
+			<variable name="horizon_mesh_height" value="1.000"/>
+		</outer_mesh>
+		<layers version="1">
+			<layer name="flora_habitat_a">
+				<summer is_enabled="true" name="flora_habitat_a" is_flora_layer="false" is_mesh_blend_layer="false" pitch_roll_yaw="0.000, 0.000, 0.000" scale="5.000, 5.000" shear="0.000, 0.000" position_offset="0.000, 0.000" physics_material="grass" detail_level_adjustment="0" elevation_amount="0.000" parallax_amount="0.000" ground_slope_scale="1.000" bigdetailmap_mode="0" bigdetailmap_weight="0.000" albedo_factor_color="1.000, 1.000, 1.000" albedo_factor_mode="0" smooth_blend_amount="1.000" bigdetailmap_scale_x="0.080" bigdetailmap_scale_y="0.080" bigdetailmap_bias_x="0.080" bigdetailmap_bias_y="0.080">
+					<textures>
+						<texture type="diffusemap" name="ground_grass_c_d"/>
+						<texture type="areamap" name="none"/>
+						<texture type="normalmap" name="ground_grass_c_n"/>
+						<texture type="specularmap" name="ground_grass_c_s"/>
+						<texture type="splattingmap" name="none"/>
+						<texture type="displacementmap" name="ground_grass_c_h"/>
+					</textures>
+					<layer_flags>
+						<flag name="use_parallax" value="false"/>
+						<flag name="use_displacement_mapping" value="false"/>
+						<flag name="use_randomized_normalmap" value="false"/>
+						<flag name="use_transparency_of_diffuse_alpha" value="false"/>
+						<flag name="use_transparency_of_ground_slope" value="false"/>
+						<flag name="use_dxt5_normal" value="false"/>
+						<flag name="use_six_side_uv_mapping" value="false"/>
+					</layer_flags>
+					<meshes>
+						<mesh name="flora_grass_a_non_shadow" index="0" density="55.000" seed_index="1" colony_radius="0.000" colony_threshold="0.000" size_min="0.650, 0.650, 0.650" size_max="1.000, 1.000, 1.000" albedo_multiplier="1.000, 1.000, 1.000" weight_offset="0.500"/>
+						<mesh name="flora_green__mix" index="1" density="45.000" seed_index="2" colony_radius="0.000" colony_threshold="0.000" size_min="0.650, 0.650, 0.650" size_max="1.550, 1.550, 1.750" albedo_multiplier="1.000, 1.000, 1.000" weight_offset="0.500"/>
+						<mesh name="flora_plant__mix" index="2" density="25.000" seed_index="3" colony_radius="0.000" colony_threshold="0.000" size_min="0.500, 0.500, 0.500" size_max="1.200, 1.200, 1.200" albedo_multiplier="1.000, 1.000, 1.000" weight_offset="0.500"/>
+						<mesh name="tree_high__mix" index="3" density="12.000" seed_index="4" colony_radius="0.000" colony_threshold="0.000" size_min="0.650, 0.650, 0.650" size_max="1.550, 1.550, 1.750" albedo_multiplier="1.000, 1.000, 1.000" weight_offset="0.500"/>
+						<mesh name="flora_green__mix_flower" index="4" density="35.000" seed_index="6" colony_radius="0.000" colony_threshold="0.000" size_min="0.650, 0.650, 0.650" size_max="1.550, 1.550, 1.750" albedo_multiplier="1.000, 1.000, 1.000" weight_offset="0.500"/>
+					</meshes>
+				</summer>
+				<fall is_enabled="true" name="flora_habitat_a" is_flora_layer="false" is_mesh_blend_layer="false">
+					<meshes/>
+				</fall>
+				<winter is_enabled="true" name="flora_habitat_a" is_flora_layer="false" is_mesh_blend_layer="false">
+					<meshes/>
+				</winter>
+				<spring is_enabled="true" name="flora_habitat_a" is_flora_layer="false" is_mesh_blend_layer="false">
+					<meshes/>
+				</spring>
+			</layer>
+		</layers>
+		<nodes>
+			<node idx="0" idy="0" occluders_enabled="true" layer_is_used_mask_summer="1" layer_is_used_mask_fall="1" layer_is_used_mask_winter="1" layer_is_used_mask_spring="1" layer_is_used_mask="true" height_complexity="0.134" min_height="0.000" max_height="1.524">
+				<texture_levels>
+					<variable name="heightmap_level" value="6"/>
+					<variable name="min_heightmap_level" value="2"/>
+					<variable name="normalmap_level" value="6"/>
+					<variable name="weightmap_levels">
+						<variable layer="0" value="6"/>
+						<variable layer="1" value="0"/>
+						<variable layer="2" value="0"/>
+						<variable layer="3" value="0"/>
+						<variable layer="4" value="0"/>
+						<variable layer="5" value="0"/>
+						<variable layer="6" value="0"/>
+						<variable layer="7" value="0"/>
+						<variable layer="8" value="0"/>
+						<variable layer="9" value="0"/>
+						<variable layer="10" value="0"/>
+						<variable layer="11" value="0"/>
+						<variable layer="12" value="0"/>
+						<variable layer="13" value="0"/>
+						<variable layer="14" value="0"/>
+						<variable layer="15" value="0"/>
+					</variable>
+				</texture_levels>
+			</node>
+			<node idx="0" idy="1" occluders_enabled="true" layer_is_used_mask_summer="1" layer_is_used_mask_fall="1" layer_is_used_mask_winter="1" layer_is_used_mask_spring="1" layer_is_used_mask="true" height_complexity="0.000" min_height="0.000" max_height="0.000">
+				<texture_levels>
+					<variable name="heightmap_level" value="6"/>
+					<variable name="min_heightmap_level" value="2"/>
+					<variable name="normalmap_level" value="6"/>
+					<variable name="weightmap_levels">
+						<variable layer="0" value="6"/>
+						<variable layer="1" value="0"/>
+						<variable layer="2" value="0"/>
+						<variable layer="3" value="0"/>
+						<variable layer="4" value="0"/>
+						<variable layer="5" value="0"/>
+						<variable layer="6" value="0"/>
+						<variable layer="7" value="0"/>
+						<variable layer="8" value="0"/>
+						<variable layer="9" value="0"/>
+						<variable layer="10" value="0"/>
+						<variable layer="11" value="0"/>
+						<variable layer="12" value="0"/>
+						<variable layer="13" value="0"/>
+						<variable layer="14" value="0"/>
+						<variable layer="15" value="0"/>
+					</variable>
+				</texture_levels>
+			</node>
+			<node idx="0" idy="2" occluders_enabled="true" layer_is_used_mask_summer="1" layer_is_used_mask_fall="1" layer_is_used_mask_winter="1" layer_is_used_mask_spring="1" layer_is_used_mask="true" height_complexity="0.000" min_height="0.000" max_height="0.000">
+				<texture_levels>
+					<variable name="heightmap_level" value="6"/>
+					<variable name="min_heightmap_level" value="2"/>
+					<variable name="normalmap_level" value="6"/>
+					<variable name="weightmap_levels">
+						<variable layer="0" value="6"/>
+						<variable layer="1" value="0"/>
+						<variable layer="2" value="0"/>
+						<variable layer="3" value="0"/>
+						<variable layer="4" value="0"/>
+						<variable layer="5" value="0"/>
+						<variable layer="6" value="0"/>
+						<variable layer="7" value="0"/>
+						<variable layer="8" value="0"/>
+						<variable layer="9" value="0"/>
+						<variable layer="10" value="0"/>
+						<variable layer="11" value="0"/>
+						<variable layer="12" value="0"/>
+						<variable layer="13" value="0"/>
+						<variable layer="14" value="0"/>
+						<variable layer="15" value="0"/>
+					</variable>
+				</texture_levels>
+			</node>
+			<node idx="0" idy="3" occluders_enabled="true" layer_is_used_mask_summer="1" layer_is_used_mask_fall="1" layer_is_used_mask_winter="1" layer_is_used_mask_spring="1" layer_is_used_mask="true" height_complexity="0.000" min_height="0.000" max_height="0.000">
+				<texture_levels>
+					<variable name="heightmap_level" value="6"/>
+					<variable name="min_heightmap_level" value="2"/>
+					<variable name="normalmap_level" value="6"/>
+					<variable name="weightmap_levels">
+						<variable layer="0" value="6"/>
+						<variable layer="1" value="0"/>
+						<variable layer="2" value="0"/>
+						<variable layer="3" value="0"/>
+						<variable layer="4" value="0"/>
+						<variable layer="5" value="0"/>
+						<variable layer="6" value="0"/>
+						<variable layer="7" value="0"/>
+						<variable layer="8" value="0"/>
+						<variable layer="9" value="0"/>
+						<variable layer="10" value="0"/>
+						<variable layer="11" value="0"/>
+						<variable layer="12" value="0"/>
+						<variable layer="13" value="0"/>
+						<variable layer="14" value="0"/>
+						<variable layer="15" value="0"/>
+					</variable>
+				</texture_levels>
+			</node>
+			<node idx="1" idy="0" occluders_enabled="true" layer_is_used_mask_summer="1" layer_is_used_mask_fall="1" layer_is_used_mask_winter="1" layer_is_used_mask_spring="1" layer_is_used_mask="true" height_complexity="0.000" min_height="0.000" max_height="0.000">
+				<texture_levels>
+					<variable name="heightmap_level" value="6"/>
+					<variable name="min_heightmap_level" value="2"/>
+					<variable name="normalmap_level" value="6"/>
+					<variable name="weightmap_levels">
+						<variable layer="0" value="6"/>
+						<variable layer="1" value="0"/>
+						<variable layer="2" value="0"/>
+						<variable layer="3" value="0"/>
+						<variable layer="4" value="0"/>
+						<variable layer="5" value="0"/>
+						<variable layer="6" value="0"/>
+						<variable layer="7" value="0"/>
+						<variable layer="8" value="0"/>
+						<variable layer="9" value="0"/>
+						<variable layer="10" value="0"/>
+						<variable layer="11" value="0"/>
+						<variable layer="12" value="0"/>
+						<variable layer="13" value="0"/>
+						<variable layer="14" value="0"/>
+						<variable layer="15" value="0"/>
+					</variable>
+				</texture_levels>
+			</node>
+			<node idx="1" idy="1" occluders_enabled="true" layer_is_used_mask_summer="1" layer_is_used_mask_fall="1" layer_is_used_mask_winter="1" layer_is_used_mask_spring="1" layer_is_used_mask="true" height_complexity="0.000" min_height="0.000" max_height="0.000">
+				<texture_levels>
+					<variable name="heightmap_level" value="6"/>
+					<variable name="min_heightmap_level" value="2"/>
+					<variable name="normalmap_level" value="6"/>
+					<variable name="weightmap_levels">
+						<variable layer="0" value="6"/>
+						<variable layer="1" value="0"/>
+						<variable layer="2" value="0"/>
+						<variable layer="3" value="0"/>
+						<variable layer="4" value="0"/>
+						<variable layer="5" value="0"/>
+						<variable layer="6" value="0"/>
+						<variable layer="7" value="0"/>
+						<variable layer="8" value="0"/>
+						<variable layer="9" value="0"/>
+						<variable layer="10" value="0"/>
+						<variable layer="11" value="0"/>
+						<variable layer="12" value="0"/>
+						<variable layer="13" value="0"/>
+						<variable layer="14" value="0"/>
+						<variable layer="15" value="0"/>
+					</variable>
+				</texture_levels>
+			</node>
+			<node idx="1" idy="2" occluders_enabled="true" layer_is_used_mask_summer="1" layer_is_used_mask_fall="1" layer_is_used_mask_winter="1" layer_is_used_mask_spring="1" layer_is_used_mask="true" height_complexity="0.000" min_height="0.000" max_height="0.000">
+				<texture_levels>
+					<variable name="heightmap_level" value="6"/>
+					<variable name="min_heightmap_level" value="2"/>
+					<variable name="normalmap_level" value="6"/>
+					<variable name="weightmap_levels">
+						<variable layer="0" value="6"/>
+						<variable layer="1" value="0"/>
+						<variable layer="2" value="0"/>
+						<variable layer="3" value="0"/>
+						<variable layer="4" value="0"/>
+						<variable layer="5" value="0"/>
+						<variable layer="6" value="0"/>
+						<variable layer="7" value="0"/>
+						<variable layer="8" value="0"/>
+						<variable layer="9" value="0"/>
+						<variable layer="10" value="0"/>
+						<variable layer="11" value="0"/>
+						<variable layer="12" value="0"/>
+						<variable layer="13" value="0"/>
+						<variable layer="14" value="0"/>
+						<variable layer="15" value="0"/>
+					</variable>
+				</texture_levels>
+			</node>
+			<node idx="1" idy="3" occluders_enabled="true" layer_is_used_mask_summer="1" layer_is_used_mask_fall="1" layer_is_used_mask_winter="1" layer_is_used_mask_spring="1" layer_is_used_mask="true" height_complexity="0.000" min_height="0.000" max_height="0.000">
+				<texture_levels>
+					<variable name="heightmap_level" value="6"/>
+					<variable name="min_heightmap_level" value="2"/>
+					<variable name="normalmap_level" value="6"/>
+					<variable name="weightmap_levels">
+						<variable layer="0" value="6"/>
+						<variable layer="1" value="0"/>
+						<variable layer="2" value="0"/>
+						<variable layer="3" value="0"/>
+						<variable layer="4" value="0"/>
+						<variable layer="5" value="0"/>
+						<variable layer="6" value="0"/>
+						<variable layer="7" value="0"/>
+						<variable layer="8" value="0"/>
+						<variable layer="9" value="0"/>
+						<variable layer="10" value="0"/>
+						<variable layer="11" value="0"/>
+						<variable layer="12" value="0"/>
+						<variable layer="13" value="0"/>
+						<variable layer="14" value="0"/>
+						<variable layer="15" value="0"/>
+					</variable>
+				</texture_levels>
+			</node>
+			<node idx="2" idy="0" occluders_enabled="true" layer_is_used_mask_summer="1" layer_is_used_mask_fall="1" layer_is_used_mask_winter="1" layer_is_used_mask_spring="1" layer_is_used_mask="true" height_complexity="0.000" min_height="0.000" max_height="0.000">
+				<texture_levels>
+					<variable name="heightmap_level" value="6"/>
+					<variable name="min_heightmap_level" value="2"/>
+					<variable name="normalmap_level" value="6"/>
+					<variable name="weightmap_levels">
+						<variable layer="0" value="6"/>
+						<variable layer="1" value="0"/>
+						<variable layer="2" value="0"/>
+						<variable layer="3" value="0"/>
+						<variable layer="4" value="0"/>
+						<variable layer="5" value="0"/>
+						<variable layer="6" value="0"/>
+						<variable layer="7" value="0"/>
+						<variable layer="8" value="0"/>
+						<variable layer="9" value="0"/>
+						<variable layer="10" value="0"/>
+						<variable layer="11" value="0"/>
+						<variable layer="12" value="0"/>
+						<variable layer="13" value="0"/>
+						<variable layer="14" value="0"/>
+						<variable layer="15" value="0"/>
+					</variable>
+				</texture_levels>
+			</node>
+			<node idx="2" idy="1" occluders_enabled="true" layer_is_used_mask_summer="1" layer_is_used_mask_fall="1" layer_is_used_mask_winter="1" layer_is_used_mask_spring="1" layer_is_used_mask="true" height_complexity="0.000" min_height="0.000" max_height="0.000">
+				<texture_levels>
+					<variable name="heightmap_level" value="6"/>
+					<variable name="min_heightmap_level" value="2"/>
+					<variable name="normalmap_level" value="6"/>
+					<variable name="weightmap_levels">
+						<variable layer="0" value="6"/>
+						<variable layer="1" value="0"/>
+						<variable layer="2" value="0"/>
+						<variable layer="3" value="0"/>
+						<variable layer="4" value="0"/>
+						<variable layer="5" value="0"/>
+						<variable layer="6" value="0"/>
+						<variable layer="7" value="0"/>
+						<variable layer="8" value="0"/>
+						<variable layer="9" value="0"/>
+						<variable layer="10" value="0"/>
+						<variable layer="11" value="0"/>
+						<variable layer="12" value="0"/>
+						<variable layer="13" value="0"/>
+						<variable layer="14" value="0"/>
+						<variable layer="15" value="0"/>
+					</variable>
+				</texture_levels>
+			</node>
+			<node idx="2" idy="2" occluders_enabled="true" layer_is_used_mask_summer="1" layer_is_used_mask_fall="1" layer_is_used_mask_winter="1" layer_is_used_mask_spring="1" layer_is_used_mask="true" height_complexity="0.000" min_height="0.000" max_height="0.000">
+				<texture_levels>
+					<variable name="heightmap_level" value="6"/>
+					<variable name="min_heightmap_level" value="2"/>
+					<variable name="normalmap_level" value="6"/>
+					<variable name="weightmap_levels">
+						<variable layer="0" value="6"/>
+						<variable layer="1" value="0"/>
+						<variable layer="2" value="0"/>
+						<variable layer="3" value="0"/>
+						<variable layer="4" value="0"/>
+						<variable layer="5" value="0"/>
+						<variable layer="6" value="0"/>
+						<variable layer="7" value="0"/>
+						<variable layer="8" value="0"/>
+						<variable layer="9" value="0"/>
+						<variable layer="10" value="0"/>
+						<variable layer="11" value="0"/>
+						<variable layer="12" value="0"/>
+						<variable layer="13" value="0"/>
+						<variable layer="14" value="0"/>
+						<variable layer="15" value="0"/>
+					</variable>
+				</texture_levels>
+			</node>
+			<node idx="2" idy="3" occluders_enabled="true" layer_is_used_mask_summer="1" layer_is_used_mask_fall="1" layer_is_used_mask_winter="1" layer_is_used_mask_spring="1" layer_is_used_mask="true" height_complexity="0.000" min_height="0.000" max_height="0.000">
+				<texture_levels>
+					<variable name="heightmap_level" value="6"/>
+					<variable name="min_heightmap_level" value="2"/>
+					<variable name="normalmap_level" value="6"/>
+					<variable name="weightmap_levels">
+						<variable layer="0" value="6"/>
+						<variable layer="1" value="0"/>
+						<variable layer="2" value="0"/>
+						<variable layer="3" value="0"/>
+						<variable layer="4" value="0"/>
+						<variable layer="5" value="0"/>
+						<variable layer="6" value="0"/>
+						<variable layer="7" value="0"/>
+						<variable layer="8" value="0"/>
+						<variable layer="9" value="0"/>
+						<variable layer="10" value="0"/>
+						<variable layer="11" value="0"/>
+						<variable layer="12" value="0"/>
+						<variable layer="13" value="0"/>
+						<variable layer="14" value="0"/>
+						<variable layer="15" value="0"/>
+					</variable>
+				</texture_levels>
+			</node>
+			<node idx="3" idy="0" occluders_enabled="true" layer_is_used_mask_summer="1" layer_is_used_mask_fall="1" layer_is_used_mask_winter="1" layer_is_used_mask_spring="1" layer_is_used_mask="true" height_complexity="0.000" min_height="0.000" max_height="0.000">
+				<texture_levels>
+					<variable name="heightmap_level" value="6"/>
+					<variable name="min_heightmap_level" value="2"/>
+					<variable name="normalmap_level" value="6"/>
+					<variable name="weightmap_levels">
+						<variable layer="0" value="6"/>
+						<variable layer="1" value="0"/>
+						<variable layer="2" value="0"/>
+						<variable layer="3" value="0"/>
+						<variable layer="4" value="0"/>
+						<variable layer="5" value="0"/>
+						<variable layer="6" value="0"/>
+						<variable layer="7" value="0"/>
+						<variable layer="8" value="0"/>
+						<variable layer="9" value="0"/>
+						<variable layer="10" value="0"/>
+						<variable layer="11" value="0"/>
+						<variable layer="12" value="0"/>
+						<variable layer="13" value="0"/>
+						<variable layer="14" value="0"/>
+						<variable layer="15" value="0"/>
+					</variable>
+				</texture_levels>
+			</node>
+			<node idx="3" idy="1" occluders_enabled="true" layer_is_used_mask_summer="1" layer_is_used_mask_fall="1" layer_is_used_mask_winter="1" layer_is_used_mask_spring="1" layer_is_used_mask="true" height_complexity="0.000" min_height="0.000" max_height="0.000">
+				<texture_levels>
+					<variable name="heightmap_level" value="6"/>
+					<variable name="min_heightmap_level" value="2"/>
+					<variable name="normalmap_level" value="6"/>
+					<variable name="weightmap_levels">
+						<variable layer="0" value="6"/>
+						<variable layer="1" value="0"/>
+						<variable layer="2" value="0"/>
+						<variable layer="3" value="0"/>
+						<variable layer="4" value="0"/>
+						<variable layer="5" value="0"/>
+						<variable layer="6" value="0"/>
+						<variable layer="7" value="0"/>
+						<variable layer="8" value="0"/>
+						<variable layer="9" value="0"/>
+						<variable layer="10" value="0"/>
+						<variable layer="11" value="0"/>
+						<variable layer="12" value="0"/>
+						<variable layer="13" value="0"/>
+						<variable layer="14" value="0"/>
+						<variable layer="15" value="0"/>
+					</variable>
+				</texture_levels>
+			</node>
+			<node idx="3" idy="2" occluders_enabled="true" layer_is_used_mask_summer="1" layer_is_used_mask_fall="1" layer_is_used_mask_winter="1" layer_is_used_mask_spring="1" layer_is_used_mask="true" height_complexity="0.000" min_height="0.000" max_height="0.000">
+				<texture_levels>
+					<variable name="heightmap_level" value="6"/>
+					<variable name="min_heightmap_level" value="2"/>
+					<variable name="normalmap_level" value="6"/>
+					<variable name="weightmap_levels">
+						<variable layer="0" value="6"/>
+						<variable layer="1" value="0"/>
+						<variable layer="2" value="0"/>
+						<variable layer="3" value="0"/>
+						<variable layer="4" value="0"/>
+						<variable layer="5" value="0"/>
+						<variable layer="6" value="0"/>
+						<variable layer="7" value="0"/>
+						<variable layer="8" value="0"/>
+						<variable layer="9" value="0"/>
+						<variable layer="10" value="0"/>
+						<variable layer="11" value="0"/>
+						<variable layer="12" value="0"/>
+						<variable layer="13" value="0"/>
+						<variable layer="14" value="0"/>
+						<variable layer="15" value="0"/>
+					</variable>
+				</texture_levels>
+			</node>
+			<node idx="3" idy="3" occluders_enabled="true" layer_is_used_mask_summer="1" layer_is_used_mask_fall="1" layer_is_used_mask_winter="1" layer_is_used_mask_spring="1" layer_is_used_mask="true" height_complexity="0.000" min_height="0.000" max_height="0.000">
+				<texture_levels>
+					<variable name="heightmap_level" value="6"/>
+					<variable name="min_heightmap_level" value="2"/>
+					<variable name="normalmap_level" value="6"/>
+					<variable name="weightmap_levels">
+						<variable layer="0" value="6"/>
+						<variable layer="1" value="0"/>
+						<variable layer="2" value="0"/>
+						<variable layer="3" value="0"/>
+						<variable layer="4" value="0"/>
+						<variable layer="5" value="0"/>
+						<variable layer="6" value="0"/>
+						<variable layer="7" value="0"/>
+						<variable layer="8" value="0"/>
+						<variable layer="9" value="0"/>
+						<variable layer="10" value="0"/>
+						<variable layer="11" value="0"/>
+						<variable layer="12" value="0"/>
+						<variable layer="13" value="0"/>
+						<variable layer="14" value="0"/>
+						<variable layer="15" value="0"/>
+					</variable>
+				</texture_levels>
+			</node>
+		</nodes>
+	</terrain>
+	<editor_data editor_camera_position="75.042, 47.899, 6.741" editor_camera_elevation="-0.396" editor_camera_bearing="0.481" editor_camera_forward="-0.828, 0.378, -0.414" author="" comment=""/>
+	<camera_data near_plane="0.100" far_plane="100000.000"/>
+	<Paths/>
+</scene>
+

@@ -81,6 +81,10 @@
       <HintPath>..\..\..\Games\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="TaleWorlds.ObjectSystem">
+      <HintPath>..\..\..\Games\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_wEditor\TaleWorlds.ObjectSystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <!-- Bannerlord Assemblies -->
     <!-- Native Assemblies -->
     <!-- Module Assemblies -->
@@ -92,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\ScenePhysicsNetworkComponent.cs" />
     <Compile Include="src\ConstraintBase.cs" />
     <Compile Include="src\ConstraintLib.cs" />
     <Compile Include="src\ConstraintTypes.cs" />
@@ -105,9 +110,13 @@
     <Compile Include="src\SCE_WheeledVehicleController.cs" />
   </ItemGroup>
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)" "$(ProjectDir)\ScenePhysicsImplementer\bin\Win64_Shipping_Client\" /i /f /y /s
+    <PostBuildEvent>xcopy "$(TargetDir)*" "$(OutDir)..\Win64_Shipping_Client"  /i /f /y /s
 
-xcopy "..\..\$(TargetPath)" "C:\Games\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\SceneEditorImplementer\" /i /f /y /s
+xcopy "$(TargetDir)*" "$(OutDir)..\Win64_Shipping_Server"  /i /f /y /s
+
+xcopy "..\..\$(TargetPath)" "C:\Games\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\ScenePhysicsImplementer\" /i /f /y /s
+
+xcopy "..\..\$(TargetPath)" "C:\Games\Steam\steamapps\common\Mount &amp; Blade II Dedicated Server\Modules\ScenePhysicsImplementer\" /i /f /y /s
 </PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

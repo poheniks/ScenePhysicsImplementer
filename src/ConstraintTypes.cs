@@ -93,6 +93,7 @@ namespace ScenePhysicsImplementer
 
             prevTorqueVector = torqueVector;
             prevTorqueSign = torqueSign;
+            Console.WriteLine($"{physObject.Name} + {physObjGlobalFrame.origin}");
             return constraintTorque * ConstraintStiffness;
         }
     }
@@ -143,12 +144,13 @@ namespace ScenePhysicsImplementer
             torqueVector *= angularDisplacement;
             torqueVector = MathLib.VectorMultiplyComponents(torqueVector, MoI);
 
-            kPStatic = 55f;
+            kPStatic = 35f;
             kDStatic = 1f;
 
             Vec3 constraintTorque = ConstraintLib.VectorPID(torqueVector, prevTorqueVector, dt, kPStatic * PDGain.x, kDStatic * PDGain.z);
 
             prevTorqueVector = torqueVector;
+            Console.WriteLine($"{physObject.Name} + {physObjGlobalFrame.origin}");
             return constraintTorque * ConstraintStiffness;
         }
         public void SetHingeRotationAxis(Vec3 hingeRotationAxis)

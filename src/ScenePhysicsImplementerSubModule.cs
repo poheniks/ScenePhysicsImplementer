@@ -20,7 +20,7 @@ namespace ScenePhysicsImplementer
 
         public override void OnMissionBehaviorInitialize(Mission mission)
         {
-            base.OnMissionBehaviorInitialize(mission);
+            if (GameNetwork.IsMultiplayer) return;
 
             if (mission.HasMissionBehavior<SimpleMountedPlayerMissionController>() | mission.HasMissionBehavior<CustomBattleAgentLogic>())
             {
