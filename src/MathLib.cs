@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
+using TaleWorlds.Core;
 
 namespace ScenePhysicsImplementer
 {
@@ -283,11 +284,11 @@ namespace ScenePhysicsImplementer
 
         public static void DebugMessage(string message, bool isError = false, bool isImportantInfo = false)
         {
-            TaleWorlds.Core.InformationMessage infoMessage = new TaleWorlds.Core.InformationMessage(message);
+            InformationMessage infoMessage = new InformationMessage(message);
             if (isImportantInfo) infoMessage.Color = Colors.Green;
             if (isError) infoMessage.Color = Colors.Red;
 
-            TaleWorlds.Core.InformationManager.DisplayMessage(infoMessage);
+            InformationManager.DisplayMessage(infoMessage);
         }
 
         public struct Matrix2x2
